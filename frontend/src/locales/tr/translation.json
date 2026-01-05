@@ -1,0 +1,74 @@
+{
+  "common": {
+    "loading": "Yükleniyor...",
+    "error": "Hata",
+    "success": "Başarılı",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "close": "Kapat",
+    "back": "Geri",
+    "next": "İleri",
+    "previous": "Önceki",
+    "search": "Ara",
+    "filter": "Filtrele",
+    "noResults": "Sonuç bulunamadı"
+  },
+  "auth": {
+    "login": "Giriş Yap",
+    "register": "Kayıt Ol",
+    "logout": "Çıkış Yap",
+    "email": "E-posta",
+    "password": "Şifre",
+    "confirmPassword": "Şifre Tekrar",
+    "forgotPassword": "Şifremi Unuttum",
+    "rememberMe": "Beni Hatırla",
+    "loginSuccess": "Başarıyla giriş yapıldı",
+    "registerSuccess": "Kayıt başarıyla oluşturuldu",
+    "logoutSuccess": "Başarıyla çıkış yapıldı"
+  },
+  "news": {
+    "title": "Haberler",
+    "categories": "Kategoriler",
+    "noNews": "Henüz haber yok",
+    "loadMore": "Daha Fazla Yükle",
+    "readMore": "Devamını Oku",
+    "source": "Kaynak",
+    "publishedAt": "Yayınlanma Tarihi",
+    "category": {
+      "business": "İş",
+      "entertainment": "Eğlence",
+      "general": "Genel",
+      "health": "Sağlık",
+      "science": "Bilim",
+      "sports": "Spor",
+      "technology": "Teknoloji"
+    }
+  },
+  "preferences": {
+    "title": "Tercihler",
+    "categories": "Kategori Tercihleri",
+    "country": "Ülke",
+    "language": "Dil",
+    "selectCategories": "Kategorileri Seçin",
+    "selectCountry": "Ülke Seçin",
+    "preferencesSaved": "Tercihler kaydedildi",
+    "preferencesError": "Tercihler kaydedilemedi"
+  },
+  "countries": {
+    "tr": "Türkiye",
+    "us": "Amerika Birleşik Devletleri",
+    "de": "Almanya",
+    "fr": "Fransa",
+    "es": "İspanya"
+  },
+  "errors": {
+    "networkError": "Ağ hatası oluştu",
+    "serverError": "Sunucu hatası",
+    "notFound": "Bulunamadı",
+    "unauthorized": "Yetkisiz erişim",
+    "validationError": "Doğrulama hatası"
+  }
+}
+

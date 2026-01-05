@@ -4,13 +4,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-lerna-debug.log*
-
-# Build outputs
-dist/
-dist-ssr/
-build/
-*.local
 
 # Environment variables
 .env
@@ -23,6 +16,9 @@ build/
 # Logs
 logs/
 *.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
 
 # Runtime data
 pids/
@@ -30,7 +26,7 @@ pids/
 *.seed
 *.pid.lock
 
-# Coverage directory used by tools like istanbul
+# Coverage directory
 coverage/
 *.lcov
 .nyc_output/
@@ -39,15 +35,12 @@ coverage/
 .vscode/
 !.vscode/extensions.json
 .idea/
-.claude/
 *.swp
 *.swo
 *~
-CLAUDE.md
 .DS_Store
 *.suo
 *.ntvs*
-.serena/
 *.njsproj
 *.sln
 *.sw?
@@ -58,7 +51,6 @@ CLAUDE.md
 ._*
 .Spotlight-V100
 .Trashes
-ehthumbs.db
 Thumbs.db
 
 # Temporary files
@@ -66,7 +58,7 @@ Thumbs.db
 *.temp
 .cache/
 
-# Optional npm cache directory
+# Optional npm cache
 .npm
 
 # Optional eslint cache
@@ -80,25 +72,6 @@ Thumbs.db
 
 # Yarn Integrity file
 .yarn-integrity
-
-# dotenv environment variable files
-.env.test
-
-# parcel-bundler cache
-.parcel-cache
-
-# Next.js (if used in future)
-.next/
-out/
-
-# Nuxt.js (if used in future)
-.nuxt/
-
-# Vite
-.vite/
-
-# TypeScript
-*.tsbuildinfo
 
 # Testing
 .jest/

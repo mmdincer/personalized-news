@@ -1,0 +1,74 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "filter": "Filter",
+    "noResults": "No results found"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "forgotPassword": "Forgot Password",
+    "rememberMe": "Remember Me",
+    "loginSuccess": "Successfully logged in",
+    "registerSuccess": "Registration successful",
+    "logoutSuccess": "Successfully logged out"
+  },
+  "news": {
+    "title": "News",
+    "categories": "Categories",
+    "noNews": "No news available",
+    "loadMore": "Load More",
+    "readMore": "Read More",
+    "source": "Source",
+    "publishedAt": "Published At",
+    "category": {
+      "business": "Business",
+      "entertainment": "Entertainment",
+      "general": "General",
+      "health": "Health",
+      "science": "Science",
+      "sports": "Sports",
+      "technology": "Technology"
+    }
+  },
+  "preferences": {
+    "title": "Preferences",
+    "categories": "Category Preferences",
+    "country": "Country",
+    "language": "Language",
+    "selectCategories": "Select Categories",
+    "selectCountry": "Select Country",
+    "preferencesSaved": "Preferences saved",
+    "preferencesError": "Failed to save preferences"
+  },
+  "countries": {
+    "tr": "Turkey",
+    "us": "United States",
+    "de": "Germany",
+    "fr": "France",
+    "es": "Spain"
+  },
+  "errors": {
+    "networkError": "Network error occurred",
+    "serverError": "Server error",
+    "notFound": "Not found",
+    "unauthorized": "Unauthorized access",
+    "validationError": "Validation error"
+  }
+}
+

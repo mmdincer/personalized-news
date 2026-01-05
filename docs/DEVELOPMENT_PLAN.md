@@ -21,56 +21,31 @@
 ## 1. feat/project-setup
 
 ### Görevler
-- [ ] Proje kök dizin yapısını oluştur (backend/, frontend/, docs/)
-- [ ] Backend klasör yapısını kur (config/, controllers/, middleware/, models/, routes/, services/, database/)
-- [ ] Database klasör yapısını kur (`backend/database/migrations/`)
-- [ ] Frontend klasör yapısını kur (components/, services/, utils/, contexts/)
-- [ ] `.gitignore` dosyasını yapılandır (node_modules, .env, dist, build)
-- [ ] Backend `package.json` oluştur ve temel bağımlılıkları ekle (bakınız: [TECHNOLOGY_STACK.md](./TECHNOLOGY_STACK.md))
-- [ ] Backend `server.js` entry point dosyasını oluştur
-- [ ] Temel Express.js sunucusunu kur (port dinleme, middleware setup)
-- [ ] Frontend Vite ile React projesi oluştur
-- [ ] Frontend `package.json` ve `vite.config.js` yapılandırması
-- [ ] Tailwind CSS kurulumu ve yapılandırması
-- [ ] Frontend bağımlılıkları ekle (bakınız: [TECHNOLOGY_STACK.md](./TECHNOLOGY_STACK.md))
-- [ ] i18n (internationalization) kurulumu (`react-i18next` veya `i18next`)
-  - [ ] i18next ve react-i18next paketlerini kur
-  - [ ] Dil dosyaları yapısını oluştur (locales/tr, locales/en, locales/de, locales/fr, locales/es)
-  - [ ] i18n configuration dosyası oluştur
-  - [ ] Default language: 'tr' (Türkçe)
-- [ ] `.env.example` dosyası oluştur (backend ve frontend için)
-- [ ] Temel health check endpoint'i ekle (`GET /api/health`)
-- [ ] Kök dizinde `README.md` şablonu oluştur
-- [ ] Git repository'yi initialize et
+- [x] Proje kök dizin yapısını oluştur (backend/, frontend/, docs/)
+- [x] Tüm klasör yapılarını kur (backend: config/, controllers/, middleware/, routes/, services/, utils/, constants/, database/migrations/; frontend: components/, services/, utils/, contexts/, config/, i18n/, locales/, pages/) - bakınız: [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)
+- [x] Backend setup: `package.json`, dependencies, `server.js`, Express.js sunucusu, health check endpoint (`GET /api/health`) - bakınız: [TECHNOLOGY_STACK.md](./TECHNOLOGY_STACK.md)
+- [x] Frontend setup: Vite + React projesi, `package.json`, `vite.config.js`, Tailwind CSS kurulumu ve yapılandırması, dependencies - bakınız: [TECHNOLOGY_STACK.md](./TECHNOLOGY_STACK.md)
+- [x] i18n kurulumu: react-i18next paketleri, dil dosyaları yapısı (locales/tr, en, de, fr, es), i18n config, default language: 'tr'
+- [x] Konfigürasyon dosyaları: `.gitignore`, `.env.example` (backend ve frontend), ESLint, Prettier
 
 ### Başarı Kriterleri
-- [ ] Tüm klasör yapıları oluşturuldu
-- [ ] `.gitignore` doğru yapılandırıldı
-- [ ] Express sunucusu çalışıyor
-- [ ] Vite dev server çalışıyor
-- [ ] Health check endpoint'i çalışıyor
-- [ ] Environment variables doğru yükleniyor
-- [ ] `.env.example` dosyası mevcut ve güncel
+- [x] Tüm klasör yapıları oluşturuldu
+- [x] `.gitignore` doğru yapılandırıldı
+- [x] Express sunucusu çalışıyor
+- [x] Vite dev server çalışıyor
+- [x] Health check endpoint'i çalışıyor
+- [x] Environment variables doğru yükleniyor
+- [x] `.env.example` dosyası mevcut ve güncel
 
 ---
 
 ## 2. feat/backend-database-and-models
 
 ### Görevler
-- [ ] Supabase hesabı oluştur ve proje kurulumu yap
-- [ ] Supabase client library kurulumu (`@supabase/supabase-js`)
-- [ ] Supabase connection yapılandırması (`config/database.js`)
-- [ ] Supabase client instance oluştur (SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
-- [ ] Error handling için database connection hatalarını yönet
-- [ ] Database migrations klasör yapısını oluştur (`backend/database/migrations/`)
-- [ ] Migration dosyası naming convention belirle (bakınız: [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md))
-- [ ] `001_create_users_table.sql` migration dosyası oluştur (bakınız: [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md))
-- [ ] `002_create_user_preferences_table.sql` migration dosyası oluştur (bakınız: [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md))
-- [ ] Migration dosyalarını Supabase SQL Editor'de manuel olarak çalıştır (bakınız: [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md))
-- [ ] Migration dosyalarını version control'e ekle
-- [ ] Password hash için bcrypt entegrasyonu
-- [ ] Email validation ve uniqueness kontrolü
-- [ ] `.env.example`'a Supabase credentials ekle
+- [ ] Supabase setup: hesap oluşturma, proje kurulumu, client library (`@supabase/supabase-js`), connection yapılandırması (`config/database.js`), error handling
+- [ ] Database migrations: migration dosyaları oluştur (`001_create_users_table.sql`, `002_create_user_preferences_table.sql`), Supabase SQL Editor'de çalıştır - bakınız: [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md)
+- [ ] User utilities: bcrypt password hashing, email validation ve uniqueness kontrolü
+- [ ] Environment: `.env.example`'a Supabase credentials ekle
 
 ### Başarı Kriterleri
 - [ ] Supabase bağlantısı başarılı
@@ -89,36 +64,12 @@
 ## 3. feat/backend-authentication
 
 ### Görevler
-- [ ] JWT token oluşturma utility fonksiyonu (`jsonwebtoken`)
-  - [ ] Token expiration: 7 days (configurable)
-  - [ ] Secret key from environment variable
-  - [ ] Include user id and email in payload
-- [ ] JWT token doğrulama middleware'i (`middleware/auth.js`)
-  - [ ] Verify token from Authorization header (Bearer token)
-  - [ ] Attach user info to request object
-  - [ ] Handle expired tokens gracefully
-- [ ] Password hash karşılaştırma fonksiyonu (bcrypt.compare)
-  - [ ] Salt rounds: 10
-  - [ ] Async comparison for performance
-- [ ] Error handling middleware'i oluştur
-- [ ] Password validation rules implementation (bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md))
-- [ ] `POST /api/auth/register` endpoint'i oluştur
-  - [ ] Supabase'de user insert işlemi
-  - [ ] Password hash'leme (bcrypt with 10 salt rounds)
-  - [ ] Email duplicate kontrolü (Supabase query)
-  - [ ] Password strength validation
-  - [ ] Return sanitized user data (no password_hash)
-- [ ] `POST /api/auth/login` endpoint'i oluştur
-  - [ ] Supabase'den user lookup (email ile)
-  - [ ] Password karşılaştırma
-  - [ ] JWT token oluşturma ve döndürme
-  - [ ] Return user data with token
-- [ ] Input validation middleware'i ekle (`express-validator`)
-  - [ ] Email format validation (valid email regex)
-  - [ ] Password format validation (call password validator)
-  - [ ] Trim whitespace from inputs
-- [ ] Error response formatlarını standardize et (bakınız: [ERROR_CODES.md](./ERROR_CODES.md))
-- [ ] Supabase RLS (Row Level Security) politikalarını yapılandır (bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md))
+- [ ] Auth service: JWT token oluşturma (7 days expiration, user id + email payload), password hash karşılaştırma (bcrypt.compare, 10 salt rounds), password validation rules - bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md)
+- [ ] Auth middleware: JWT token doğrulama (`middleware/auth.js`), Authorization header'dan token okuma, user info'yu request'e ekleme, expired token handling
+- [ ] Auth endpoints: `POST /api/auth/register` (user insert, password hash, email duplicate check, password validation, sanitized response), `POST /api/auth/login` (user lookup, password compare, JWT token return)
+- [ ] Validation middleware: `express-validator` ile email format, password format, input trimming
+- [ ] Error handling: standardized error response format, error handling middleware - bakınız: [ERROR_CODES.md](./ERROR_CODES.md)
+- [ ] Security: Supabase RLS policies yapılandırma - bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md)
 
 ### Başarı Kriterleri
 - [ ] JWT token başarıyla oluşturuluyor ve doğrulanıyor
@@ -134,44 +85,11 @@
 ## 4. feat/backend-user-preferences
 
 ### Görevler
-- [ ] Category constants file oluştur (`constants/categories.js`)
-  - [ ] ALLOWED_CATEGORIES array tanımla (bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md))
-  - [ ] Category validation helper function
-  - [ ] Category display names mapping (multi-language support)
-- [ ] Country/Language constants file oluştur (`constants/countries.js`)
-  - [ ] SUPPORTED_COUNTRIES array tanımla (tr, us, de, fr, es) (bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md))
-  - [ ] Country validation helper function
-  - [ ] Country to language mapping
-  - [ ] Default country: 'tr'
-- [ ] `GET /api/user/preferences` endpoint'i oluştur (protected)
-  - [ ] Supabase'den user preferences sorgusu (user_id ile)
-  - [ ] JSONB categories array döndürme
-  - [ ] Country field döndürme (default: 'tr')
-  - [ ] Empty array döndür eğer preferences yoksa
-  - [ ] User ID from JWT token
-- [ ] `PUT /api/user/preferences` endpoint'i oluştur (protected)
-  - [ ] Supabase upsert işlemi (INSERT ... ON CONFLICT UPDATE)
-  - [ ] JSONB array update işlemi
-  - [ ] Country field update işlemi
-  - [ ] Validate all categories before update
-  - [ ] Validate country (must be one of: tr, us, de, fr, es)
-  - [ ] User ID from JWT token
-- [ ] Kategori validation (sadece izin verilen kategoriler)
-  - [ ] Check each category against ALLOWED_CATEGORIES
-  - [ ] Reject invalid categories with error code (bakınız: [ERROR_CODES.md](./ERROR_CODES.md))
-  - [ ] Allow empty array (user wants no categories)
-  - [ ] Remove duplicates from input
-- [ ] User preferences update logic (Supabase query)
-  - [ ] Use parameterized queries (SQL injection prevention)
-  - [ ] Handle concurrent updates gracefully
-- [ ] Default preferences atama (kayıt sırasında)
-  - [ ] Register endpoint'inde default categories ile preferences insert
-  - [ ] Default categories: ['general', 'technology'] (recommended categories)
-  - [ ] Default country: 'tr' (Türkiye - Türkçe)
-  - [ ] Transaction: user insert + preferences insert (atomic operation)
-- [ ] Supabase JSONB query optimizasyonu
-  - [ ] Use JSONB operators for efficient queries
-  - [ ] Add GIN index on categories column (optional, for search)
+- [ ] Constants files: `constants/categories.js` (ALLOWED_CATEGORIES, validation helper, display names mapping), `constants/countries.js` (SUPPORTED_COUNTRIES: tr/us/de/fr/es, validation helper, country-to-language mapping, default: 'tr') - bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)
+- [ ] Preferences endpoints: `GET /api/user/preferences` (Supabase query, JSONB categories + country, default 'tr', JWT user ID), `PUT /api/user/preferences` (upsert, JSONB update, category/country validation, JWT user ID)
+- [ ] Validation logic: category validation (ALLOWED_CATEGORIES check, reject invalid, allow empty array, remove duplicates), country validation (must be tr/us/de/fr/es) - bakınız: [ERROR_CODES.md](./ERROR_CODES.md)
+- [ ] Default preferences: register endpoint'inde default categories ['general', 'technology'] ve country 'tr' ile preferences insert (atomic operation)
+- [ ] Database optimization: parameterized queries (SQL injection prevention), JSONB operators, GIN index on categories (optional)
 
 ### Başarı Kriterleri
 - [ ] Kullanıcı tercihleri Supabase'den okunabiliyor
@@ -190,38 +108,12 @@
 ## 5. feat/backend-news-api
 
 ### Görevler
-- [ ] NewsAPI.org API key'i `.env`'e ekle (bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md))
-- [ ] News service layer oluştur (`services/newsService.js`)
-  - [ ] Separate service from controller (SRP - Single Responsibility)
-  - [ ] Pure business logic, no HTTP concerns
-  - [ ] Reusable functions for different controllers
-- [ ] NewsAPI.org entegrasyonu (`axios` kullanarak) (bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md))
-  - [ ] Create axios instance with base URL
-  - [ ] Add API key to all requests (interceptor or config)
-  - [ ] Set timeout: 10 seconds
-  - [ ] Handle network errors gracefully
-- [ ] Kategori bazlı haber çekme fonksiyonu
-  - [ ] Validate category against ALLOWED_CATEGORIES
-  - [ ] Country parametresi ekle (user preferences'ten veya default: 'tr')
-  - [ ] Default country: 'tr' (Türkiye - Türkçe)
-  - [ ] Default pageSize: 20 (configurable, max 100)
-  - [ ] Map NewsAPI response to normalized format (bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md))
-- [ ] User country preference'ine göre haber çekme
-  - [ ] Kullanıcı country preference'ini al
-  - [ ] NewsAPI.org'a country parametresi ile istek gönder
-  - [ ] Eğer user country preference yoksa default 'tr' kullan
-- [ ] API rate limiting kontrolü (bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md))
-  - [ ] Track daily request count (100/day limit)
-  - [ ] Implement per-second rate limiting (1/second)
-  - [ ] Return cached results when limit reached
-  - [ ] Log rate limit warnings
-- [ ] Error handling (API hataları için) (bakınız: [ERROR_CODES.md](./ERROR_CODES.md))
-- [ ] Response transformation (API response'unu normalize et) (bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md))
-- [ ] `GET /api/news` endpoint'i oluştur (genel haberler)
-- [ ] `GET /api/news/:category` endpoint'i oluştur
-- [ ] Query parameters desteği (page, limit)
-- [ ] CORS yapılandırması (bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md))
-- [ ] Response caching stratejisi (opsiyonel) (bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md))
+- [ ] News service layer: `services/newsService.js` oluştur (SRP: pure business logic, no HTTP concerns), NewsAPI.org entegrasyonu (axios instance, API key interceptor, 10s timeout, network error handling) - bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)
+- [ ] News fetching logic: kategori bazlı haber çekme (category validation, country parameter from user preferences/default 'tr', pageSize: 20, max 100), user country preference'e göre haber çekme, response normalization
+- [ ] News endpoints: `GET /api/news` (genel haberler), `GET /api/news/:category` (kategori bazlı), query parameters (page, limit)
+- [ ] Rate limiting: daily request tracking (100/day), per-second limiting (1/second), cached results when limit reached, logging - bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)
+- [ ] Error handling ve response transformation: API error handling, response normalization - bakınız: [ERROR_CODES.md](./ERROR_CODES.md), [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)
+- [ ] Configuration: NewsAPI.org API key `.env`'e ekle, CORS yapılandırması, response caching (15 minutes) - bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md)
 
 ### Başarı Kriterleri
 - [ ] NewsAPI.org'dan haberler çekiliyor
@@ -241,19 +133,10 @@
 ## 6. feat/frontend-api-and-auth
 
 ### Görevler
-- [ ] API base URL yapılandırması (`config/api.js`)
-- [ ] Axios instance oluştur ve interceptors ekle
-- [ ] Auth service fonksiyonları (login, register, logout)
-- [ ] News service fonksiyonları (getNews, getNewsByCategory)
-- [ ] User service fonksiyonları (getPreferences, updatePreferences)
-- [ ] Error handling utility fonksiyonları (bakınız: [ERROR_CODES.md](./ERROR_CODES.md))
-- [ ] Token storage yönetimi (`localStorage` kullanarak)
-- [ ] AuthContext oluştur (`contexts/AuthContext.js`)
-- [ ] AuthProvider component'i oluştur
-- [ ] Login, register, logout fonksiyonları
-- [ ] Token validation ve auto-logout (token expire)
-- [ ] Protected route wrapper component'i
-- [ ] Auth state management (user bilgileri, isAuthenticated)
+- [ ] API configuration: `config/api.js` (base URL, axios instance, request/response interceptors, token auto-injection)
+- [ ] Service layer: auth service (login, register, logout), news service (getNews, getNewsByCategory), preferences service (getPreferences, updatePreferences)
+- [ ] Error handling: error handling utilities, error parsing ve display - bakınız: [ERROR_CODES.md](./ERROR_CODES.md)
+- [ ] Auth context: `AuthContext.js` ve `AuthProvider` component, login/register/logout fonksiyonları, token storage (`localStorage`), token validation ve auto-logout, protected route wrapper, auth state management (user, isAuthenticated)
 
 ### Başarı Kriterleri
 - [ ] API çağrıları başarıyla yapılıyor
@@ -268,19 +151,9 @@
 ## 7. feat/frontend-auth-and-routing
 
 ### Görevler
-- [ ] Login form component'i oluştur (`react-hook-form` kullanarak)
-- [ ] Register form component'i oluştur (`react-hook-form` kullanarak)
-- [ ] Form validation (`react-hook-form` ile email, password, confirm password validation)
-- [ ] Error message display (bakınız: [ERROR_CODES.md](./ERROR_CODES.md))
-- [ ] Loading states
-- [ ] Form styling (Tailwind CSS ile modern ve kullanıcı dostu)
-- [ ] Success redirect handling
-- [ ] React Router yapılandırması
-- [ ] Route tanımlamaları (/, /login, /register, /news, /preferences)
-- [ ] Protected route wrapper'ı entegre et
-- [ ] Public route wrapper'ı (login/register için)
-- [ ] 404 page oluştur
-- [ ] Navigation component'i (Header/Navbar)
+- [ ] Auth forms: LoginForm ve RegisterForm component'leri (`react-hook-form`), form validation (email, password, confirm password), error message display, loading states, Tailwind CSS styling, success redirect handling - bakınız: [ERROR_CODES.md](./ERROR_CODES.md)
+- [ ] Routing: React Router yapılandırması, route tanımlamaları (/, /login, /register, /news, /preferences), protected/public route wrappers entegrasyonu, 404 page
+- [ ] Navigation: Header/Navbar component
 
 ### Başarı Kriterleri
 - [ ] Form validation çalışıyor
@@ -295,32 +168,11 @@
 ## 8. feat/frontend-news-and-preferences
 
 ### Görevler
-- [ ] NewsFeed component'i oluştur
-- [ ] NewsCard component'i oluştur
-- [ ] Kategori bazlı haber filtreleme
-- [ ] Loading skeleton/placeholder
-- [ ] Empty state handling
-- [ ] Error state handling
-- [ ] Responsive grid layout
-- [ ] CategorySelector component'i oluştur
-- [ ] Kategori checkbox/button UI
-- [ ] Kullanıcı tercihlerini yükleme
-- [ ] Tercih güncelleme fonksiyonu
-- [ ] Visual feedback (seçili kategoriler)
-- [ ] UserPreferences page component'i oluştur
-- [ ] Country/Language selector component'i oluştur
-  - [ ] 5 ülke seçeneği (tr, us, de, fr, es)
-  - [ ] Ülke bayrakları ve isimleri göster
-  - [ ] Seçilen ülkeye göre UI dilini değiştir (i18n.changeLanguage)
-  - [ ] Country preference'i backend'e kaydet
-  - [ ] Country değiştiğinde haberleri yeniden çek (yeni ülkeden)
-  - [ ] Loading state göster (dil değişimi ve haber yükleme sırasında)
-- [ ] i18n entegrasyonu
-  - [ ] Tüm UI metinlerini translation dosyalarına taşı
-  - [ ] useTranslation hook kullanımı
-  - [ ] Dil değiştiğinde UI'ı güncelle
-  - [ ] 5 dil dosyası oluştur (tr.json, en.json, de.json, fr.json, es.json)
-- [ ] Success/error notifications (`react-hot-toast` kullanarak)
+- [ ] News components: NewsFeed ve NewsCard component'leri, kategori bazlı haber filtreleme, loading skeleton, empty/error state handling, responsive grid layout
+- [ ] Preferences components: CategorySelector (checkbox/button UI, visual feedback), UserPreferences page component, kullanıcı tercihlerini yükleme ve güncelleme fonksiyonları
+- [ ] Country/Language selector: CountrySelector component (5 ülke: tr/us/de/fr/es, bayraklar ve isimler), UI dilini değiştirme (i18n.changeLanguage), country preference backend'e kaydetme, country değiştiğinde haberleri yeniden çekme, loading states
+- [ ] i18n entegrasyonu: tüm UI metinlerini translation dosyalarına taşıma, useTranslation hook kullanımı, dil değiştiğinde UI güncelleme, 5 dil dosyası (tr/en/de/fr/es.json)
+- [ ] Notifications: success/error notifications (`react-hot-toast`)
 
 ### Başarı Kriterleri
 - [ ] Haberler başarıyla gösteriliyor
@@ -339,25 +191,8 @@
 ## 9. refactor/security-and-error-handling
 
 ### Görevler
-
-#### Error Handling
-- [ ] Global error boundary component (React)
-- [ ] Backend error response standardizasyonu (bakınız: [ERROR_CODES.md](./ERROR_CODES.md))
-- [ ] Frontend error handling utility'leri (bakınız: [ERROR_CODES.md](./ERROR_CODES.md))
-- [ ] User-friendly error mesajları (bakınız: [ERROR_CODES.md](./ERROR_CODES.md))
-- [ ] Error logging (`winston` kütüphanesi ile)
-- [ ] Network error handling
-
-#### Security Hardening
-- [ ] Backend input validation middleware'i güçlendir (bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md))
-- [ ] Frontend form validation iyileştirmeleri
-- [ ] XSS prevention kontrolleri (bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md))
-- [ ] SQL injection prevention (bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md))
-- [ ] Supabase RLS (Row Level Security) politikalarını gözden geçir (bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md))
-- [ ] Rate limiting middleware'i (`express-rate-limit` kullanarak) (bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md))
-- [ ] Request size limiting (bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md))
-- [ ] Supabase connection pool yönetimi
-- [ ] OWASP Top 10 checklist tamamla (bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md))
+- [ ] Error handling: global error boundary component (React), backend error response standardizasyonu, frontend error handling utilities, user-friendly error mesajları (multi-language), error logging (`winston`), network error handling - bakınız: [ERROR_CODES.md](./ERROR_CODES.md)
+- [ ] Security hardening: backend input validation middleware güçlendirme, frontend form validation iyileştirmeleri, XSS prevention (HTML sanitization, CSP headers), SQL injection prevention (parameterized queries), Supabase RLS policies gözden geçirme, rate limiting middleware (`express-rate-limit`), request size limiting, Supabase connection pool yönetimi, OWASP Top 10 checklist - bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md)
 
 ### Başarı Kriterleri
 - [ ] Error boundary çalışıyor ve kullanıcı dostu mesajlar gösteriyor
@@ -381,17 +216,8 @@
 ## 10. feat/responsive-and-config
 
 ### Görevler
-- [ ] Mobile-first CSS yaklaşımı (Tailwind CSS ile)
-- [ ] Tailwind CSS breakpoint'lerini yapılandır (sm, md, lg, xl, 2xl)
-- [ ] Responsive navigation (hamburger menu)
-- [ ] Responsive news grid
-- [ ] Touch-friendly button sizes
-- [ ] Mobile form optimizasyonu
-- [ ] Production ve development environment ayrımı
-- [ ] `.env.example` dosyasını güncelle
-- [ ] Environment variable validation
-- [ ] Build script'leri optimize et
-- [ ] Deployment hazırlığı
+- [ ] Responsive design: mobile-first CSS (Tailwind), breakpoint yapılandırması (sm/md/lg/xl/2xl), responsive navigation (hamburger menu), responsive news grid, touch-friendly button sizes, mobile form optimizasyonu
+- [ ] Environment configuration: production/development ayrımı, `.env.example` güncelleme, environment variable validation, build script optimizasyonu, deployment hazırlığı
 
 ### Başarı Kriterleri
 - [ ] Mobil cihazlarda düzgün görünüyor
@@ -406,19 +232,8 @@
 ## 11. docs/readme-documentation
 
 ### Görevler
-- [ ] Proje açıklaması
-- [ ] Kurulum talimatları
-- [ ] Supabase setup guide (hesap oluşturma, proje kurulumu)
-- [ ] Database migration dosyaları kurulum adımları (bakınız: [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md))
-- [ ] Supabase database schema kurulum adımları
-- [ ] Environment setup guide (Supabase credentials)
-- [ ] NewsAPI.org API key configuration steps (bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md))
-- [ ] Running instructions (dev ve production)
-- [ ] Technology stack documentation (bakınız: [TECHNOLOGY_STACK.md](./TECHNOLOGY_STACK.md))
-- [ ] API endpoint documentation (bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md))
-- [ ] Supabase connection troubleshooting
-- [ ] Migration dosyaları troubleshooting (bakınız: [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md))
-- [ ] Troubleshooting section
+- [ ] README.md: proje açıklaması, kurulum talimatları, Supabase setup guide (hesap oluşturma, proje kurulumu, database schema), environment setup (Supabase credentials, NewsAPI.org API key), running instructions (dev ve production) - bakınız: [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md), [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)
+- [ ] Documentation: technology stack documentation, API endpoint documentation, Supabase connection troubleshooting, migration troubleshooting, genel troubleshooting section - bakınız: [TECHNOLOGY_STACK.md](./TECHNOLOGY_STACK.md), [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md), [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md)
 
 ### Başarı Kriterleri
 - [ ] README.md kapsamlı ve anlaşılır
@@ -432,12 +247,8 @@
 ## 12. test/integration-tests (Opsiyonel)
 
 ### Görevler
-- [ ] Jest test framework kurulumu (bakınız: [TECHNOLOGY_STACK.md](./TECHNOLOGY_STACK.md))
-- [ ] Backend API endpoint testleri (Jest ve Supertest ile)
-- [ ] Auth flow testleri
-- [ ] News API integration testleri
-- [ ] User preferences testleri
-- [ ] Error scenario testleri
+- [ ] Test setup: Jest test framework kurulumu - bakınız: [TECHNOLOGY_STACK.md](./TECHNOLOGY_STACK.md)
+- [ ] Test implementation: backend API endpoint testleri (Jest + Supertest), auth flow testleri, news API integration testleri, user preferences testleri, error scenario testleri
 
 ### Başarı Kriterleri
 - [ ] Tüm kritik endpoint'ler test edildi
@@ -449,12 +260,9 @@
 ## 13. fix/bug-fixes-and-polish
 
 ### Görevler
-- [ ] Kullanıcı testleri sonrası bug fix'ler
-- [ ] Performance optimizasyonları
-- [ ] UI/UX iyileştirmeleri
-- [ ] Code cleanup ve refactoring
-- [ ] Console.log'ları temizle
-- [ ] Final security audit (bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md))
+- [ ] Bug fixes: kullanıcı testleri sonrası bug fix'ler
+- [ ] Optimization: performance optimizasyonları, code cleanup ve refactoring, console.log temizleme
+- [ ] Polish: UI/UX iyileştirmeleri, final security audit - bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md)
 
 ### Başarı Kriterleri
 - [ ] Kritik bug'lar düzeltildi
