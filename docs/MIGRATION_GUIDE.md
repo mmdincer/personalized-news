@@ -32,6 +32,7 @@ Migration dosyaları sıralı numaralandırılmalı:
 CREATE TABLE IF NOT EXISTS users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email VARCHAR(255) UNIQUE NOT NULL,
+  name VARCHAR(255) NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
@@ -43,6 +44,7 @@ CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 -- Add comment
 COMMENT ON TABLE users IS 'User accounts table';
 COMMENT ON COLUMN users.email IS 'User email address (unique)';
+COMMENT ON COLUMN users.name IS 'User full name';
 COMMENT ON COLUMN users.password_hash IS 'Bcrypt hashed password';
 ```
 
@@ -204,9 +206,9 @@ CREATE INDEX IF NOT EXISTS idx_users_created_at
 ### Column Ekleme Migration
 
 ```sql
--- 004_add_name_to_users.sql
+-- 004_add_bio_to_users.sql (örnek - name kolonu zaten 001_create_users_table.sql'de mevcut)
 ALTER TABLE users 
-ADD COLUMN IF NOT EXISTS name VARCHAR(255);
+ADD COLUMN IF NOT EXISTS bio TEXT;
 ```
 
 ### Column Değiştirme Migration

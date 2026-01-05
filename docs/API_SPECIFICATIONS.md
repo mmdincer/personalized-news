@@ -198,6 +198,7 @@ SUPABASE_ANON_KEY=your_anon_key
 CREATE TABLE users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email VARCHAR UNIQUE NOT NULL,
+  name VARCHAR NOT NULL,
   password_hash VARCHAR NOT NULL,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
@@ -246,7 +247,7 @@ module.exports = supabase;
 ```javascript
 const { data, error } = await supabase
   .from('users')
-  .insert({ email, password_hash })
+  .insert({ email, name, password_hash })
   .select();
 ```
 
@@ -281,6 +282,7 @@ RLS policies production'da aktif edilmeli:
 ```json
 {
   "email": "user@example.com",
+  "name": "John Doe",
   "password": "SecurePass123!"
 }
 ```
@@ -292,7 +294,8 @@ RLS policies production'da aktif edilmeli:
   "data": {
     "user": {
       "id": "uuid",
-      "email": "user@example.com"
+      "email": "user@example.com",
+      "name": "John Doe"
     },
     "token": "jwt_token_here"
   }
@@ -316,7 +319,8 @@ RLS policies production'da aktif edilmeli:
   "data": {
     "user": {
       "id": "uuid",
-      "email": "user@example.com"
+      "email": "user@example.com",
+      "name": "John Doe"
     },
     "token": "jwt_token_here"
   }
