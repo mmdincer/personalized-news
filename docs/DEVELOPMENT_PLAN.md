@@ -44,8 +44,7 @@
 ### Görevler
 - [x] Supabase setup: proje kurulumu, client library (`@supabase/supabase-js`), connection yapılandırması (`config/database.js`), error handling
 - [x] Database migrations: migration dosyaları oluştur (`001_create_users_table.sql`, `002_create_user_preferences_table.sql`), Supabase SQL Editor'de çalıştır - bakınız: [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md)
-- [ ] User utilities: bcrypt password hashing, email validation ve uniqueness kontrolü
-- [ ] Environment: `.env.example`'a Supabase credentials ekle
+- [x] User utilities: bcrypt password hashing, email validation ve uniqueness kontrolü
 
 ### Başarı Kriterleri
 - [x] Supabase bağlantısı başarılı (config/database.js oluşturuldu, client library kurulu)
@@ -55,9 +54,8 @@
 - [ ] Users tablosu doğru şekilde oluşturuldu
 - [ ] User preferences tablosu doğru şekilde oluşturuldu
 - [ ] Foreign key constraint çalışıyor
-- [ ] Password hash işlemi çalışıyor
-- [ ] Email validation ve uniqueness çalışıyor
-- [ ] Supabase client başarıyla query yapabiliyor
+- [ ] Password hash işlemi çalışıyor (utils/password.js: hashPassword, comparePassword, 10 salt rounds)
+- [ ] Email validation ve uniqueness çalışıyor (utils/email.js: isValidEmailFormat, isEmailUnique, validateEmail)
 
 ---
 
