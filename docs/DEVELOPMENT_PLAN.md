@@ -64,10 +64,10 @@
 ### Görevler
 - [x] Auth service: JWT token oluşturma (7 days expiration, user id + email payload), password hash karşılaştırma (bcrypt.compare, 10 salt rounds), password validation rules - bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md)
 - [x] Auth middleware: JWT token doğrulama (`middleware/auth.js`), Authorization header'dan token okuma, user info'yu request'e ekleme, expired token handling
-- [ ] Auth endpoints: `POST /api/auth/register` (user insert with name, email, password hash, email duplicate check, password validation, sanitized response), `POST /api/auth/login` (user lookup, password compare, JWT token return)
-- [ ] Validation middleware: `express-validator` ile name validation (required, min length, max length), email format, password format, input trimming
-- [ ] Error handling: standardized error response format, error handling middleware - bakınız: [ERROR_CODES.md](./ERROR_CODES.md)
-- [ ] Security: Supabase RLS policies yapılandırma - bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md)
+- [x] Auth endpoints: `POST /api/auth/register` (user insert with name, email, password hash, email duplicate check, password validation, sanitized response), `POST /api/auth/login` (user lookup, password compare, JWT token return)
+- [x] Validation middleware: `express-validator` ile name validation (required, min length, max length), email format, password format, input trimming
+- [x] Error handling: standardized error response format, error handling middleware - bakınız: [ERROR_CODES.md](./ERROR_CODES.md)
+- [x] Security: Supabase RLS policies yapılandırma - bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md), [RLS_POLICIES.md](./RLS_POLICIES.md)
 
 ### Başarı Kriterleri
 - [ ] JWT token başarıyla oluşturuluyor ve doğrulanıyor

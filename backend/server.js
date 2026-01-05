@@ -22,6 +22,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Routes
+const authRoutes = require('./routes/auth');
+app.use('/api/auth', authRoutes);
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.status(200).json({
@@ -43,18 +47,9 @@ app.use('*', (req, res) => {
   });
 });
 
-// Error handling middleware (basic)
-app.use((err, req, res, _next) => {
-  // eslint-disable-next-line no-console
-  console.error('Error:', err);
-  res.status(err.status || 500).json({
-    success: false,
-    error: {
-      code: err.code || 'INTERNAL_SERVER_ERROR',
-      message: err.message || 'Internal server error',
-    },
-  });
-});
+// Error handling middleware
+const errorHandler = require('./middleware/errorHandler');
+app.use(errorHandler);
 
 // Start server
 const server = app.listen(PORT, () => {
