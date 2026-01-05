@@ -42,13 +42,13 @@
 ## 2. feat/backend-database-and-models
 
 ### Görevler
-- [ ] Supabase setup: hesap oluşturma, proje kurulumu, client library (`@supabase/supabase-js`), connection yapılandırması (`config/database.js`), error handling
+- [x] Supabase setup: proje kurulumu, client library (`@supabase/supabase-js`), connection yapılandırması (`config/database.js`), error handling
 - [ ] Database migrations: migration dosyaları oluştur (`001_create_users_table.sql`, `002_create_user_preferences_table.sql`), Supabase SQL Editor'de çalıştır - bakınız: [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md)
 - [ ] User utilities: bcrypt password hashing, email validation ve uniqueness kontrolü
 - [ ] Environment: `.env.example`'a Supabase credentials ekle
 
 ### Başarı Kriterleri
-- [ ] Supabase bağlantısı başarılı
+- [x] Supabase bağlantısı başarılı (config/database.js oluşturuldu, client library kurulu)
 - [ ] Database migrations klasör yapısı oluşturuldu
 - [ ] Tüm migration dosyaları `backend/database/migrations/` klasöründe
 - [ ] Migration dosyaları doğru sırayla çalıştırıldı
