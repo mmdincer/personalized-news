@@ -39,9 +39,11 @@ coverage/
 .vscode/
 !.vscode/extensions.json
 .idea/
+.claude/
 *.swp
 *.swo
 *~
+CLAUDE.md
 .DS_Store
 *.suo
 *.ntvs*
@@ -53,7 +55,6 @@ coverage/
 .DS_Store
 .DS_Store?
 ._*
-*.md
 .Spotlight-V100
 .Trashes
 ehthumbs.db
