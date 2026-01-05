@@ -70,13 +70,13 @@
 - [x] Security: Supabase RLS policies yapılandırma - bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md), [RLS_POLICIES.md](./RLS_POLICIES.md)
 
 ### Başarı Kriterleri
-- [ ] JWT token başarıyla oluşturuluyor ve doğrulanıyor
-- [ ] Kullanıcı kaydı Supabase'e başarıyla yazılıyor
-- [ ] Login işlemi token döndürüyor
-- [ ] Protected route'lar korunuyor
-- [ ] Validation hataları uygun şekilde döndürülüyor (bakınız: [ERROR_CODES.md](./ERROR_CODES.md))
-- [ ] Password güvenli şekilde hash'leniyor
-- [ ] Supabase query'leri doğru çalışıyor
+- [x] JWT token başarıyla oluşturuluyor ve doğrulanıyor
+- [x] Kullanıcı kaydı Supabase'e başarıyla yazılıyor
+- [x] Login işlemi token döndürüyor
+- [x] Protected route'lar korunuyor
+- [x] Validation hataları uygun şekilde döndürülüyor (bakınız: [ERROR_CODES.md](./ERROR_CODES.md))
+- [x] Password güvenli şekilde hash'leniyor
+- [x] Supabase query'leri doğru çalışıyor
 
 ---
 
