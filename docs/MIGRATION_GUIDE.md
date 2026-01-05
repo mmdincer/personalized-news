@@ -11,7 +11,8 @@ backend/
 └── database/
     └── migrations/
         ├── 001_create_users_table.sql
-        └── 002_create_user_preferences_table.sql
+        ├── 002_create_user_preferences_table.sql
+        └── 003_enable_rls_policies.sql (optional)
 ```
 
 ### Naming Convention
