@@ -42,22 +42,20 @@
 ## 2. feat/backend-database-and-models
 
 ### Görevler
-- [ ] Supabase setup: hesap oluşturma, proje kurulumu, client library (`@supabase/supabase-js`), connection yapılandırması (`config/database.js`), error handling
-- [ ] Database migrations: migration dosyaları oluştur (`001_create_users_table.sql`, `002_create_user_preferences_table.sql`), Supabase SQL Editor'de çalıştır - bakınız: [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md)
-- [ ] User utilities: bcrypt password hashing, email validation ve uniqueness kontrolü
-- [ ] Environment: `.env.example`'a Supabase credentials ekle
+- [x] Supabase setup: proje kurulumu, client library (`@supabase/supabase-js`), connection yapılandırması (`config/database.js`), error handling
+- [x] Database migrations: migration dosyaları oluştur (`001_create_users_table.sql`, `002_create_user_preferences_table.sql`), Supabase SQL Editor'de çalıştır - bakınız: [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md)
+- [x] User utilities: bcrypt password hashing, email validation ve uniqueness kontrolü
 
 ### Başarı Kriterleri
-- [ ] Supabase bağlantısı başarılı
-- [ ] Database migrations klasör yapısı oluşturuldu
-- [ ] Tüm migration dosyaları `backend/database/migrations/` klasöründe
-- [ ] Migration dosyaları doğru sırayla çalıştırıldı
-- [ ] Users tablosu doğru şekilde oluşturuldu
-- [ ] User preferences tablosu doğru şekilde oluşturuldu
-- [ ] Foreign key constraint çalışıyor
-- [ ] Password hash işlemi çalışıyor
-- [ ] Email validation ve uniqueness çalışıyor
-- [ ] Supabase client başarıyla query yapabiliyor
+- [x] Supabase bağlantısı başarılı (config/database.js oluşturuldu, client library kurulu)
+- [x] Database migrations klasör yapısı oluşturuldu
+- [x] Tüm migration dosyaları `backend/database/migrations/` klasöründe
+- [x] Migration dosyaları doğru sırayla çalıştırıldı
+- [x] Users tablosu doğru şekilde oluşturuldu
+- [x] User preferences tablosu doğru şekilde oluşturuldu
+- [x] Foreign key constraint çalışıyor
+- [x] Password hash işlemi çalışıyor (utils/password.js: hashPassword, comparePassword, 10 salt rounds)
+- [x] Email validation ve uniqueness çalışıyor (utils/email.js: isValidEmailFormat, isEmailUnique, validateEmail)
 
 ---
 
@@ -66,8 +64,8 @@
 ### Görevler
 - [ ] Auth service: JWT token oluşturma (7 days expiration, user id + email payload), password hash karşılaştırma (bcrypt.compare, 10 salt rounds), password validation rules - bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md)
 - [ ] Auth middleware: JWT token doğrulama (`middleware/auth.js`), Authorization header'dan token okuma, user info'yu request'e ekleme, expired token handling
-- [ ] Auth endpoints: `POST /api/auth/register` (user insert, password hash, email duplicate check, password validation, sanitized response), `POST /api/auth/login` (user lookup, password compare, JWT token return)
-- [ ] Validation middleware: `express-validator` ile email format, password format, input trimming
+- [ ] Auth endpoints: `POST /api/auth/register` (user insert with name, email, password hash, email duplicate check, password validation, sanitized response), `POST /api/auth/login` (user lookup, password compare, JWT token return)
+- [ ] Validation middleware: `express-validator` ile name validation (required, min length, max length), email format, password format, input trimming
 - [ ] Error handling: standardized error response format, error handling middleware - bakınız: [ERROR_CODES.md](./ERROR_CODES.md)
 - [ ] Security: Supabase RLS policies yapılandırma - bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md)
 
@@ -151,7 +149,7 @@
 ## 7. feat/frontend-auth-and-routing
 
 ### Görevler
-- [ ] Auth forms: LoginForm ve RegisterForm component'leri (`react-hook-form`), form validation (email, password, confirm password), error message display, loading states, Tailwind CSS styling, success redirect handling - bakınız: [ERROR_CODES.md](./ERROR_CODES.md)
+- [ ] Auth forms: LoginForm ve RegisterForm component'leri (`react-hook-form`), form validation (RegisterForm: name, email, password, confirm password; LoginForm: email, password), error message display, loading states, Tailwind CSS styling, success redirect handling - bakınız: [ERROR_CODES.md](./ERROR_CODES.md)
 - [ ] Routing: React Router yapılandırması, route tanımlamaları (/, /login, /register, /news, /preferences), protected/public route wrappers entegrasyonu, 404 page
 - [ ] Navigation: Header/Navbar component
 
