@@ -25,7 +25,7 @@
 - [x] Tüm klasör yapılarını kur (backend: config/, controllers/, middleware/, routes/, services/, utils/, constants/, database/migrations/; frontend: components/, services/, utils/, contexts/, config/, i18n/, locales/, pages/) - bakınız: [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)
 - [x] Backend setup: `package.json`, dependencies, `server.js`, Express.js sunucusu, health check endpoint (`GET /api/health`) - bakınız: [TECHNOLOGY_STACK.md](./TECHNOLOGY_STACK.md)
 - [x] Frontend setup: Vite + React projesi, `package.json`, `vite.config.js`, Tailwind CSS kurulumu ve yapılandırması, dependencies - bakınız: [TECHNOLOGY_STACK.md](./TECHNOLOGY_STACK.md)
-- [ ] i18n kurulumu: react-i18next paketleri, dil dosyaları yapısı (locales/tr, en, de, fr, es), i18n config, default language: 'tr'
+- [x] i18n kurulumu: react-i18next paketleri, dil dosyaları yapısı (locales/tr, en, de, fr, es), i18n config, default language: 'tr'
 - [ ] Konfigürasyon dosyaları: `.gitignore`, `.env.example` (backend ve frontend), ESLint, Prettier
 
 ### Başarı Kriterleri
