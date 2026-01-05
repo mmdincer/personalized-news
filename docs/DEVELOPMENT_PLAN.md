@@ -48,14 +48,14 @@
 
 ### Başarı Kriterleri
 - [x] Supabase bağlantısı başarılı (config/database.js oluşturuldu, client library kurulu)
-- [ ] Database migrations klasör yapısı oluşturuldu
-- [ ] Tüm migration dosyaları `backend/database/migrations/` klasöründe
-- [ ] Migration dosyaları doğru sırayla çalıştırıldı
-- [ ] Users tablosu doğru şekilde oluşturuldu
-- [ ] User preferences tablosu doğru şekilde oluşturuldu
-- [ ] Foreign key constraint çalışıyor
-- [ ] Password hash işlemi çalışıyor (utils/password.js: hashPassword, comparePassword, 10 salt rounds)
-- [ ] Email validation ve uniqueness çalışıyor (utils/email.js: isValidEmailFormat, isEmailUnique, validateEmail)
+- [x] Database migrations klasör yapısı oluşturuldu
+- [x] Tüm migration dosyaları `backend/database/migrations/` klasöründe
+- [x] Migration dosyaları doğru sırayla çalıştırıldı
+- [x] Users tablosu doğru şekilde oluşturuldu
+- [x] User preferences tablosu doğru şekilde oluşturuldu
+- [x] Foreign key constraint çalışıyor
+- [x] Password hash işlemi çalışıyor (utils/password.js: hashPassword, comparePassword, 10 salt rounds)
+- [x] Email validation ve uniqueness çalışıyor (utils/email.js: isValidEmailFormat, isEmailUnique, validateEmail)
 
 ---
 
