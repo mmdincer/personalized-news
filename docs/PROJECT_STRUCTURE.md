@@ -704,7 +704,7 @@ import './styles.css';
 ```bash
 # Server
 NODE_ENV=development
-PORT=5000
+PORT=3000
 
 # Supabase
 SUPABASE_URL=your_supabase_project_url
@@ -724,7 +724,7 @@ CORS_ORIGIN=http://localhost:5173
 ### Frontend `.env.example`
 ```bash
 # API Configuration
-VITE_API_BASE_URL=http://localhost:5000/api
+VITE_API_BASE_URL=http://localhost:3000/api
 ```
 
 ### ESLint Configuration (`.eslintrc.json`)

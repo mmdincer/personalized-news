@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
@@ -16,7 +16,7 @@ app.get('/api/health', (req, res) => {
     success: true,
     message: 'Server is running',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
   });
 });
 
@@ -26,29 +26,45 @@ app.use('*', (req, res) => {
     success: false,
     error: {
       code: 'ROUTE_NOT_FOUND',
-      message: `Route ${req.originalUrl} not found`
-    }
+      message: `Route ${req.originalUrl} not found`,
+    },
   });
 });
 
 // Error handling middleware (basic)
-app.use((err, req, res, next) => {
+app.use((err, req, res, _next) => {
+  // eslint-disable-next-line no-console
   console.error('Error:', err);
   res.status(err.status || 500).json({
     success: false,
     error: {
       code: err.code || 'INTERNAL_SERVER_ERROR',
-      message: err.message || 'Internal server error'
-    }
+      message: err.message || 'Internal server error',
+    },
   });
 });
 
 // Start server
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
+  // eslint-disable-next-line no-console
   console.log(`Server is running on port ${PORT}`);
+  // eslint-disable-next-line no-console
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  // eslint-disable-next-line no-console
   console.log(`Health check: http://localhost:${PORT}/api/health`);
 });
 
-module.exports = app;
+// Handle port already in use error
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    // eslint-disable-next-line no-console
+    console.error(`Port ${PORT} is already in use. Please stop the other process or use a different port.`);
+    // eslint-disable-next-line no-console
+    console.error(`To find and kill the process: lsof -ti:${PORT} | xargs kill -9`);
+    process.exit(1);
+  } else {
+    throw err;
+  }
+});
 
+module.exports = app;

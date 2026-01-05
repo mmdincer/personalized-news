@@ -26,19 +26,16 @@ const resources = {
   },
 };
 
-i18n
-  .use(initReactI18next)
-  .init({
-    resources,
-    lng: 'tr', // Default language: Turkish
-    fallbackLng: 'tr', // Fallback language if translation missing
-    interpolation: {
-      escapeValue: false, // React already escapes values
-    },
-    react: {
-      useSuspense: false, // Disable suspense for better compatibility
-    },
-  });
+i18n.use(initReactI18next).init({
+  resources,
+  lng: 'tr', // Default language: Turkish
+  fallbackLng: 'tr', // Fallback language if translation missing
+  interpolation: {
+    escapeValue: false, // React already escapes values
+  },
+  react: {
+    useSuspense: false, // Disable suspense for better compatibility
+  },
+});
 
 export default i18n;
-

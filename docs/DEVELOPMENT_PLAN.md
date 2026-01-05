@@ -29,13 +29,13 @@
 - [x] Konfigürasyon dosyaları: `.gitignore`, `.env.example` (backend ve frontend), ESLint, Prettier
 
 ### Başarı Kriterleri
-- [ ] Tüm klasör yapıları oluşturuldu
-- [ ] `.gitignore` doğru yapılandırıldı
-- [ ] Express sunucusu çalışıyor
-- [ ] Vite dev server çalışıyor
-- [ ] Health check endpoint'i çalışıyor
-- [ ] Environment variables doğru yükleniyor
-- [ ] `.env.example` dosyası mevcut ve güncel
+- [x] Tüm klasör yapıları oluşturuldu
+- [x] `.gitignore` doğru yapılandırıldı
+- [x] Express sunucusu çalışıyor
+- [x] Vite dev server çalışıyor
+- [x] Health check endpoint'i çalışıyor
+- [x] Environment variables doğru yükleniyor
+- [x] `.env.example` dosyası mevcut ve güncel
 
 ---
 

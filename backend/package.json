@@ -11,7 +11,12 @@
     "lint": "eslint .",
     "format": "prettier --write ."
   },
-  "keywords": ["news", "api", "express", "nodejs"],
+  "keywords": [
+    "news",
+    "api",
+    "express",
+    "nodejs"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
