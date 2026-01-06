@@ -81,7 +81,7 @@ const LoginForm = () => {
                         message: 'Invalid email format',
                       },
                     })}
-                    className={`py-2.5 sm:py-3 px-4 block w-full border rounded-lg sm:text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none ${
+                    className={`py-2.5 sm:py-3 px-4 block w-full bg-white border rounded-lg sm:text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none ${
                       hasEmailError
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                         : 'border-gray-200'
@@ -115,18 +115,9 @@ const LoginForm = () => {
 
               {/* Password Field */}
               <div>
-                <div className="flex flex-wrap justify-between items-center gap-2">
-                  <label htmlFor="password" className="block text-sm mb-2">
-                    Password
-                  </label>
-                  <button
-                    type="button"
-                    className="inline-flex items-center gap-x-1 text-sm text-blue-600 decoration-2 hover:underline focus:outline-none focus:underline font-medium"
-                    onClick={() => toast.error('Forgot password feature coming soon')}
-                  >
-                    Forgot password?
-                  </button>
-                </div>
+                <label htmlFor="password" className="block text-sm mb-2">
+                  Password
+                </label>
                 <div className="relative">
                   <input
                     type={showPassword ? 'text' : 'password'}
@@ -134,7 +125,7 @@ const LoginForm = () => {
                     {...register('password', {
                       required: 'Password is required',
                     })}
-                    className={`py-2.5 sm:py-3 px-4 pr-10 block w-full border rounded-lg sm:text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none ${
+                    className={`py-2.5 sm:py-3 px-4 pr-10 block w-full bg-white border rounded-lg sm:text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none ${
                       hasPasswordError
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                         : 'border-gray-200'
@@ -208,24 +199,6 @@ const LoginForm = () => {
                     {errors.password.message || 'Password is required'}
                   </p>
                 )}
-              </div>
-
-              {/* Remember Me Checkbox */}
-              <div className="flex items-center">
-                <div className="flex">
-                  <input
-                    id="remember-me"
-                    name="remember-me"
-                    type="checkbox"
-                    className="shrink-0 mt-0.5 border-gray-200 rounded-sm text-blue-600 focus:ring-blue-500"
-                    disabled={isLoading}
-                  />
-                </div>
-                <div className="ml-3">
-                  <label htmlFor="remember-me" className="text-sm">
-                    Remember me
-                  </label>
-                </div>
               </div>
 
               {/* Submit Button */}

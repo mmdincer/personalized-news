@@ -47,10 +47,10 @@ const Header = () => {
         </div>
 
         <div className="flex items-center gap-1 md:order-4 md:ml-4">
-          {/* Logout Button */}
+          {/* Desktop Logout Button */}
           <button
             onClick={handleLogout}
-            className="w-full sm:w-auto whitespace-nowrap py-3 sm:py-2 px-4 sm:px-3 min-h-[44px] sm:min-h-0 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-full border border-transparent bg-red-600 text-white hover:bg-red-700 active:bg-red-800 focus:outline-none focus:bg-red-700 disabled:opacity-50 disabled:pointer-events-none touch-manipulation"
+            className="hidden md:inline-flex whitespace-nowrap py-2 px-3 justify-center items-center gap-x-2 text-sm font-medium rounded-full border border-transparent bg-red-600 text-white hover:bg-red-700 active:bg-red-800 focus:outline-none focus:bg-red-700 disabled:opacity-50 disabled:pointer-events-none touch-manipulation"
           >
             Logout
           </button>
@@ -126,6 +126,17 @@ const Header = () => {
                 {link.label}
               </Link>
             ))}
+            
+            {/* Mobile Logout Button */}
+            <button
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                handleLogout();
+              }}
+              className="md:hidden w-full text-center py-2 px-4 border-l-2 border-transparent text-red-600 hover:text-red-700 hover:border-red-600 font-medium focus:outline-none touch-manipulation"
+            >
+              Logout
+            </button>
           </div>
         </div>
       </nav>

@@ -133,7 +133,7 @@ const RegisterForm = () => {
                         message: 'Name must be at most 255 characters',
                       },
                     })}
-                    className={`py-2.5 sm:py-3 px-4 block w-full border rounded-lg sm:text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none ${
+                    className={`py-2.5 sm:py-3 px-4 block w-full bg-white border rounded-lg sm:text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none ${
                       hasNameError
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                         : 'border-gray-200'
@@ -185,7 +185,7 @@ const RegisterForm = () => {
                         message: 'Email must be at most 255 characters',
                       },
                     })}
-                    className={`py-2.5 sm:py-3 px-4 block w-full border rounded-lg sm:text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none ${
+                    className={`py-2.5 sm:py-3 px-4 block w-full bg-white border rounded-lg sm:text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none ${
                       hasEmailError
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                         : 'border-gray-200'
@@ -229,7 +229,7 @@ const RegisterForm = () => {
                     {...register('password', {
                       validate: validatePassword,
                     })}
-                    className={`py-2.5 sm:py-3 px-4 pr-10 block w-full border rounded-lg sm:text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none ${
+                    className={`py-2.5 sm:py-3 px-4 pr-10 block w-full bg-white border rounded-lg sm:text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none ${
                       hasPasswordError
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                         : 'border-gray-200'
@@ -317,7 +317,7 @@ const RegisterForm = () => {
                     {...register('confirmPassword', {
                       validate: validateConfirmPassword,
                     })}
-                    className={`py-2.5 sm:py-3 px-4 pr-10 block w-full border rounded-lg sm:text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none ${
+                    className={`py-2.5 sm:py-3 px-4 pr-10 block w-full bg-white border rounded-lg sm:text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none ${
                       hasConfirmPasswordError
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                         : 'border-gray-200'
@@ -392,37 +392,6 @@ const RegisterForm = () => {
                   </p>
                 )}
               </div>
-
-              {/* Terms and Conditions Checkbox */}
-              <div className="flex items-center">
-                <div className="flex">
-                  <input
-                    id="terms"
-                    name="terms"
-                    type="checkbox"
-                    {...register('terms', {
-                      required: 'You must accept the Terms and Conditions',
-                    })}
-                    className="shrink-0 mt-0.5 border-gray-200 rounded-sm text-blue-600 focus:ring-blue-500"
-                    disabled={isLoading}
-                  />
-                </div>
-                <div className="ml-3">
-                  <label htmlFor="terms" className="text-sm">
-                    I accept the{' '}
-                    <button
-                      type="button"
-                      className="text-blue-600 decoration-2 hover:underline focus:outline-none focus:underline font-medium"
-                      onClick={() => toast.info('Terms and Conditions coming soon')}
-                    >
-                      Terms and Conditions
-                    </button>
-                  </label>
-                </div>
-              </div>
-              {errors.terms && (
-                <p className="text-xs text-red-600 mt-1">{errors.terms.message}</p>
-              )}
 
               {/* Submit Button */}
               <button
