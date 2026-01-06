@@ -12,5 +12,5 @@ ALTER TABLE user_preferences DROP COLUMN IF EXISTS country;
 
 -- Update table comment
 COMMENT ON TABLE user_preferences IS 'User news preferences (categories only)';
-COMMENT ON COLUMN user_preferences.categories IS 'JSONB array of selected news categories (default: ["general", "technology"])';
+COMMENT ON COLUMN user_preferences.categories IS 'JSONB array of selected news categories from Guardian API sections (default: ["news", "technology"])';
 

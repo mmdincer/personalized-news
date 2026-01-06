@@ -85,14 +85,14 @@
 - [x] Constants files: `constants/categories.js` (ALLOWED_CATEGORIES, validation helper, display names mapping) - bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)
 - [x] Preferences endpoints: `GET /api/user/preferences` (Supabase query, JSONB categories, JWT user ID), `PUT /api/user/preferences` (upsert, JSONB update, category validation, JWT user ID)
 - [x] Validation logic: category validation (ALLOWED_CATEGORIES check, reject invalid, reject empty array, remove duplicates) - bakınız: [ERROR_CODES.md](./ERROR_CODES.md)
-- [x] Default preferences: register endpoint'inde default categories ['general', 'technology'] ile preferences insert (atomic operation - preferences oluşturulamazsa user silinir)
+- [x] Default preferences: register endpoint'inde default categories ['news', 'technology'] ile preferences insert (atomic operation - preferences oluşturulamazsa user silinir)
 - [x] Database optimization: parameterized queries (SQL injection prevention), JSONB operators, GIN index on categories (optional)
 
 ### Başarı Kriterleri
 - [x] Kullanıcı tercihleri Supabase'den okunabiliyor (Terminal testi geçti)
 - [x] Tercihler Supabase'de güncellenebiliyor (Terminal testi geçti)
-- [x] Sadece 7 geçerli kategori kabul ediliyor (bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)) (Terminal testi geçti)
-- [x] Default preferences yeni kullanıcılara atanıyor (general, technology) (Terminal testi geçti)
+- [x] Sadece 20 geçerli kategori kabul ediliyor (bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)) (Terminal testi geçti)
+- [x] Default preferences yeni kullanıcılara atanıyor (news, technology) (Terminal testi geçti)
 - [x] JSONB array işlemleri doğru çalışıyor (Terminal testi geçti)
 - [x] Invalid kategoriler reddediliyor (Terminal testi geçti)
 - [x] Duplicate kategoriler otomatik temizleniyor (Terminal testi geçti)

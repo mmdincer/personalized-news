@@ -15,31 +15,59 @@ Bu dosya projede kullanılan external API'lerin detaylı spesifikasyonlarını i
   - Non-commercial use only
   - Register at: https://open-platform.theguardian.com/access
 
-### Desteklenen Kategoriler
+### Desteklenen Kategoriler (Guardian API Sections)
 
 ```javascript
 const ALLOWED_CATEGORIES = [
-  'business',      // Business news → Guardian section: 'business'
-  'entertainment', // Entertainment news → Guardian section: 'culture'
-  'general',       // General news → No section (all sections)
-  'health',        // Health news → Guardian section: 'society'
-  'science',       // Science news → Guardian section: 'science'
-  'sports',        // Sports news → Guardian section: 'sport'
-  'technology'     // Technology news → Guardian section: 'technology'
+  'business',      // Business news
+  'technology',    // Technology news
+  'science',       // Science news
+  'sport',         // Sports news (Guardian uses singular 'sport')
+  'culture',       // Culture/Entertainment news
+  'news',          // General news
+  'world',         // World news
+  'politics',      // Politics news
+  'environment',   // Environment news
+  'society',       // Society news (includes health, social issues)
+  'lifeandstyle',  // Life and style
+  'food',          // Food news
+  'travel',        // Travel news
+  'fashion',       // Fashion news
+  'books',         // Books news
+  'music',         // Music news
+  'film',          // Film news
+  'games',         // Games news
+  'education',     // Education news
+  'media',         // Media news
 ];
 ```
 
-### Kategori Mapping (NewsAPI → The Guardian)
+### Kategori Mapping
 
-| NewsAPI Category | The Guardian Section |
-|-----------------|---------------------|
-| `business` | `business` |
-| `technology` | `technology` |
-| `sports` | `sport` (singular) |
-| `science` | `science` |
-| `health` | `society` |
-| `entertainment` | `culture` |
-| `general` | `null` (no section parameter - fetch from all sections) |
+Kategoriler doğrudan Guardian API section ID'leri kullanılmaktadır. 1:1 mapping vardır:
+
+| Category | Guardian Section | Description |
+|----------|-----------------|-------------|
+| `business` | `business` | Business news |
+| `technology` | `technology` | Technology news |
+| `science` | `science` | Science news |
+| `sport` | `sport` | Sports news |
+| `culture` | `culture` | Culture/Entertainment news |
+| `news` | `news` | General news |
+| `world` | `world` | World news |
+| `politics` | `politics` | Politics news |
+| `environment` | `environment` | Environment news |
+| `society` | `society` | Society news (includes health) |
+| `lifeandstyle` | `lifeandstyle` | Life and style |
+| `food` | `food` | Food news |
+| `travel` | `travel` | Travel news |
+| `fashion` | `fashion` | Fashion news |
+| `books` | `books` | Books news |
+| `music` | `music` | Music news |
+| `film` | `film` | Film news |
+| `games` | `games` | Games news |
+| `education` | `education` | Education news |
+| `media` | `media` | Media news |
 
 ### API Parametreleri
 
@@ -220,7 +248,7 @@ const { data, error } = await supabase
   .from('user_preferences')
   .upsert({ 
     user_id, 
-    categories: ['general', 'technology'],
+    categories: ['news', 'technology'],
     updated_at: new Date().toISOString()
   })
   .select();
@@ -303,7 +331,7 @@ Authorization: Bearer jwt_token_here
 {
   "success": true,
   "data": {
-    "categories": ["general", "technology"]
+    "categories": ["news", "technology"]
   }
 }
 ```

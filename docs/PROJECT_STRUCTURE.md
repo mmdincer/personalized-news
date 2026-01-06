@@ -45,7 +45,12 @@ personalized-news/
 │   ├── database/
 │   │   └── migrations/          # SQL migration files
 │   │       ├── 001_create_users_table.sql
-│   │       └── 002_create_user_preferences_table.sql
+│   │       ├── 002_create_user_preferences_table.sql
+│   │       ├── 003_create_saved_articles_table.sql
+│   │       ├── 004_create_reading_history_table.sql
+│   │       ├── 005_remove_country_column.sql
+│   │       ├── 007_update_categories_to_guardian_sections.sql
+│   │       └── 006_enable_rls_policies.sql (optional)
 │   ├── tests/                   # Test files (optional - Branch 12)
 │   │   ├── unit/
 │   │   │   ├── services/

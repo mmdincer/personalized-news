@@ -57,7 +57,7 @@ describe('GET /api/user/preferences', () => {
     expect(response.body.success).toBe(true);
     expect(response.body.data).toHaveProperty('categories');
     expect(Array.isArray(response.body.data.categories)).toBe(true);
-    expect(response.body.data.categories).toContain('general');
+    expect(response.body.data.categories).toContain('news');
     expect(response.body.data.categories).toContain('technology');
   });
 
@@ -168,7 +168,7 @@ describe('Preferences Persistence', () => {
   test('should persist preferences across requests', async () => {
     // Update preferences
     const newPrefs = {
-      categories: ['entertainment', 'sports'],
+      categories: ['culture', 'sport'],
     };
 
     await request(app)

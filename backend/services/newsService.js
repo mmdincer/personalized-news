@@ -479,10 +479,8 @@ const fetchNewsByCategory = async (
     'order-by': 'newest',
   };
   
-  // Add section parameter only if not 'general' category
-  if (guardianSection) {
-    requestParams.section = guardianSection;
-  }
+  // Add section parameter (all categories now map to Guardian sections)
+  requestParams.section = guardianSection;
   
   // Log API request
   logger.info('Fetching news from The Guardian API', {

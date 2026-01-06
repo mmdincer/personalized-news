@@ -60,7 +60,7 @@ router.get(
  * @route   GET /api/news/:category
  * @desc    Get news by category
  * @access  Public
- * @params  category - One of: business, entertainment, general, health, science, sports, technology
+ * @params  category - One of: business, technology, science, sport, culture, news, world, politics, environment, society, lifeandstyle, food, travel, fashion, books, music, film, games, education, media
  * @query   page (optional) - Page number (default: 1)
  * @query   limit (optional) - Results per page (default: 20, max: 100)
  */
