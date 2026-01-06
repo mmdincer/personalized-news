@@ -9,7 +9,6 @@
  */
 
 import { createContext, useContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import * as authService from '../services/authService';
 import { extractErrorMessage } from '../utils/errorHandler';
 
@@ -19,12 +18,13 @@ const AuthContext = createContext(null);
 /**
  * AuthProvider Component
  * Wraps the application and provides auth state and functions
+ * 
+ * Note: Router integration (useNavigate) will be added when React Router is set up
  */
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   /**
    * Initialize auth state from localStorage on mount
@@ -110,28 +110,30 @@ export const AuthProvider = ({ children }) => {
   /**
    * Logout user
    * Clears auth state and redirects to login
+   * Note: Router integration will handle navigation when React Router is set up
    */
   const logout = () => {
     authService.logout();
     setUser(null);
     setIsAuthenticated(false);
-    navigate('/login');
+    // Navigation will be handled by Router when integrated
+    // For now, use window.location if Router is not available
+    if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+      window.location.href = '/login';
+    }
   };
 
   /**
    * Validate token and update auth state
    * Called when API returns 401 (token expired/invalid)
+   * Note: Navigation handled by API interceptor or Router when integrated
    */
   const handleTokenExpiration = () => {
     authService.logout();
     setUser(null);
     setIsAuthenticated(false);
-    
-    // Only redirect if not already on login/register page
-    if (!window.location.pathname.includes('/login') && 
-        !window.location.pathname.includes('/register')) {
-      navigate('/login');
-    }
+    // Navigation is handled by API interceptor (api.js)
+    // Router integration will use navigate() when React Router is set up
   };
 
   /**

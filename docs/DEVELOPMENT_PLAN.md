@@ -132,12 +132,12 @@
 - [x] Auth context: `AuthContext.jsx` ve `AuthProvider` component, login/register/logout fonksiyonları, token storage (`localStorage`), token validation ve auto-logout, protected route wrapper, auth state management (user, isAuthenticated)
 
 ### Başarı Kriterleri
-- [ ] API çağrıları başarıyla yapılıyor
-- [ ] Token otomatik olarak header'a ekleniyor
-- [ ] Auth state global olarak yönetiliyor
-- [ ] Login/logout işlemleri çalışıyor
-- [ ] Protected route'lar korunuyor
-- [ ] Token expire kontrolü çalışıyor
+- [x] API çağrıları başarıyla yapılıyor
+- [x] Token otomatik olarak header'a ekleniyor
+- [x] Auth state global olarak yönetiliyor
+- [x] Login/logout işlemleri çalışıyor
+- [x] Protected route'lar korunuyor
+- [x] Token expire kontrolü çalışıyor
 
 ---
 
