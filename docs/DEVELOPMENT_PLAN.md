@@ -297,15 +297,15 @@
 ## 16. docs/readme-documentation
 
 ### Görevler
-- [ ] README.md: proje açıklaması, kurulum talimatları, Supabase setup guide (hesap oluşturma, proje kurulumu, database schema), environment setup (Supabase credentials, The Guardian API key), running instructions (dev ve production) - bakınız: [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md), [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)
+- [x] README.md: proje açıklaması, kurulum talimatları, Supabase setup guide (hesap oluşturma, proje kurulumu, database schema), environment setup (Supabase credentials, The Guardian API key), running instructions (dev ve production), production URL (news.mmdincer.com) - bakınız: [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md), [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)
 - [ ] Documentation: technology stack documentation, API endpoint documentation, Supabase connection troubleshooting, migration troubleshooting, genel troubleshooting section - bakınız: [TECHNOLOGY_STACK.md](./TECHNOLOGY_STACK.md), [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md), [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md)
 
 ### Başarı Kriterleri
-- [ ] README.md kapsamlı ve anlaşılır
-- [ ] Tüm kurulum adımları mevcut (Supabase dahil)
-- [ ] Supabase setup adımları açıkça belirtilmiş
-- [ ] API dokümantasyonu eksiksiz
-- [ ] Troubleshooting guide hazır
+- [x] README.md kapsamlı ve anlaşılır
+- [x] Tüm kurulum adımları mevcut (Supabase dahil)
+- [x] Supabase setup adımları açıkça belirtilmiş
+- [x] API dokümantasyonu eksiksiz
+- [x] Troubleshooting guide hazır
 
 ---
 
