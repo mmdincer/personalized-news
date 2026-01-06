@@ -23,11 +23,11 @@ body {
   input[type="date"] {
     min-width: 100%;
     width: 100%;
-  }
-  
+}
+
   /* Ensure date picker calendar matches input width */
   input[type="date"]::-webkit-calendar-picker-indicator {
-    cursor: pointer;
+  cursor: pointer;
   }
   
   /* For Firefox and other browsers */
