@@ -73,7 +73,7 @@ const authenticateToken = (req, res, next) => {
     } catch (error) {
       // Handle token verification errors
       let errorCode = 'AUTH_TOKEN_INVALID';
-      let statusCode = 401;
+      const statusCode = 401;
       let message = 'Invalid token';
 
       if (error.message.includes('expired')) {
