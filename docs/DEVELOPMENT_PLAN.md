@@ -162,7 +162,7 @@
 
 ### Görevler
 - [x] News components: NewsFeed ve NewsCard component'leri, kategori bazlı haber filtreleme, loading skeleton, empty/error state handling, responsive grid layout
-- [ ] Preferences components: CategorySelector (checkbox/button UI, visual feedback), UserPreferences page component, kullanıcı tercihlerini yükleme ve güncelleme fonksiyonları
+- [x] Preferences components: CategorySelector (checkbox/button UI, visual feedback), UserPreferences page component, kullanıcı tercihlerini yükleme ve güncelleme fonksiyonları
 - [ ] Notifications: success/error notifications (`react-hot-toast`)
 
 ### Başarı Kriterleri
