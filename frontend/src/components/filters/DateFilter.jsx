@@ -169,16 +169,16 @@ const DateFilter = ({
 
         {/* Date Inputs */}
         {className.includes('compact') ? (
-          <div className="flex items-center gap-2 w-full">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full">
             {/* From Date */}
-            <div className="flex items-center gap-1.5 flex-1">
+            <div className="flex items-center gap-1.5 flex-1 min-w-0">
               <label
                 htmlFor="from-date"
-                className="text-xs font-medium text-gray-600 whitespace-nowrap"
+                className="text-xs font-medium text-gray-600 whitespace-nowrap flex-shrink-0"
               >
                 From:
               </label>
-              <div className="relative flex-1">
+              <div className="relative flex-1 min-w-0">
                 <input
                   id="from-date"
                   type="date"
@@ -187,7 +187,7 @@ const DateFilter = ({
                   max={localToDate || getTodayDate()}
                   disabled={disabled}
                   className={`
-                    w-full px-3 py-2 border border-gray-300 rounded-lg text-sm h-[38px]
+                    w-full px-2 sm:px-3 py-2 border border-gray-300 rounded-lg text-xs sm:text-sm h-[38px]
                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
                     disabled:bg-gray-100 disabled:cursor-not-allowed
                     text-gray-900 placeholder-gray-400
@@ -202,14 +202,14 @@ const DateFilter = ({
             </div>
 
             {/* To Date */}
-            <div className="flex items-center gap-1.5 flex-1">
+            <div className="flex items-center gap-1.5 flex-1 min-w-0">
               <label
                 htmlFor="to-date"
-                className="text-xs font-medium text-gray-600 whitespace-nowrap"
+                className="text-xs font-medium text-gray-600 whitespace-nowrap flex-shrink-0"
               >
                 To:
               </label>
-              <div className="relative flex-1">
+              <div className="relative flex-1 min-w-0">
                 <input
                   id="to-date"
                   type="date"
@@ -219,7 +219,7 @@ const DateFilter = ({
                   max={getTodayDate()}
                   disabled={disabled}
                   className={`
-                    w-full px-3 py-2 border border-gray-300 rounded-lg text-sm h-[38px]
+                    w-full px-2 sm:px-3 py-2 border border-gray-300 rounded-lg text-xs sm:text-sm h-[38px]
                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
                     disabled:bg-gray-100 disabled:cursor-not-allowed
                     text-gray-900 placeholder-gray-400

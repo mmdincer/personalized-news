@@ -285,7 +285,7 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
       {/* Filters Section */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-visible">
         {/* Filters Header */}
-        <div className="px-4 py-2.5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+        <div className="px-3 sm:px-4 py-2 sm:py-2.5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="p-1.5 bg-blue-100 rounded">
@@ -337,15 +337,15 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
         </div>
 
         {/* Filters Content */}
-        <div className="p-4">
+        <div className="p-3 sm:p-4">
           {/* Single Row Filters */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {/* Search Bar */}
-            <div className="md:col-span-1">
+            <div className="sm:col-span-2 lg:col-span-1">
               <SearchBar
                 onSearch={handleSearch}
                 placeholder="Search news..."
-                debounceMs={300}
+                debounceMs={500}
                 minLength={2}
                 disabled={loading}
                 defaultValue={searchQuery}
@@ -353,7 +353,7 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
             </div>
 
             {/* Date Filter - Compact */}
-            <div className="md:col-span-2 flex items-center">
+            <div className="sm:col-span-2 lg:col-span-2 flex items-center">
               <DateFilter
                 fromDate={dateFilters.fromDate}
                 toDate={dateFilters.toDate}
@@ -364,7 +364,7 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
             </div>
 
             {/* Sort Dropdown */}
-            <div className="md:col-span-1 relative z-10">
+            <div className="sm:col-span-1 lg:col-span-1 relative z-10">
               <SortDropdown
                 value={sort}
                 onChange={handleSortChange}
