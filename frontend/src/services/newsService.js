@@ -47,10 +47,13 @@ const isCacheValid = (cached) => {
  * @param {string} params.q - Search query (required)
  * @param {number} [params.page=1] - Page number
  * @param {number} [params.limit=20] - Results per page (max 50)
+ * @param {string} [params.from] - Start date filter (YYYY-MM-DD format)
+ * @param {string} [params.to] - End date filter (YYYY-MM-DD format)
+ * @param {string} [params.sort] - Sort option (newest, oldest, relevance)
  * @param {boolean} [params.forceRefresh=false] - Force refresh cache
  * @returns {Promise<Object>} News response with articles
  */
-export const searchNews = async ({ q, page = 1, limit = 20, forceRefresh = false } = {}) => {
+export const searchNews = async ({ q, page = 1, limit = 20, from = null, to = null, sort = 'relevance', forceRefresh = false } = {}) => {
   if (!q || typeof q !== 'string' || q.trim().length === 0) {
     throw new Error('Search query is required');
   }
@@ -61,6 +64,9 @@ export const searchNews = async ({ q, page = 1, limit = 20, forceRefresh = false
 
   const endpoint = '/news/search';
   const params = { q: q.trim(), page, limit };
+  if (from) params.from = from;
+  if (to) params.to = to;
+  if (sort) params.sort = sort;
   const cacheKey = getCacheKey(endpoint, params);
 
   // Check cache first

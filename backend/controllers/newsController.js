@@ -275,6 +275,9 @@ const searchNews = async (req, res, next) => {
     const query = req.query.q;
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;
+    const fromDate = req.query.from || null;
+    const toDate = req.query.to || null;
+    const sort = req.query.sort || 'relevance';
 
     // Validate query parameter
     if (!query) {
@@ -285,7 +288,7 @@ const searchNews = async (req, res, next) => {
     }
 
     // Call service layer
-    const news = await newsService.searchNews(query, page, limit);
+    const news = await newsService.searchNews(query, page, limit, fromDate, toDate, sort);
 
     // Send success response
     res.json({

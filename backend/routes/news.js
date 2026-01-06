@@ -65,6 +65,8 @@ const searchValidation = [
     .withMessage('Search query must be at least 2 characters')
     .escape(),
   ...paginationValidation,
+  ...dateFilterValidation,
+  ...sortValidation,
 ];
 
 // ===========================

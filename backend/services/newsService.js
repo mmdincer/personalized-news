@@ -95,8 +95,10 @@ const getCacheKey = (category, page, pageSize, fromDate = null, toDate = null, s
  * @param {number} pageSize - Results per page
  * @returns {string} Cache key
  */
-const getSearchCacheKey = (query, page, pageSize) => {
-  return `search:${query.toLowerCase().trim()}:${page}:${pageSize}`;
+const getSearchCacheKey = (query, page, pageSize, fromDate = null, toDate = null, sort = 'relevance') => {
+  const datePart = fromDate || toDate ? `:${fromDate || ''}:${toDate || ''}` : '';
+  const sortPart = sort ? `:${sort}` : '';
+  return `search:${query.toLowerCase().trim()}:${page}:${pageSize}${datePart}${sortPart}`;
 };
 
 /**
@@ -906,10 +908,13 @@ const fetchArticleById = async (articleIdOrUrl) => {
  * @param {string} query - Search query
  * @param {number} page - Page number (default: 1)
  * @param {number} pageSize - Results per page (default: 20)
+ * @param {string} [fromDate] - Start date filter (YYYY-MM-DD format)
+ * @param {string} [toDate] - End date filter (YYYY-MM-DD format)
+ * @param {string} [sort] - Sort option (newest, oldest, relevance, default: relevance)
  * @returns {Promise<Object>} Normalized news data
  * @throws {Error} On validation or API errors
  */
-const searchNews = async (query, page = 1, pageSize = DEFAULT_PAGE_SIZE) => {
+const searchNews = async (query, page = 1, pageSize = DEFAULT_PAGE_SIZE, fromDate = null, toDate = null, sort = 'relevance') => {
   // Validate inputs
   if (!query || typeof query !== 'string' || query.trim().length === 0) {
     const error = new Error('Search query is required');
@@ -926,9 +931,11 @@ const searchNews = async (query, page = 1, pageSize = DEFAULT_PAGE_SIZE) => {
   }
 
   validatePagination(page, pageSize);
+  validateDateFilter(fromDate, toDate);
+  const normalizedSort = validateSort(sort);
 
   // Check cache first
-  const cacheKey = getSearchCacheKey(query, page, pageSize);
+  const cacheKey = getSearchCacheKey(query, page, pageSize, fromDate, toDate, normalizedSort);
   const cached = getCachedNews(cacheKey);
   if (cached) {
     return cached;
@@ -962,19 +969,33 @@ const searchNews = async (query, page = 1, pageSize = DEFAULT_PAGE_SIZE) => {
   }
 
   // Build request parameters for search
+  // Using query-fields=headline to search only in article headlines
+  // This provides more focused and relevant results
   const requestParams = {
     'q': query.trim(),
+    'query-fields': 'headline', // Search only in headlines for better relevance
     'page': page,
     'page-size': pageSize,
     'show-fields': 'thumbnail,headline,trailText,bodyText',
-    'order-by': 'relevance', // Use relevance for search results
+    'order-by': normalizedSort,
   };
+
+  // Add date filters if provided
+  if (fromDate) {
+    requestParams['from-date'] = fromDate;
+  }
+  if (toDate) {
+    requestParams['to-date'] = toDate;
+  }
 
   // Log API request
   logger.info('Searching news from The Guardian API', {
     query: query.trim(),
     page,
     pageSize,
+    fromDate,
+    toDate,
+    sort: normalizedSort,
     cacheKey,
   });
 

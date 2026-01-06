@@ -12,7 +12,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getNews, getNewsByCategory } from '../../services/newsService';
+import { getNews, getNewsByCategory, searchNews } from '../../services/newsService';
 import { getPreferences } from '../../services/preferencesService';
 import { getSavedArticles } from '../../services/savedArticlesService';
 import { extractErrorMessage } from '../../utils/errorHandler';
@@ -27,6 +27,7 @@ import toast from 'react-hot-toast';
 
 const NewsFeed = ({ showCategoryFilter = true }) => {
   const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -44,6 +45,7 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
     toDate: null,
   });
   const [sort, setSort] = useState('newest');
+  const [searchQuery, setSearchQuery] = useState('');
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const sentinelRef = useRef(null);
   const observerRef = useRef(null);
@@ -132,8 +134,14 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
       }
 
       let response;
-      // If category filter is disabled, always fetch personalized news
-      if (!showCategoryFilter) {
+      // If search query exists, use search instead of category/preferences
+      if (searchQuery && searchQuery.trim().length >= 2) {
+        response = await searchNews({
+          q: searchQuery.trim(),
+          ...filterParams,
+        });
+      } else if (!showCategoryFilter) {
+        // If category filter is disabled, always fetch personalized news
         response = await getNews(filterParams);
       } else {
         // Category filter is enabled - always fetch by category (category is required)
@@ -176,9 +184,9 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
       setLoading(false);
       setIsLoadingMore(false);
     }
-  }, [limit, showCategoryFilter, dateFilters, sort]);
+  }, [limit, showCategoryFilter, dateFilters, sort, searchQuery]);
 
-  // Initial load and when category, date filters, or sort changes
+  // Initial load and when category, date filters, sort, or search query changes
   useEffect(() => {
     setPage(1);
     setArticles([]);
@@ -186,7 +194,7 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
     const categoryToUse = showCategoryFilter ? selectedCategory : null;
     fetchNews(categoryToUse, 1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCategory, showCategoryFilter, dateFilters, sort]);
+  }, [selectedCategory, showCategoryFilter, dateFilters, sort, searchQuery]);
 
   // Handle category change
   const handleCategoryChange = (category) => {
@@ -265,13 +273,12 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
 
   // Handle search
   const handleSearch = (query) => {
-    if (query && query.trim().length >= 2) {
-      navigate(`/search?q=${encodeURIComponent(query.trim())}`);
-    }
+    // Update search query state (debounce is handled in SearchBar)
+    setSearchQuery(query || '');
   };
 
   // Check if any filters are active
-  const hasActiveFilters = dateFilters.fromDate || dateFilters.toDate || sort !== 'newest';
+  const hasActiveFilters = dateFilters.fromDate || dateFilters.toDate || sort !== 'newest' || (searchQuery && searchQuery.trim().length >= 2);
 
   return (
     <div className="space-y-6">
@@ -306,6 +313,7 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
                 onClick={() => {
                   setDateFilters({ fromDate: null, toDate: null });
                   setSort('newest');
+                  setSearchQuery('');
                 }}
                 className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 transition-colors"
               >
@@ -340,7 +348,7 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
                 debounceMs={300}
                 minLength={2}
                 disabled={loading}
-                className="border-0 shadow-none"
+                defaultValue={searchQuery}
               />
             </div>
 
@@ -423,7 +431,7 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
 
           {/* Active Filters Summary */}
           {hasActiveFilters && (
-            <div className="pt-3 border-t border-gray-200">
+            <div className="pt-3">
               <div className="flex flex-wrap items-center gap-1.5">
                 <span className="text-xs font-medium text-gray-500">Active:</span>
                 {dateFilters.fromDate && (
@@ -457,6 +465,19 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
                     Sort: {sort === 'oldest' ? 'Oldest' : 'Relevance'}
                     <button
                       onClick={() => handleSortChange('newest')}
+                      className="hover:text-blue-900"
+                    >
+                      <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </span>
+                )}
+                {searchQuery && searchQuery.trim().length >= 2 && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">
+                    Search: {searchQuery}
+                    <button
+                      onClick={() => setSearchQuery('')}
                       className="hover:text-blue-900"
                     >
                       <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
