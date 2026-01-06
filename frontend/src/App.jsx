@@ -9,6 +9,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
+import ErrorBoundary from './components/common/ErrorBoundary';
 import Layout from './components/layout/Layout';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -20,9 +21,10 @@ import './App.css';
 
 function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Routes>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <AuthProvider>
+          <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
@@ -64,6 +66,7 @@ function App() {
         </Routes>
       </AuthProvider>
     </BrowserRouter>
+    </ErrorBoundary>
   );
 }
 

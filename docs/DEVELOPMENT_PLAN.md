@@ -178,7 +178,7 @@
 ## 9. refactor/security-and-error-handling
 
 ### Görevler
-- [ ] Error handling: global error boundary component (React), backend error response standardizasyonu, frontend error handling utilities, user-friendly error mesajları (English), error logging (`winston`), network error handling - bakınız: [ERROR_CODES.md](./ERROR_CODES.md)
+- [x] Error handling: global error boundary component (React), backend error response standardizasyonu, frontend error handling utilities, user-friendly error mesajları (English), error logging (`winston`), network error handling - bakınız: [ERROR_CODES.md](./ERROR_CODES.md)
 - [ ] Security hardening: backend input validation middleware güçlendirme, frontend form validation iyileştirmeleri, XSS prevention (HTML sanitization, CSP headers), SQL injection prevention (parameterized queries), Supabase RLS policies gözden geçirme, rate limiting middleware (`express-rate-limit`), request size limiting, Supabase connection pool yönetimi, OWASP Top 10 checklist - bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md)
 
 ### Başarı Kriterleri
