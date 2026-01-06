@@ -116,10 +116,10 @@ const NewsFeed = () => {
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => handleCategoryChange(null)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+            className={`px-4 py-3 sm:py-2 rounded-full text-sm font-medium transition-colors min-h-[44px] sm:min-h-0 touch-manipulation ${
               selectedCategory === null
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-blue-600 text-white active:bg-blue-700'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
             }`}
           >
             All (Your Preferences)
@@ -128,10 +128,10 @@ const NewsFeed = () => {
             <button
               key={category.code}
               onClick={() => handleCategoryChange(category.code)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+              className={`px-4 py-3 sm:py-2 rounded-full text-sm font-medium transition-colors min-h-[44px] sm:min-h-0 touch-manipulation ${
                 selectedCategory === category.code
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-blue-600 text-white active:bg-blue-700'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
               }`}
             >
               {category.name}
@@ -223,7 +223,8 @@ const NewsFeed = () => {
             <div className="text-center">
               <button
                 onClick={handleLoadMore}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                disabled={loading}
+                className="px-6 py-3 min-h-[48px] bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium touch-manipulation"
               >
                 Load More
               </button>

@@ -50,7 +50,7 @@ const Header = () => {
           {/* Logout Button */}
           <button
             onClick={handleLogout}
-            className="w-full sm:w-auto whitespace-nowrap py-2 px-3 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-full border border-transparent bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:bg-red-700 disabled:opacity-50 disabled:pointer-events-none"
+            className="w-full sm:w-auto whitespace-nowrap py-3 sm:py-2 px-4 sm:px-3 min-h-[44px] sm:min-h-0 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-full border border-transparent bg-red-600 text-white hover:bg-red-700 active:bg-red-800 focus:outline-none focus:bg-red-700 disabled:opacity-50 disabled:pointer-events-none touch-manipulation"
           >
             Logout
           </button>
@@ -60,7 +60,7 @@ const Header = () => {
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="flex justify-center items-center w-9.5 h-9.5 border border-gray-200 text-gray-500 rounded-full hover:bg-gray-200 focus:outline-none focus:bg-gray-200"
+              className="flex justify-center items-center w-11 h-11 min-w-[44px] min-h-[44px] border border-gray-200 text-gray-500 rounded-full hover:bg-gray-200 active:bg-gray-300 focus:outline-none focus:bg-gray-200 touch-manipulation"
               aria-expanded={isMobileMenuOpen}
               aria-controls="mobile-menu"
               aria-label="Toggle navigation"
