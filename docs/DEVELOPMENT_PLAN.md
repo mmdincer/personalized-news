@@ -178,23 +178,23 @@
 ## 9. refactor/security-and-error-handling
 
 ### Görevler
-- [ ] Error handling: global error boundary component (React), backend error response standardizasyonu, frontend error handling utilities, user-friendly error mesajları (English), error logging (`winston`), network error handling - bakınız: [ERROR_CODES.md](./ERROR_CODES.md)
-- [ ] Security hardening: backend input validation middleware güçlendirme, frontend form validation iyileştirmeleri, XSS prevention (HTML sanitization, CSP headers), SQL injection prevention (parameterized queries), Supabase RLS policies gözden geçirme, rate limiting middleware (`express-rate-limit`), request size limiting, Supabase connection pool yönetimi, OWASP Top 10 checklist - bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md)
+- [x] Error handling: global error boundary component (React), backend error response standardizasyonu, frontend error handling utilities, user-friendly error mesajları (English), error logging (`winston`), network error handling - bakınız: [ERROR_CODES.md](./ERROR_CODES.md)
+- [x] Security hardening: backend input validation middleware güçlendirme, frontend form validation iyileştirmeleri, XSS prevention (HTML sanitization, CSP headers), SQL injection prevention (parameterized queries), Supabase RLS policies gözden geçirme, rate limiting middleware (`express-rate-limit`), request size limiting, Supabase connection pool yönetimi, OWASP Top 10 checklist - bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md)
 
 ### Başarı Kriterleri
-- [ ] Error boundary çalışıyor ve kullanıcı dostu mesajlar gösteriyor
-- [ ] Tüm error'lar standardize edilmiş formatta döndürülüyor
-- [ ] Error codes catalog'da tanımlı ve tutarlı (bakınız: [ERROR_CODES.md](./ERROR_CODES.md))
-- [ ] Winston logging aktif (error.log, combined.log)
-- [ ] Tüm input'lar validate ediliyor (frontend ve backend)
-- [ ] XSS koruması aktif (HTML sanitization, CSP headers)
-- [ ] SQL injection koruması aktif (Supabase parameterized queries)
-- [ ] Supabase RLS policies aktif ve test edildi
-- [ ] Rate limiting aktif (bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md))
-- [ ] Request size limiting aktif
-- [ ] Network hataları handle ediliyor (offline detection, retry)
-- [ ] Supabase connection errors handle ediliyor (retry logic)
-- [ ] OWASP Top 10 kontrolleri tamamlandı
+- [x] Error boundary çalışıyor ve kullanıcı dostu mesajlar gösteriyor
+- [x] Tüm error'lar standardize edilmiş formatta döndürülüyor
+- [x] Error codes catalog'da tanımlı ve tutarlı (bakınız: [ERROR_CODES.md](./ERROR_CODES.md))
+- [x] Winston logging aktif (error.log, combined.log)
+- [x] Tüm input'lar validate ediliyor (frontend ve backend)
+- [x] XSS koruması aktif (HTML sanitization, CSP headers)
+- [x] SQL injection koruması aktif (Supabase parameterized queries)
+- [x] Supabase RLS policies aktif ve test edildi
+- [x] Rate limiting aktif (bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md))
+- [x] Request size limiting aktif
+- [x] Network hataları handle ediliyor (offline detection, retry)
+- [x] Supabase connection errors handle ediliyor (retry logic)
+- [x] OWASP Top 10 kontrolleri tamamlandı
 
 ---
 

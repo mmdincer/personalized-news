@@ -9,6 +9,7 @@ const { query, param } = require('express-validator');
 const newsController = require('../controllers/newsController');
 const { authenticateToken, requireAdmin } = require('../middleware/auth');
 const { ALLOWED_CATEGORIES } = require('../constants/categories');
+const { newsLimiter } = require('../middleware/security');
 
 const router = express.Router();
 
@@ -53,6 +54,7 @@ const paginationValidation = [
  */
 router.get(
   '/:category',
+  newsLimiter,
   [...categoryValidation, ...paginationValidation],
   newsController.getNewsByCategory
 );
@@ -67,9 +69,11 @@ router.get(
  * @access  Private (requires authentication)
  * @query   page (optional) - Page number (default: 1)
  * @query   limit (optional) - Results per page (default: 20, max: 100)
+ * @note    Rate limited: 50 requests per 15 minutes per IP
  */
 router.get(
   '/',
+  newsLimiter,
   authenticateToken,
   paginationValidation,
   newsController.getPersonalizedNews
