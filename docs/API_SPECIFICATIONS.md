@@ -360,7 +360,10 @@ Authorization: Bearer jwt_token_here
 
 **Query Parameters:**
 - `page` (optional, default: 1)
-- `limit` (optional, default: 20, max: 100)
+- `limit` (optional, default: 20, max: 50)
+- `from` (optional) - Start date filter (YYYY-MM-DD format)
+- `to` (optional) - End date filter (YYYY-MM-DD format)
+- `sort` (optional) - Sort order: newest, oldest, relevance (default: newest)
 
 **Response:**
 ```json
@@ -372,6 +375,235 @@ Authorization: Bearer jwt_token_here
     "page": 1,
     "pageSize": 20
   }
+}
+```
+
+#### GET /api/news/search
+
+**Query Parameters:**
+- `q` (required) - Search query string
+- `page` (optional, default: 1)
+- `limit` (optional, default: 20, max: 50)
+- `from` (optional) - Start date filter (YYYY-MM-DD format)
+- `to` (optional) - End date filter (YYYY-MM-DD format)
+- `sort` (optional) - Sort order: newest, oldest, relevance (default: relevance)
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "articles": [...],
+    "totalResults": 100,
+    "page": 1,
+    "pageSize": 20
+  }
+}
+```
+
+### Saved Articles Endpoints
+
+#### POST /api/user/saved-articles
+
+**Headers:**
+```
+Authorization: Bearer jwt_token_here
+```
+
+**Request:**
+```json
+{
+  "articleUrl": "https://www.theguardian.com/...",
+  "articleTitle": "Article Title",
+  "articleImageUrl": "https://media.guim.co.uk/..."
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "uuid",
+    "articleUrl": "https://www.theguardian.com/...",
+    "articleTitle": "Article Title",
+    "articleImageUrl": "https://media.guim.co.uk/...",
+    "savedAt": "2024-01-05T12:00:00Z"
+  }
+}
+```
+
+#### GET /api/user/saved-articles
+
+**Headers:**
+```
+Authorization: Bearer jwt_token_here
+```
+
+**Query Parameters:**
+- `page` (optional, default: 1)
+- `limit` (optional, default: 20, max: 100)
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "articles": [
+      {
+        "id": "uuid",
+        "articleUrl": "https://www.theguardian.com/...",
+        "articleTitle": "Article Title",
+        "articleImageUrl": "https://media.guim.co.uk/...",
+        "savedAt": "2024-01-05T12:00:00Z"
+      }
+    ],
+    "totalResults": 10,
+    "page": 1,
+    "pageSize": 20
+  }
+}
+```
+
+#### DELETE /api/user/saved-articles/:id
+
+**Headers:**
+```
+Authorization: Bearer jwt_token_here
+```
+
+**Path Parameters:**
+- `id` - Saved article UUID
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Saved article deleted successfully"
+}
+```
+
+### Reading History Endpoints
+
+#### POST /api/user/reading-history
+
+**Headers:**
+```
+Authorization: Bearer jwt_token_here
+```
+
+**Request:**
+```json
+{
+  "articleUrl": "https://www.theguardian.com/...",
+  "articleTitle": "Article Title",
+  "articleImageUrl": "https://media.guim.co.uk/..."
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "uuid",
+    "articleUrl": "https://www.theguardian.com/...",
+    "articleTitle": "Article Title",
+    "articleImageUrl": "https://media.guim.co.uk/...",
+    "readAt": "2024-01-05T12:00:00Z"
+  }
+}
+```
+
+#### GET /api/user/reading-history
+
+**Headers:**
+```
+Authorization: Bearer jwt_token_here
+```
+
+**Query Parameters:**
+- `page` (optional, default: 1)
+- `limit` (optional, default: 20, max: 100)
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "history": [
+      {
+        "id": "uuid",
+        "articleUrl": "https://www.theguardian.com/...",
+        "articleTitle": "Article Title",
+        "articleImageUrl": "https://media.guim.co.uk/...",
+        "readAt": "2024-01-05T12:00:00Z"
+      }
+    ],
+    "totalResults": 50,
+    "page": 1,
+    "pageSize": 20
+  }
+}
+```
+
+#### DELETE /api/user/reading-history
+
+**Headers:**
+```
+Authorization: Bearer jwt_token_here
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Reading history cleared successfully"
+}
+```
+
+### Profile Endpoints
+
+#### GET /api/user/profile
+
+**Headers:**
+```
+Authorization: Bearer jwt_token_here
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "uuid",
+    "email": "user@example.com",
+    "name": "John Doe",
+    "createdAt": "2024-01-01T00:00:00Z"
+  }
+}
+```
+
+#### PUT /api/user/password
+
+**Headers:**
+```
+Authorization: Bearer jwt_token_here
+```
+
+**Request:**
+```json
+{
+  "currentPassword": "OldPassword123!",
+  "newPassword": "NewPassword123!"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Password updated successfully"
 }
 ```
 

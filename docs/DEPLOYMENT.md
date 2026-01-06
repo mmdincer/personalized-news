@@ -72,7 +72,17 @@ Build output will be in `frontend/dist/` directory.
 
 ## Deployment Options
 
-### Option 1: Vercel (Recommended for Frontend)
+### Option 1: Docker (Recommended - Self-hosted)
+
+**Docker Compose Deployment:**
+- Complete setup with docker-compose.yml
+- Backend and frontend containers
+- Environment variable management
+- Health checks and logging
+
+Detaylar için bakınız: [DEVELOPMENT_PLAN.md](./DEVELOPMENT_PLAN.md) - Branch 15: chore/docker-support
+
+### Option 2: Vercel (Recommended for Frontend)
 
 **Frontend:**
 1. Install Vercel CLI: `npm i -g vercel`

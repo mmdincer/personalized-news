@@ -27,7 +27,10 @@ personalized-news/
 │   │   ├── authService.js       # JWT token generation, password hashing
 │   │   ├── newsService.js       # The Guardian API integration, caching
 │   │   ├── userService.js       # User CRUD operations (Supabase)
-│   │   └── preferencesService.js # User preferences CRUD (Supabase)
+│   │   ├── preferencesService.js # User preferences CRUD (Supabase)
+│   │   ├── savedArticlesService.js # Saved articles CRUD (Supabase)
+│   │   ├── readingHistoryService.js # Reading history CRUD (Supabase)
+│   │   └── profileService.js    # Profile operations (password update)
 │   ├── utils/
 │   │   ├── errors.js            # Custom error classes (AppError, AuthError, etc.)
 │   │   └── validators.js        # Custom validation functions
@@ -35,7 +38,10 @@ personalized-news/
 │   │   ├── index.js             # Route aggregator (mounts all routes)
 │   │   ├── auth.js              # Auth routes
 │   │   ├── news.js              # News routes
-│   │   └── preferences.js       # Preferences routes
+│   │   ├── preferences.js       # Preferences routes
+│   │   ├── savedArticles.js    # Saved articles routes
+│   │   ├── readingHistory.js    # Reading history routes
+│   │   └── profile.js           # Profile routes
 │   ├── database/
 │   │   └── migrations/          # SQL migration files
 │   │       ├── 001_create_users_table.sql
@@ -71,7 +77,12 @@ personalized-news/
 │   │   │   ├── news/            # News-related components
 │   │   │   │   ├── NewsCard.jsx
 │   │   │   │   ├── NewsFeed.jsx
+│   │   │   │   ├── NewsCardSkeleton.jsx
 │   │   │   │   └── CategorySelector.jsx
+│   │   │   ├── search/          # Search components
+│   │   │   │   ├── SearchBar.jsx
+│   │   │   │   ├── DateFilter.jsx
+│   │   │   │   └── SortDropdown.jsx
 │   │   │   ├── preferences/     # User preferences components
 │   │   │   ├── common/          # Reusable UI components
 │   │   │   │   ├── Button.jsx
@@ -96,15 +107,24 @@ personalized-news/
 │   │   ├── services/
 │   │   │   ├── authService.js   # Auth API calls
 │   │   │   ├── newsService.js   # News API calls
-│   │   │   └── preferencesService.js  # Preferences API calls
+│   │   │   ├── preferencesService.js  # Preferences API calls
+│   │   │   ├── savedArticlesService.js # Saved articles API calls
+│   │   │   ├── readingHistoryService.js # Reading history API calls
+│   │   │   ├── searchService.js # Search API calls
+│   │   │   └── profileService.js # Profile API calls
 │   │   ├── utils/
 │   │   │   ├── errorHandler.js  # Error parsing and display
 │   │   │   └── constants.js     # Frontend constants (categories, countries)
 │   │   ├── pages/               # Page components (route-level)
-│   │   │   ├── Home.jsx         # News feed page
-│   │   │   ├── Login.jsx        # Login page
-│   │   │   ├── Register.jsx     # Registration page
-│   │   │   └── Preferences.jsx  # User preferences page
+│   │   │   ├── HomePage.jsx     # News feed page
+│   │   │   ├── NewsPage.jsx     # News page with filters
+│   │   │   ├── SearchPage.jsx   # Search results page
+│   │   │   ├── SavedArticlesPage.jsx # Saved articles page
+│   │   │   ├── ReadingHistoryPage.jsx # Reading history page
+│   │   │   ├── ProfilePage.jsx  # Profile management page
+│   │   │   ├── LoginPage.jsx    # Login page
+│   │   │   ├── RegisterPage.jsx # Registration page
+│   │   │   └── NotFoundPage.jsx # 404 page
 │   │   ├── App.jsx              # Root component with routes
 │   │   ├── main.jsx             # Entry point (ReactDOM.render)
 │   │   └── index.css            # Global styles and Tailwind imports
