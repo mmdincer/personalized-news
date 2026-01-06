@@ -25,7 +25,7 @@ personalized-news/
 │   │   └── rateLimiter.js       # express-rate-limit configuration
 │   ├── services/
 │   │   ├── authService.js       # JWT token generation, password hashing
-│   │   ├── newsService.js       # NewsAPI.org integration, caching
+│   │   ├── newsService.js       # The Guardian API integration, caching
 │   │   ├── userService.js       # User CRUD operations (Supabase)
 │   │   └── preferencesService.js # User preferences CRUD (Supabase)
 │   ├── utils/
@@ -222,7 +222,7 @@ Response ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ←
 **Services** (`services/`):
 - Business logic implementation
 - Data transformation
-- External API calls (NewsAPI.org, Supabase)
+- External API calls (The Guardian API, Supabase)
 - Reusable across controllers
 - NO HTTP concerns (SOLID: SRP)
 - NO direct database access (use Supabase client from config)
@@ -698,8 +698,8 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 JWT_SECRET=your_jwt_secret_key
 JWT_EXPIRES_IN=7d
 
-# NewsAPI
-NEWSAPI_KEY=your_newsapi_key
+# The Guardian API
+GUARDIAN_API_KEY=your_guardian_api_key
 
 # CORS
 CORS_ORIGIN=http://localhost:5173
@@ -802,7 +802,7 @@ Before starting development, ensure:
    ```javascript
    // ❌ BAD
    const newsController = async (req, res) => {
-     const response = await axios.get('https://newsapi.org/...');
+     const response = await axios.get('https://content.guardianapis.com/search?...');
      const normalized = response.data.articles.map(...);
      res.json(normalized);
    };

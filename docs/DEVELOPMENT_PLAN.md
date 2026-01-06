@@ -103,7 +103,7 @@
 ## 5. feat/backend-news-api
 
 ### Görevler
-- [x] News service layer: `services/newsService.js` oluştur (SRP: pure business logic, no HTTP concerns), NewsAPI.org entegrasyonu (axios instance, API key interceptor, 10s timeout, network error handling) - bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)
+- [x] News service layer: `services/newsService.js` oluştur (SRP: pure business logic, no HTTP concerns), The Guardian API entegrasyonu (axios instance, API key interceptor, 10s timeout, network error handling) - bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)
 - [x] News fetching logic: kategori bazlı haber çekme (category validation, pageSize: 20, max 100), response normalization
 - [x] News endpoints: `GET /api/news` (genel haberler), `GET /api/news/:category` (kategori bazlı), query parameters (page, limit)
 - [x] Rate limiting: daily request tracking (100/day), per-second limiting (1/second), cached results when limit reached, logging - bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md) 
@@ -111,7 +111,7 @@
 - [x] Configuration: CORS yapılandırması, response caching (15 minutes) - bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md) 
 
 ### Başarı Kriterleri
-- [x] NewsAPI.org'dan haberler çekiliyor ✅ (US country ile test edildi, gerçek haberler geliyor)
+- [x] The Guardian API'den haberler çekiliyor ✅ (Kategori mapping ile test edildi, gerçek haberler geliyor)
 - [x] 7 kategori filtreleme çalışıyor (bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)) ✅ (Tüm kategoriler test edildi)
 - [x] API key güvenli şekilde yönetiliyor (sadece backend'de) ✅ (Kod kontrolü geçti, manuel test gerekli - bakınız: [MANUAL_TEST_NEWS_API.md](./MANUAL_TEST_NEWS_API.md))
 - [x] Haberler normalize edilmiş formatta döndürülüyor ✅ (API_SPECIFICATIONS.md formatına tam uyumlu, tüm fields mevcut)
@@ -219,7 +219,7 @@
 ## 11. docs/readme-documentation
 
 ### Görevler
-- [ ] README.md: proje açıklaması, kurulum talimatları, Supabase setup guide (hesap oluşturma, proje kurulumu, database schema), environment setup (Supabase credentials, NewsAPI.org API key), running instructions (dev ve production) - bakınız: [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md), [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)
+- [ ] README.md: proje açıklaması, kurulum talimatları, Supabase setup guide (hesap oluşturma, proje kurulumu, database schema), environment setup (Supabase credentials, The Guardian API key), running instructions (dev ve production) - bakınız: [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md), [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)
 - [ ] Documentation: technology stack documentation, API endpoint documentation, Supabase connection troubleshooting, migration troubleshooting, genel troubleshooting section - bakınız: [TECHNOLOGY_STACK.md](./TECHNOLOGY_STACK.md), [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md), [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md)
 
 ### Başarı Kriterleri

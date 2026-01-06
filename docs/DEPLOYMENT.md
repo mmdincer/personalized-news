@@ -6,7 +6,7 @@ Bu dosya projenin production'a deploy edilmesi için gerekli adımları içerir.
 
 - Node.js 18+ installed
 - Supabase project created
-- NewsAPI.org API key
+- The Guardian API key
 - Production server/hosting (Vercel, Railway, Heroku, etc.)
 
 ## Environment Setup
@@ -27,7 +27,7 @@ Bu dosya projenin production'a deploy edilmesi için gerekli adımları içerir.
    SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
    JWT_SECRET=your_strong_secret_key_min_64_chars
    JWT_EXPIRES_IN=7d
-   NEWSAPI_KEY=your_newsapi_key
+   GUARDIAN_API_KEY=your_guardian_api_key
    CORS_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
    ADMIN_EMAILS=admin@yourdomain.com
    ```
@@ -139,7 +139,7 @@ CMD ["nginx", "-g", "daemon off;"]
 - Monitor error logs (Winston logs)
 - Check API response times
 - Monitor rate limit usage
-- Track NewsAPI.org quota usage
+- Track The Guardian API quota usage
 
 ## Troubleshooting
 

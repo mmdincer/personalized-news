@@ -1,19 +1,31 @@
 /**
  * News categories constants
- * Based on NewsAPI.org supported categories
- * @see https://newsapi.org/docs/endpoints/top-headlines
+ * Based on The Guardian API supported sections
+ * @see https://open-platform.theguardian.com/documentation/
  */
 
-// Allowed news categories
+// Allowed news categories (frontend compatibility - keep unchanged)
 const ALLOWED_CATEGORIES = [
   'business',      // Business news
   'entertainment', // Entertainment news
-  'general',      // General news
+  'general',      // General news (all sections)
   'health',        // Health news
   'science',       // Science news
   'sports',        // Sports news
   'technology',    // Technology news
 ];
+
+// Mapping from NewsAPI categories to The Guardian API sections
+// Note: 'general' maps to null (no section parameter - fetch from all sections)
+const GUARDIAN_SECTION_MAPPING = {
+  business: 'business',
+  technology: 'technology',
+  sports: 'sport',        // Guardian uses singular 'sport'
+  science: 'science',
+  health: 'society',      // Health news is under 'society' section
+  entertainment: 'culture', // Entertainment news is under 'culture' section
+  general: null,          // No section parameter - fetch from all sections
+};
 
 // Display names mapping for categories
 const CATEGORY_DISPLAY_NAMES = {
@@ -103,13 +115,36 @@ const getAllCategoriesWithNames = () => {
   }));
 };
 
+/**
+ * Map NewsAPI category to The Guardian API section
+ * @param {string} category - NewsAPI category
+ * @returns {string|null} Guardian section name or null for 'general' category
+ * @throws {Error} If category is invalid (not in ALLOWED_CATEGORIES)
+ */
+const mapCategoryToGuardianSection = (category) => {
+  if (!category || typeof category !== 'string') {
+    return null;
+  }
+  const normalizedCategory = category.toLowerCase();
+  
+  // Validate category first
+  if (!ALLOWED_CATEGORIES.includes(normalizedCategory)) {
+    throw new Error(`Invalid category: ${category}. Allowed categories: ${ALLOWED_CATEGORIES.join(', ')}`);
+  }
+  
+  // Return mapped section (can be null for 'general')
+  return GUARDIAN_SECTION_MAPPING[normalizedCategory];
+};
+
 module.exports = {
   ALLOWED_CATEGORIES,
   CATEGORY_DISPLAY_NAMES,
+  GUARDIAN_SECTION_MAPPING,
   isValidCategory,
   validateCategories,
   normalizeCategories,
   getCategoryDisplayName,
   getAllCategoriesWithNames,
+  mapCategoryToGuardianSection,
 };
 

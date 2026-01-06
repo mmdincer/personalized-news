@@ -39,12 +39,12 @@ Tüm API error response'ları aşağıdaki formatta döndürülmelidir:
 
 ### News API Errors (NEWS_*)
 
-- `NEWS_API_INVALID_KEY` - Invalid NewsAPI key
-- `NEWS_API_RATE_LIMIT` - Rate limit exceeded (100/day or 1/second)
-- `NEWS_API_SERVER_ERROR` - NewsAPI server error
+- `NEWS_API_INVALID_KEY` - Invalid The Guardian API key
+- `NEWS_API_RATE_LIMIT` - Rate limit exceeded (500/day or 1/second for free tier)
+- `NEWS_API_SERVER_ERROR` - The Guardian API server error
 - `NEWS_API_TIMEOUT` - Request timeout after 10s
 - `NEWS_NETWORK_ERROR` - Network connection error
-- `NEWS_RATE_LIMIT_EXCEEDED` - Internal rate limit exceeded (100/day or 1/second)
+- `NEWS_RATE_LIMIT_EXCEEDED` - Internal rate limit exceeded (500/day or 1/second)
 - `NEWS_INVALID_CATEGORY` - Invalid news category
 - `NEWS_FETCH_FAILED` - Failed to fetch news
 

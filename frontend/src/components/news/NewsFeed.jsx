@@ -228,14 +228,14 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
       {/* News Grid */}
       {articles.length > 0 && (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid lg:grid-cols-2 lg:gap-y-16 gap-10">
             {articles.map((article, index) => (
               <NewsCard key={article.url || index} article={article} />
             ))}
             {/* Loading more skeletons */}
             {loading && articles.length > 0 && (
               <>
-                {[...Array(3)].map((_, index) => (
+                {[...Array(2)].map((_, index) => (
                   <NewsCardSkeleton key={`skeleton-${index}`} />
                 ))}
               </>

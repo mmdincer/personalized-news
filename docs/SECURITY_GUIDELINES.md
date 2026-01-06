@@ -74,7 +74,7 @@ Bu dosya proje için güvenlik rehberi ve best practice'leri içerir.
 
 ### A10:2021 – Server-Side Request Forgery
 
-- [ ] Validate NewsAPI.org responses
+- [ ] Validate The Guardian API responses
 - [ ] No user-controlled URLs
 - [ ] Whitelist allowed domains
 - [ ] Validate external API responses

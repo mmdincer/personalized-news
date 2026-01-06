@@ -33,9 +33,9 @@ const validateEnv = () => {
         return null;
       },
     },
-    NEWSAPI_KEY: {
-      value: process.env.NEWSAPI_KEY,
-      message: 'NEWSAPI_KEY is required. Get it from https://newsapi.org/',
+    GUARDIAN_API_KEY: {
+      value: process.env.GUARDIAN_API_KEY,
+      message: 'GUARDIAN_API_KEY is required. Get it from https://open-platform.theguardian.com/access',
     },
   };
 
