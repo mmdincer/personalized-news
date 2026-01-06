@@ -3,6 +3,16 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 
+// Validate environment variables
+const { validateEnv } = require('./utils/envValidator');
+try {
+  validateEnv();
+} catch (error) {
+  // eslint-disable-next-line no-console
+  console.error(error.message);
+  process.exit(1);
+}
+
 // Initialize Supabase client (will throw error if env vars missing)
 try {
   require('./config/database');
@@ -11,8 +21,7 @@ try {
 } catch (error) {
   // eslint-disable-next-line no-console
   console.error('✗ Supabase initialization failed:', error.message);
-  // eslint-disable-next-line no-console
-  console.error('Please check your .env file and ensure SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set');
+  process.exit(1);
 }
 
 // Initialize News Service cache cleanup (if news service is available)

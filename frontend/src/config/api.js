@@ -11,6 +11,11 @@
 import axios from 'axios';
 
 // Base URL from environment variable (defaults to localhost:3000/api)
+// Validate environment variables in development
+if (import.meta.env.MODE === 'development' && !import.meta.env.VITE_API_BASE_URL) {
+  console.warn('⚠️  VITE_API_BASE_URL is not set. Using default: http://localhost:3000/api');
+}
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
 
 /**
