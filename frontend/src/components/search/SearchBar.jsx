@@ -18,13 +18,21 @@ const SearchBar = ({
   debounceMs = 300,
   minLength = 2,
   className = '',
-  disabled = false
+  disabled = false,
+  defaultValue = ''
 }) => {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(defaultValue);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const debounceTimerRef = useRef(null);
   const inputRef = useRef(null);
+
+  // Update query when defaultValue changes
+  useEffect(() => {
+    if (defaultValue !== undefined) {
+      setQuery(defaultValue);
+    }
+  }, [defaultValue]);
 
   // Clear debounce timer on unmount
   useEffect(() => {
