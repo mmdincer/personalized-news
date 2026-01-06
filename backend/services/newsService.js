@@ -79,11 +79,13 @@ const requestLog = [];
  * @param {number} pageSize - Results per page
  * @param {string} [fromDate] - Start date filter (YYYY-MM-DD format)
  * @param {string} [toDate] - End date filter (YYYY-MM-DD format)
+ * @param {string} [sort] - Sort option (newest, oldest, relevance)
  * @returns {string} Cache key
  */
-const getCacheKey = (category, page, pageSize, fromDate = null, toDate = null) => {
+const getCacheKey = (category, page, pageSize, fromDate = null, toDate = null, sort = 'newest') => {
   const datePart = fromDate || toDate ? `:${fromDate || ''}:${toDate || ''}` : '';
-  return `news:${category || 'all'}:${page}:${pageSize}${datePart}`;
+  const sortPart = sort && sort !== 'newest' ? `:${sort}` : '';
+  return `news:${category || 'all'}:${page}:${pageSize}${datePart}${sortPart}`;
 };
 
 /**
@@ -493,6 +495,93 @@ const validatePagination = (page, pageSize) => {
   }
 };
 
+/**
+ * Validate date filter parameters
+ * @param {string} fromDate - Start date (YYYY-MM-DD format)
+ * @param {string} toDate - End date (YYYY-MM-DD format)
+ * @throws {Error} If dates are invalid
+ */
+const validateDateFilter = (fromDate, toDate) => {
+  if (fromDate) {
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(fromDate)) {
+      const error = new Error('From date must be in YYYY-MM-DD format');
+      error.code = 'VAL_INVALID_FORMAT';
+      error.statusCode = 400;
+      throw error;
+    }
+    
+    const from = new Date(fromDate);
+    if (isNaN(from.getTime())) {
+      const error = new Error('Invalid from date');
+      error.code = 'VAL_INVALID_FORMAT';
+      error.statusCode = 400;
+      throw error;
+    }
+  }
+
+  if (toDate) {
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(toDate)) {
+      const error = new Error('To date must be in YYYY-MM-DD format');
+      error.code = 'VAL_INVALID_FORMAT';
+      error.statusCode = 400;
+      throw error;
+    }
+    
+    const to = new Date(toDate);
+    if (isNaN(to.getTime())) {
+      const error = new Error('Invalid to date');
+      error.code = 'VAL_INVALID_FORMAT';
+      error.statusCode = 400;
+      throw error;
+    }
+  }
+
+  // Validate date range
+  if (fromDate && toDate) {
+    const from = new Date(fromDate);
+    const to = new Date(toDate);
+    if (from > to) {
+      const error = new Error('From date must be before or equal to to date');
+      error.code = 'VAL_INVALID_FORMAT';
+      error.statusCode = 400;
+      throw error;
+    }
+  }
+};
+
+/**
+ * Validate and normalize sort parameter
+ * @param {string} sort - Sort option (newest, oldest, relevance)
+ * @returns {string} Normalized sort value for Guardian API
+ * @throws {Error} If sort is invalid
+ */
+const validateSort = (sort) => {
+  if (!sort) {
+    return 'newest'; // Default sort
+  }
+
+  const normalizedSort = sort.toLowerCase().trim();
+  const allowedSorts = ['newest', 'oldest', 'relevance'];
+
+  if (!allowedSorts.includes(normalizedSort)) {
+    const error = new Error(`Invalid sort option. Allowed values: ${allowedSorts.join(', ')}`);
+    error.code = 'VAL_INVALID_FORMAT';
+    error.statusCode = 400;
+    throw error;
+  }
+
+  // Map to Guardian API order-by values
+  const guardianSortMap = {
+    'newest': 'newest',
+    'oldest': 'oldest',
+    'relevance': 'relevance',
+  };
+
+  return guardianSortMap[normalizedSort];
+};
+
 // ===========================
 // Core Service Functions
 // ===========================
@@ -504,6 +593,7 @@ const validatePagination = (page, pageSize) => {
  * @param {number} pageSize - Results per page (default: 20)
  * @param {string} [fromDate] - Start date filter (YYYY-MM-DD format)
  * @param {string} [toDate] - End date filter (YYYY-MM-DD format)
+ * @param {string} [sort] - Sort option (newest, oldest, relevance, default: newest)
  * @returns {Promise<Object>} Normalized news data
  * @throws {Error} On validation or API errors
  */
@@ -512,15 +602,17 @@ const fetchNewsByCategory = async (
   page = 1,
   pageSize = DEFAULT_PAGE_SIZE,
   fromDate = null,
-  toDate = null
+  toDate = null,
+  sort = 'newest'
 ) => {
   // Validate inputs
   validateCategory(category);
   validatePagination(page, pageSize);
   validateDateFilter(fromDate, toDate);
+  const normalizedSort = validateSort(sort);
 
   // Check cache first
-  const cacheKey = getCacheKey(category, page, pageSize, fromDate, toDate);
+  const cacheKey = getCacheKey(category, page, pageSize, fromDate, toDate, normalizedSort);
   const cached = getCachedNews(cacheKey);
   if (cached) {
     return cached;
@@ -563,7 +655,7 @@ const fetchNewsByCategory = async (
     'page': page,
     'page-size': pageSize,
     'show-fields': 'thumbnail,headline,trailText,bodyText',
-    'order-by': 'newest',
+    'order-by': normalizedSort,
   };
   
   // Add section parameter (all categories now map to Guardian sections)
@@ -585,6 +677,7 @@ const fetchNewsByCategory = async (
     pageSize,
     fromDate,
     toDate,
+    sort: normalizedSort,
     cacheKey,
   });
 
@@ -625,6 +718,7 @@ const fetchNewsByCategory = async (
  * @param {number} pageSize - Results per page
  * @param {string} [fromDate] - Start date filter (YYYY-MM-DD format)
  * @param {string} [toDate] - End date filter (YYYY-MM-DD format)
+ * @param {string} [sort] - Sort option (newest, oldest, relevance, default: newest)
  * @returns {Promise<Object>} Aggregated news from all categories
  * @throws {Error} On validation or API errors
  */
@@ -633,7 +727,8 @@ const fetchNewsByPreferences = async (
   page = 1,
   pageSize = DEFAULT_PAGE_SIZE,
   fromDate = null,
-  toDate = null
+  toDate = null,
+  sort = 'newest'
 ) => {
   if (!Array.isArray(categories) || categories.length === 0) {
     const error = new Error('At least one category is required');
@@ -646,6 +741,7 @@ const fetchNewsByPreferences = async (
   categories.forEach((category) => validateCategory(category));
   validatePagination(page, pageSize);
   validateDateFilter(fromDate, toDate);
+  const normalizedSort = validateSort(sort);
 
   // Fetch news from all categories sequentially to respect rate limits
   // The Guardian API free tier allows 1 request/second, so we serialize requests
@@ -659,15 +755,24 @@ const fetchNewsByPreferences = async (
       await new Promise((resolve) => setTimeout(resolve, 1100));
     }
     
-    const result = await fetchNewsByCategory(category, 1, resultsPerCategory, fromDate, toDate);
+    const result = await fetchNewsByCategory(category, 1, resultsPerCategory, fromDate, toDate, normalizedSort);
     results.push(result);
   }
 
   // Aggregate results
   const allArticles = results.flatMap((result) => result.articles);
 
-  // Sort by publishedAt (newest first)
-  allArticles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+  // Sort articles based on sort parameter
+  if (normalizedSort === 'oldest') {
+    // Sort by publishedAt (oldest first)
+    allArticles.sort((a, b) => new Date(a.publishedAt) - new Date(b.publishedAt));
+  } else if (normalizedSort === 'relevance') {
+    // For relevance, keep Guardian API's original order (already sorted by relevance)
+    // No additional sorting needed
+  } else {
+    // Default: newest first
+    allArticles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+  }
 
   // Apply pagination to aggregated results
   const startIndex = (page - 1) * pageSize;

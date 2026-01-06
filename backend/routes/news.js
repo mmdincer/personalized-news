@@ -51,6 +51,13 @@ const dateFilterValidation = [
     .withMessage('To date must be in YYYY-MM-DD format'),
 ];
 
+const sortValidation = [
+  query('sort')
+    .optional()
+    .isIn(['newest', 'oldest', 'relevance'])
+    .withMessage('Sort must be one of: newest, oldest, relevance'),
+];
+
 const searchValidation = [
   query('q')
     .trim()
@@ -104,7 +111,7 @@ router.get(
 router.get(
   '/:category',
   newsLimiter,
-  [...categoryValidation, ...paginationValidation, ...dateFilterValidation],
+  [...categoryValidation, ...paginationValidation, ...dateFilterValidation, ...sortValidation],
   newsController.getNewsByCategory
 );
 
@@ -124,7 +131,7 @@ router.get(
   '/',
   newsLimiter,
   authenticateToken,
-  [...paginationValidation, ...dateFilterValidation],
+  [...paginationValidation, ...dateFilterValidation, ...sortValidation],
   newsController.getPersonalizedNews
 );
 

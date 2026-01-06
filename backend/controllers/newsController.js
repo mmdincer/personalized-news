@@ -38,9 +38,10 @@ const getNewsByCategory = async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 20;
     const fromDate = req.query.from || null;
     const toDate = req.query.to || null;
+    const sort = req.query.sort || 'newest';
 
     // Call service layer
-    const news = await newsService.fetchNewsByCategory(category, page, limit, fromDate, toDate);
+    const news = await newsService.fetchNewsByCategory(category, page, limit, fromDate, toDate, sort);
 
     // Send success response
     res.json({
@@ -81,6 +82,7 @@ const getPersonalizedNews = async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 20;
     const fromDate = req.query.from || null;
     const toDate = req.query.to || null;
+    const sort = req.query.sort || 'newest';
 
     // Get user preferences from request (attached by auth middleware)
     const { categories } = req.user;
@@ -99,7 +101,8 @@ const getPersonalizedNews = async (req, res, next) => {
       page,
       limit,
       fromDate,
-      toDate
+      toDate,
+      sort
     );
 
     // Send success response
