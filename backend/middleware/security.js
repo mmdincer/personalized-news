@@ -63,11 +63,12 @@ const authLimiter = rateLimit({
 
 /**
  * News API rate limiter
- * Limits: 50 requests per 15 minutes per IP
+ * Limits: 50 requests per 15 minutes per IP (production)
+ * Limits: 500 requests per 15 minutes per IP (development)
  */
 const newsLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 50, // Limit each IP to 50 requests per windowMs
+  max: process.env.NODE_ENV === 'production' ? 50 : 500, // Higher limit for development
   message: {
     success: false,
     error: {

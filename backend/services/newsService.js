@@ -340,8 +340,10 @@ const normalizeNewsResponse = (apiResponse, page, pageSize) => {
     const fields = result.fields || {};
     
     return {
+      id: result.id || result.webUrl, // Use article ID or URL as unique identifier
       title: fields.headline || result.webTitle || 'No title',
       description: fields.trailText || fields.bodyText?.substring(0, 200) || '',
+      content: fields.bodyText || null, // Full article content
       url: result.webUrl || '',
       imageUrl: fields.thumbnail || null,
       publishedAt: result.webPublicationDate || new Date().toISOString(),
@@ -473,7 +475,7 @@ const fetchNewsByCategory = async (
   const requestParams = {
     'page': page,
     'page-size': pageSize,
-    'show-fields': 'thumbnail,headline,trailText',
+    'show-fields': 'thumbnail,headline,trailText,bodyText',
     'order-by': 'newest',
   };
   
@@ -579,6 +581,118 @@ const fetchNewsByPreferences = async (
   };
 };
 
+/**
+ * Fetch a single article by ID or URL
+ * @param {string} articleIdOrUrl - Article ID (e.g., "technology/2024/jan/05/article-id") or full URL
+ * @returns {Promise<Object>} Single article data with full content
+ * @throws {Error} On validation or API errors
+ */
+const fetchArticleById = async (articleIdOrUrl) => {
+  if (!articleIdOrUrl || typeof articleIdOrUrl !== 'string') {
+    const error = new Error('Article ID or URL is required');
+    error.code = 'VAL_MISSING_FIELD';
+    error.statusCode = 400;
+    throw error;
+  }
+
+  // Extract article ID from URL if needed
+  // Guardian URL format: https://www.theguardian.com/section/date/article-id
+  // Article ID format: section/date/article-id
+  let articleId = articleIdOrUrl;
+  if (articleIdOrUrl.startsWith('http')) {
+    // Extract ID from URL
+    const urlMatch = articleIdOrUrl.match(/theguardian\.com\/(.+)$/);
+    if (urlMatch) {
+      articleId = urlMatch[1];
+    } else {
+      const error = new Error('Invalid article URL format');
+      error.code = 'VAL_INVALID_FORMAT';
+      error.statusCode = 400;
+      throw error;
+    }
+  }
+
+  // Check cache first
+  const cacheKey = `article:${articleId}`;
+  const cached = getCachedNews(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  // Check rate limit and reserve slot atomically
+  const rateLimit = checkRateLimitAndReserve();
+  if (!rateLimit.allowed) {
+    const error = new Error(
+      `Rate limit exceeded. ${rateLimit.remainingDaily} requests remaining today. Resets in ${rateLimit.resetTime}`
+    );
+    error.code = 'NEWS_RATE_LIMIT_EXCEEDED';
+    error.statusCode = 429;
+    throw error;
+  }
+
+  // Build request parameters - use ids parameter to fetch specific article
+  const requestParams = {
+    'ids': articleId,
+    'show-fields': 'thumbnail,headline,trailText,bodyText',
+  };
+
+  // Log API request
+  logger.info('Fetching article from The Guardian API', {
+    articleId,
+    cacheKey,
+  });
+
+  try {
+    // Make API request to The Guardian API
+    const response = await guardianApiClient.get(GUARDIAN_ENDPOINT, {
+      params: requestParams,
+    });
+
+    // Normalize response
+    const normalizedData = normalizeNewsResponse(response.data, 1, 1);
+
+    // Check if article was found
+    if (!normalizedData.articles || normalizedData.articles.length === 0) {
+      const error = new Error('Article not found');
+      error.code = 'NEWS_ARTICLE_NOT_FOUND';
+      error.statusCode = 404;
+      throw error;
+    }
+
+    // Return single article
+    const article = normalizedData.articles[0];
+
+    // Cache result
+    setCachedNews(cacheKey, article);
+
+    logger.info('Article fetched and cached successfully', {
+      cacheKey,
+      articleId,
+    });
+
+    return article;
+  } catch (error) {
+    // If it's already our custom error, re-throw it
+    if (error.code && error.statusCode) {
+      throw error;
+    }
+
+    // Handle API errors
+    if (error.response) {
+      const { status } = error.response;
+      if (status === 404) {
+        const notFoundError = new Error('Article not found');
+        notFoundError.code = 'NEWS_ARTICLE_NOT_FOUND';
+        notFoundError.statusCode = 404;
+        throw notFoundError;
+      }
+    }
+
+    // Re-throw other errors
+    throw error;
+  }
+};
+
 // ===========================
 // Module Exports
 // ===========================
@@ -587,6 +701,7 @@ module.exports = {
   // Core functions
   fetchNewsByCategory,
   fetchNewsByPreferences,
+  fetchArticleById,
 
   // Cache management
   clearCache,

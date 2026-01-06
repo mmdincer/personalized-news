@@ -130,6 +130,44 @@ const getRateLimitStats = async (req, res, next) => {
 };
 
 /**
+ * Get single article by ID or URL
+ * GET /api/news/article/:id
+ *
+ * Fetches full article content including bodyText
+ *
+ * @param {Object} req - Express request
+ * @param {Object} res - Express response
+ * @param {Function} next - Express next middleware
+ */
+const getArticleById = async (req, res, next) => {
+  try {
+    // Extract article ID or URL from params
+    // Support both: /api/news/article/technology/2024/jan/05/article-id
+    // and: /api/news/article/https://www.theguardian.com/...
+    const articleIdOrUrl = req.params.id || req.params['*'];
+
+    if (!articleIdOrUrl) {
+      const error = new Error('Article ID or URL is required');
+      error.code = 'VAL_MISSING_FIELD';
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    // Call service layer
+    const article = await newsService.fetchArticleById(articleIdOrUrl);
+
+    // Send success response
+    res.json({
+      success: true,
+      data: article,
+    });
+  } catch (error) {
+    // Pass error to error handler middleware
+    next(error);
+  }
+};
+
+/**
  * Clear news cache (admin only)
  * POST /api/news/cache/clear
  *
@@ -155,6 +193,7 @@ const clearNewsCache = async (req, res, next) => {
 module.exports = {
   getNewsByCategory,
   getPersonalizedNews,
+  getArticleById,
   getRateLimitStats,
   clearNewsCache,
 };

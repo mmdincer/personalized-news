@@ -7,6 +7,8 @@
  * - Link to full article
  */
 
+import { Link } from 'react-router-dom';
+
 const NewsCard = ({ article }) => {
   if (!article) return null;
 
@@ -24,11 +26,20 @@ const NewsCard = ({ article }) => {
     }
   };
 
+  // Generate article detail URL from article ID or URL
+  const getArticleDetailUrl = () => {
+    if (article.id) {
+      return `/article/${encodeURIComponent(article.id)}`;
+    }
+    if (article.url) {
+      return `/article/${encodeURIComponent(article.url)}`;
+    }
+    return '#';
+  };
+
   return (
-    <a
-      href={article.url || '#'}
-      target="_blank"
-      rel="noopener noreferrer"
+    <Link
+      to={getArticleDetailUrl()}
       className="group block rounded-xl overflow-hidden focus:outline-none"
     >
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
@@ -90,7 +101,7 @@ const NewsCard = ({ article }) => {
           </p>
         </div>
       </div>
-    </a>
+    </Link>
   );
 };
 

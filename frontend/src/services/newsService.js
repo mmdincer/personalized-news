@@ -50,3 +50,23 @@ export const getNewsByCategory = async ({ category, page = 1, limit = 20 }) => {
   return response;
 };
 
+/**
+ * Get single article by ID or URL
+ * @param {string} articleIdOrUrl - Article ID (e.g., "technology/2024/jan/05/article-id") or full URL
+ * @returns {Promise<Object>} Article data with full content
+ */
+export const getArticleById = async (articleIdOrUrl) => {
+  if (!articleIdOrUrl) {
+    throw new Error('Article ID or URL is required');
+  }
+
+  // Encode article ID to handle special characters and slashes
+  const encodedId = encodeURIComponent(articleIdOrUrl);
+  // apiClient interceptor returns response.data
+  // Backend returns { success: true, data: article }
+  // So response is { success: true, data: article }
+  const response = await apiClient.get(`/news/article/${encodedId}`);
+  // Extract article from response.data
+  return response?.data || response;
+};
+

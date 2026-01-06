@@ -45,6 +45,18 @@ const paginationValidation = [
 // ===========================
 
 /**
+ * @route   GET /api/news/article/:id
+ * @desc    Get single article by ID or URL (with full content)
+ * @access  Public
+ * @params  id - Article ID (e.g., "technology/2024/jan/05/article-id") or full URL
+ */
+router.get(
+  '/article/:id(*)',
+  newsLimiter,
+  newsController.getArticleById
+);
+
+/**
  * @route   GET /api/news/:category
  * @desc    Get news by category
  * @access  Public

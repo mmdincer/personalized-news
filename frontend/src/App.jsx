@@ -16,6 +16,7 @@ import RegisterPage from './pages/RegisterPage';
 import HomePage from './pages/HomePage';
 import NewsPage from './pages/NewsPage';
 import PreferencesPage from './pages/PreferencesPage';
+import ArticleDetailPage from './pages/ArticleDetailPage';
 import NotFoundPage from './pages/NotFoundPage';
 import './App.css';
 
@@ -60,9 +61,26 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/article/*"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <ArticleDetailPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
 
-          {/* 404 Page */}
-          <Route path="*" element={<NotFoundPage />} />
+          {/* 404 Page - Show navbar (Layout handles auth check) */}
+          <Route
+            path="*"
+            element={
+              <Layout>
+                <NotFoundPage />
+              </Layout>
+            }
+          />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
