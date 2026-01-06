@@ -12,11 +12,11 @@ backend/
     └── migrations/
         ├── 001_create_users_table.sql
         ├── 002_create_user_preferences_table.sql
-        ├── 003_create_saved_articles_table.sql
-        ├── 004_create_reading_history_table.sql
-        ├── 005_remove_country_column.sql
-        ├── 007_update_categories_to_guardian_sections.sql
-        └── 006_enable_rls_policies.sql (optional)
+        ├── 003_enable_rls_policies.sql (optional)
+        ├── 004_remove_country_column.sql
+        ├── 005_create_saved_articles_table.sql
+        ├── 006_create_reading_history_table.sql (henüz oluşturulmadı)
+        └── 007_update_categories_to_guardian_sections.sql
 ```
 
 ### Naming Convention
@@ -150,11 +150,11 @@ COMMENT ON COLUMN reading_history.read_at IS 'Timestamp when article was read';
 
 1. `001_create_users_table.sql` - Önce users tablosu oluşturulmalı
 2. `002_create_user_preferences_table.sql` - Sonra preferences tablosu (foreign key için)
-3. `003_create_saved_articles_table.sql` - Saved articles tablosu (foreign key için users gerekli)
-4. `004_create_reading_history_table.sql` - Reading history tablosu (foreign key için users gerekli)
-5. `005_remove_country_column.sql` - Country kolonunu kaldır (user_preferences tablosu için)
-6. `007_update_categories_to_guardian_sections.sql` - Kategorileri Guardian API section'larına güncelle
-7. `006_enable_rls_policies.sql` (optional) - Row Level Security politikaları
+3. `003_enable_rls_policies.sql` (optional) - Row Level Security politikaları
+4. `004_remove_country_column.sql` - Country kolonunu kaldır (user_preferences tablosu için)
+5. `005_create_saved_articles_table.sql` - Saved articles tablosu (foreign key için users gerekli)
+6. `006_create_reading_history_table.sql` - Reading history tablosu (foreign key için users gerekli) (henüz oluşturulmadı)
+7. `007_update_categories_to_guardian_sections.sql` - Kategorileri Guardian API section'larına güncelle
 
 ## Migration Best Practices
 
