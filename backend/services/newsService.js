@@ -10,8 +10,47 @@
  */
 
 const axios = require('axios');
+const winston = require('winston');
 const { ALLOWED_CATEGORIES } = require('../constants/categories');
 const { isValidCountry, DEFAULT_COUNTRY } = require('../constants/countries');
+
+// ===========================
+// Winston Logger Configuration
+// ===========================
+
+const logger = winston.createLogger({
+  level: process.env.LOG_LEVEL || 'info',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.errors({ stack: true }),
+    winston.format.json()
+  ),
+  defaultMeta: { service: 'news-service' },
+  transports: [
+    // Write all logs to console
+    new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.colorize(),
+        winston.format.simple()
+      ),
+    }),
+  ],
+});
+
+// In production, also log to file
+if (process.env.NODE_ENV === 'production') {
+  logger.add(
+    new winston.transports.File({
+      filename: 'logs/news-service-error.log',
+      level: 'error',
+    })
+  );
+  logger.add(
+    new winston.transports.File({
+      filename: 'logs/news-service.log',
+    })
+  );
+}
 
 // ===========================
 // Configuration Constants
@@ -108,10 +147,9 @@ const startCacheCleanup = () => {
       }
     }
 
-    // Optional: Log cleanup (if Winston logger is available)
-    if (cleanedCount > 0 && process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
-      console.log(`[Cache Cleanup] Removed ${cleanedCount} expired entries`);
+    // Log cache cleanup
+    if (cleanedCount > 0) {
+      logger.info(`Cache cleanup: Removed ${cleanedCount} expired entries`);
     }
   }, 5 * 60 * 1000); // 5 minutes
 };
@@ -184,10 +222,15 @@ const getRateLimitStats = () => {
   const oneDayAgo = now - 24 * 60 * 60 * 1000;
   const recentRequests = requestLog.filter((timestamp) => timestamp > oneDayAgo);
 
-  return {
+  const stats = {
     dailyCount: recentRequests.length,
     remaining: MAX_REQUESTS_PER_DAY - recentRequests.length,
   };
+
+  // Log rate limit stats access
+  logger.debug('Rate limit statistics requested', stats);
+
+  return stats;
 };
 
 // ===========================
@@ -414,11 +457,40 @@ const fetchNewsByCategory = async (
   // Check rate limit and reserve slot atomically
   const rateLimit = checkRateLimitAndReserve();
   if (!rateLimit.allowed) {
+    // Log rate limit exceeded
+    logger.warn(`Rate limit exceeded: ${rateLimit.message}`, {
+      dailyCount: rateLimit.dailyCount,
+      cacheKey,
+    });
+
+    // Rate limit exceeded - try to return cached data (even if expired)
+    // This provides graceful degradation when rate limit is reached
+    const expiredCache = cache.get(cacheKey);
+    if (expiredCache) {
+      logger.info('Returning expired cache due to rate limit', { cacheKey });
+      // Return expired cache data (better than error)
+      return expiredCache.data;
+    }
+
+    // No cache available - throw error
+    logger.error('Rate limit exceeded and no cache available', {
+      cacheKey,
+      dailyCount: rateLimit.dailyCount,
+    });
     const error = new Error(rateLimit.message);
     error.code = 'NEWS_RATE_LIMIT_EXCEEDED';
     error.statusCode = 429;
     throw error;
   }
+
+  // Log API request
+  logger.info('Fetching news from NewsAPI.org', {
+    category,
+    country,
+    page,
+    pageSize,
+    cacheKey,
+  });
 
   // Make API request
   const response = await newsApiClient.get(NEWSAPI_ENDPOINT, {
@@ -437,6 +509,12 @@ const fetchNewsByCategory = async (
 
   // Cache result
   setCachedNews(cacheKey, normalizedData);
+
+  logger.info('News fetched and cached successfully', {
+    cacheKey,
+    articleCount: normalizedData.articles.length,
+    totalResults: normalizedData.totalResults,
+  });
 
   return normalizedData;
 };
