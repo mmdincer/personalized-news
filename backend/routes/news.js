@@ -35,8 +35,8 @@ const paginationValidation = [
     .toInt(),
   query('limit')
     .optional()
-    .isInt({ min: 1, max: 100 })
-    .withMessage('Limit must be between 1 and 100')
+    .isInt({ min: 1, max: 50 })
+    .withMessage('Limit must be between 1 and 50 (The Guardian API limit)')
     .toInt(),
 ];
 

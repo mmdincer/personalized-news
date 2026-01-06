@@ -2,10 +2,12 @@
  * NewsFeed Component
  * 
  * Displays news articles in a grid layout
- * - Category filtering
+ * - Category filtering (optional)
  * - Loading skeleton
  * - Empty/error state handling
  * - Responsive grid layout
+ * 
+ * @param {boolean} showCategoryFilter - Whether to show category filter buttons (default: true)
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -17,7 +19,7 @@ import NewsCard from './NewsCard';
 import NewsCardSkeleton from './NewsCardSkeleton';
 import toast from 'react-hot-toast';
 
-const NewsFeed = () => {
+const NewsFeed = ({ showCategoryFilter = true }) => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -46,13 +48,17 @@ const NewsFeed = () => {
   }, []);
 
   // Fetch news based on selected category
+  // If showCategoryFilter is false, always use preferences (category = null)
   const fetchNews = useCallback(async (category = null, pageNum = 1) => {
     try {
       setLoading(true);
       setError(null);
 
       let response;
-      if (category) {
+      // If category filter is disabled, always fetch personalized news
+      if (!showCategoryFilter) {
+        response = await getNews({ page: pageNum, limit });
+      } else if (category) {
         response = await getNewsByCategory({ category, page: pageNum, limit });
       } else {
         response = await getNews({ page: pageNum, limit });
@@ -77,15 +83,17 @@ const NewsFeed = () => {
     } finally {
       setLoading(false);
     }
-  }, [limit]);
+  }, [limit, showCategoryFilter]);
 
   // Initial load and when category changes
   useEffect(() => {
     setPage(1);
     setArticles([]);
-    fetchNews(selectedCategory, 1);
+    // If category filter is disabled, always use null (preferences)
+    const categoryToUse = showCategoryFilter ? selectedCategory : null;
+    fetchNews(categoryToUse, 1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCategory]);
+  }, [selectedCategory, showCategoryFilter]);
 
   // Handle category change
   const handleCategoryChange = (category) => {
@@ -97,48 +105,61 @@ const NewsFeed = () => {
   const handleLoadMore = () => {
     const nextPage = page + 1;
     setPage(nextPage);
-    fetchNews(selectedCategory, nextPage);
+    const categoryToUse = showCategoryFilter ? selectedCategory : null;
+    fetchNews(categoryToUse, nextPage);
   };
 
   return (
     <div className="space-y-6">
-      {/* Category Filter */}
-      <div className="bg-white rounded-lg shadow p-4">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Filter by Category</h2>
-          {selectedCategory === null && userPreferences.length > 0 && (
-            <div className="text-sm text-gray-600">
-              <span className="font-medium">Using your preferences:</span>{' '}
-              {userPreferences.map((cat) => getCategoryDisplayName(cat)).join(', ')}
-            </div>
-          )}
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => handleCategoryChange(null)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              selectedCategory === null
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
-          >
-            All (Your Preferences)
-          </button>
-          {categories.map((category) => (
+      {/* Category Filter - Only show if enabled */}
+      {showCategoryFilter && (
+        <div className="bg-white rounded-lg shadow p-4">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">Filter by Category</h2>
+            {selectedCategory === null && userPreferences.length > 0 && (
+              <div className="text-sm text-gray-600">
+                <span className="font-medium">Using your preferences:</span>{' '}
+                {userPreferences.map((cat) => getCategoryDisplayName(cat)).join(', ')}
+              </div>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-2">
             <button
-              key={category.code}
-              onClick={() => handleCategoryChange(category.code)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                selectedCategory === category.code
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              onClick={() => handleCategoryChange(null)}
+              className={`px-4 py-3 sm:py-2 rounded-full text-sm font-medium transition-colors min-h-[44px] sm:min-h-0 touch-manipulation ${
+                selectedCategory === null
+                  ? 'bg-blue-600 text-white active:bg-blue-700'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
               }`}
             >
-              {category.name}
+              All (Your Preferences)
             </button>
-          ))}
+            {categories.map((category) => (
+              <button
+                key={category.code}
+                onClick={() => handleCategoryChange(category.code)}
+                className={`px-4 py-3 sm:py-2 rounded-full text-sm font-medium transition-colors min-h-[44px] sm:min-h-0 touch-manipulation ${
+                  selectedCategory === category.code
+                    ? 'bg-blue-600 text-white active:bg-blue-700'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
+                }`}
+              >
+                {category.name}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Preferences Info - Show when filter is disabled */}
+      {!showCategoryFilter && userPreferences.length > 0 && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="text-sm text-blue-800">
+            <span className="font-medium">Showing news from your preferences:</span>{' '}
+            {userPreferences.map((cat) => getCategoryDisplayName(cat)).join(', ')}
+          </div>
+        </div>
+      )}
 
       {/* Loading State */}
       {loading && articles.length === 0 && (
@@ -168,7 +189,10 @@ const NewsFeed = () => {
           <h3 className="text-lg font-semibold text-red-900 mb-2">Failed to load news</h3>
           <p className="text-red-700 mb-4">{error}</p>
           <button
-            onClick={() => fetchNews(selectedCategory, 1)}
+            onClick={() => {
+              const categoryToUse = showCategoryFilter ? selectedCategory : null;
+              fetchNews(categoryToUse, 1);
+            }}
             className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
           >
             Try Again
@@ -204,14 +228,14 @@ const NewsFeed = () => {
       {/* News Grid */}
       {articles.length > 0 && (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid lg:grid-cols-2 lg:gap-y-16 gap-10">
             {articles.map((article, index) => (
               <NewsCard key={article.url || index} article={article} />
             ))}
             {/* Loading more skeletons */}
             {loading && articles.length > 0 && (
               <>
-                {[...Array(3)].map((_, index) => (
+                {[...Array(2)].map((_, index) => (
                   <NewsCardSkeleton key={`skeleton-${index}`} />
                 ))}
               </>
@@ -223,7 +247,8 @@ const NewsFeed = () => {
             <div className="text-center">
               <button
                 onClick={handleLoadMore}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                disabled={loading}
+                className="px-6 py-3 min-h-[48px] bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium touch-manipulation"
               >
                 Load More
               </button>

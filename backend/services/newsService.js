@@ -1,17 +1,17 @@
 /**
  * News Service Layer
  *
- * SRP: Pure business logic for NewsAPI.org integration
- * - Handles NewsAPI.org API calls
+ * SRP: Pure business logic for The Guardian API integration
+ * - Handles The Guardian API calls
  * - Implements caching strategy (15 minutes)
- * - Manages rate limiting (100/day, 1/sec)
+ * - Manages rate limiting (500/day, 1/sec)
  * - Normalizes API responses
  * - NO HTTP concerns (controllers handle that)
  */
 
 const axios = require('axios');
 const winston = require('winston');
-const { ALLOWED_CATEGORIES } = require('../constants/categories');
+const { ALLOWED_CATEGORIES, mapCategoryToGuardianSection } = require('../constants/categories');
 
 // ===========================
 // Winston Logger Configuration
@@ -55,14 +55,14 @@ if (process.env.NODE_ENV === 'production') {
 // Configuration Constants
 // ===========================
 
-const NEWSAPI_BASE_URL = 'https://newsapi.org/v2';
-const NEWSAPI_ENDPOINT = '/top-headlines';
+const GUARDIAN_BASE_URL = 'https://content.guardianapis.com';
+const GUARDIAN_ENDPOINT = '/search';
 const REQUEST_TIMEOUT_MS = 10000; // 10 seconds
 const CACHE_DURATION_MS = 15 * 60 * 1000; // 15 minutes
-const MAX_REQUESTS_PER_DAY = 200; // Increased from 100
-const MAX_REQUESTS_PER_SECOND = 3; // Increased from 1 (allows 3 requests per second)
+const MAX_REQUESTS_PER_DAY = 500; // The Guardian API free tier: 500/day
+const MAX_REQUESTS_PER_SECOND = 1; // The Guardian API free tier: 1/sec
 const DEFAULT_PAGE_SIZE = 20;
-const MAX_PAGE_SIZE = 100;
+const MAX_PAGE_SIZE = 50; // The Guardian API max page-size is 50
 
 // ===========================
 // In-Memory Cache
@@ -235,8 +235,8 @@ const getRateLimitStats = () => {
 // Axios Instance Configuration
 // ===========================
 
-const newsApiClient = axios.create({
-  baseURL: NEWSAPI_BASE_URL,
+const guardianApiClient = axios.create({
+  baseURL: GUARDIAN_BASE_URL,
   timeout: REQUEST_TIMEOUT_MS,
   headers: {
     'Content-Type': 'application/json',
@@ -244,12 +244,12 @@ const newsApiClient = axios.create({
 });
 
 // Request interceptor: Add API key
-newsApiClient.interceptors.request.use(
+guardianApiClient.interceptors.request.use(
   (config) => {
-    // Add API key to params
+    // Add API key to params (Guardian uses 'api-key' parameter)
     config.params = {
       ...config.params,
-      apiKey: process.env.NEWSAPI_KEY,
+      'api-key': process.env.GUARDIAN_API_KEY,
     };
     return config;
   },
@@ -259,12 +259,12 @@ newsApiClient.interceptors.request.use(
 );
 
 // Response interceptor: Handle errors
-newsApiClient.interceptors.response.use(
+guardianApiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     // Timeout error (specific)
     if (error.code === 'ECONNABORTED') {
-      const timeoutError = new Error('NewsAPI.org request timeout after 10s');
+      const timeoutError = new Error('The Guardian API request timeout after 10s');
       timeoutError.code = 'NEWS_API_TIMEOUT';
       timeoutError.statusCode = 504;
       throw timeoutError;
@@ -272,7 +272,7 @@ newsApiClient.interceptors.response.use(
 
     // Network error (no response)
     if (!error.response) {
-      const networkError = new Error('Network error: Unable to reach NewsAPI.org');
+      const networkError = new Error('Network error: Unable to reach The Guardian API');
       networkError.code = 'NEWS_NETWORK_ERROR';
       networkError.statusCode = 503;
       throw networkError;
@@ -284,25 +284,25 @@ newsApiClient.interceptors.response.use(
 
     switch (status) {
       case 401:
-        apiError = new Error('Invalid NewsAPI.org API key');
+        apiError = new Error('Invalid The Guardian API key');
         apiError.code = 'NEWS_API_INVALID_KEY';
         apiError.statusCode = 500; // Internal error (config issue)
         break;
 
       case 429:
-        apiError = new Error('NewsAPI.org rate limit exceeded');
+        apiError = new Error('The Guardian API rate limit exceeded');
         apiError.code = 'NEWS_API_RATE_LIMIT';
         apiError.statusCode = 429;
         break;
 
       case 500:
-        apiError = new Error('NewsAPI.org server error');
+        apiError = new Error('The Guardian API server error');
         apiError.code = 'NEWS_API_SERVER_ERROR';
         apiError.statusCode = 503;
         break;
 
       default:
-        apiError = new Error(data?.message || 'NewsAPI.org request failed');
+        apiError = new Error(data?.message || 'The Guardian API request failed');
         apiError.code = 'NEWS_API_ERROR';
         apiError.statusCode = 500;
     }
@@ -316,14 +316,17 @@ newsApiClient.interceptors.response.use(
 // ===========================
 
 /**
- * Normalize NewsAPI.org response to internal format
- * @param {Object} apiResponse - Raw NewsAPI.org response
+ * Normalize The Guardian API response to internal format
+ * @param {Object} apiResponse - Raw The Guardian API response
  * @param {number} page - Current page number
  * @param {number} pageSize - Results per page
  * @returns {Object} Normalized response
  */
 const normalizeNewsResponse = (apiResponse, page, pageSize) => {
-  if (!apiResponse || !apiResponse.articles) {
+  // Guardian API wraps response in 'response' object
+  const guardianResponse = apiResponse?.response;
+  
+  if (!guardianResponse || !guardianResponse.results || !Array.isArray(guardianResponse.results)) {
     return {
       articles: [],
       totalResults: 0,
@@ -332,21 +335,25 @@ const normalizeNewsResponse = (apiResponse, page, pageSize) => {
     };
   }
 
-  // Normalize articles
-  const articles = apiResponse.articles.map((article) => ({
-    title: article.title || 'No title',
-    description: article.description || '',
-    url: article.url || '',
-    imageUrl: article.urlToImage || null,
-    publishedAt: article.publishedAt || new Date().toISOString(),
-    source: {
-      name: article.source?.name || 'Unknown',
-    },
-  }));
+  // Normalize articles from Guardian format
+  const articles = guardianResponse.results.map((result) => {
+    const fields = result.fields || {};
+    
+    return {
+      title: fields.headline || result.webTitle || 'No title',
+      description: fields.trailText || fields.bodyText?.substring(0, 200) || '',
+      url: result.webUrl || '',
+      imageUrl: fields.thumbnail || null,
+      publishedAt: result.webPublicationDate || new Date().toISOString(),
+      source: {
+        name: result.sectionName || 'The Guardian',
+      },
+    };
+  });
 
   return {
     articles,
-    totalResults: apiResponse.totalResults || articles.length,
+    totalResults: guardianResponse.total || articles.length,
     page,
     pageSize,
   };
@@ -395,7 +402,7 @@ const validatePagination = (page, pageSize) => {
   }
 
   if (pageSize < 1 || pageSize > MAX_PAGE_SIZE) {
-    const error = new Error(`Page size must be between 1 and ${MAX_PAGE_SIZE}`);
+    const error = new Error(`Page size must be between 1 and ${MAX_PAGE_SIZE} (The Guardian API limit)`);
     error.code = 'VAL_INVALID_PAGE_SIZE';
     error.statusCode = 400;
     throw error;
@@ -459,21 +466,34 @@ const fetchNewsByCategory = async (
     throw error;
   }
 
+  // Map category to Guardian section
+  const guardianSection = mapCategoryToGuardianSection(category);
+  
+  // Build request parameters
+  const requestParams = {
+    'page': page,
+    'page-size': pageSize,
+    'show-fields': 'thumbnail,headline,trailText',
+    'order-by': 'newest',
+  };
+  
+  // Add section parameter only if not 'general' category
+  if (guardianSection) {
+    requestParams.section = guardianSection;
+  }
+  
   // Log API request
-  logger.info('Fetching news from NewsAPI.org', {
+  logger.info('Fetching news from The Guardian API', {
     category,
+    guardianSection: guardianSection || 'all-sections',
     page,
     pageSize,
     cacheKey,
   });
 
-  // Make API request (no country parameter - uses NewsAPI.org default)
-  const response = await newsApiClient.get(NEWSAPI_ENDPOINT, {
-    params: {
-      category: category.toLowerCase(),
-      page,
-      pageSize,
-    },
+  // Make API request to The Guardian API
+  const response = await guardianApiClient.get(GUARDIAN_ENDPOINT, {
+    params: requestParams,
   });
 
   // Note: Request already logged in checkRateLimitAndReserve()
@@ -500,6 +520,9 @@ const fetchNewsByCategory = async (
  * Pagination is applied AFTER aggregation. For true pagination across categories,
  * consider fetching from a single category using fetchNewsByCategory().
  *
+ * IMPORTANT: Requests are serialized (one at a time) to respect rate limits (1 request/second).
+ * This prevents rate limit errors when fetching multiple categories.
+ *
  * @param {Array<string>} categories - User's preferred categories
  * @param {number} page - Page number (applied after aggregation)
  * @param {number} pageSize - Results per page
@@ -522,13 +545,21 @@ const fetchNewsByPreferences = async (
   categories.forEach((category) => validateCategory(category));
   validatePagination(page, pageSize);
 
-  // Fetch news from all categories (always page 1 from each category)
+  // Fetch news from all categories sequentially to respect rate limits
+  // The Guardian API free tier allows 1 request/second, so we serialize requests
   const resultsPerCategory = Math.ceil(pageSize / categories.length);
-  const promises = categories.map((category) =>
-    fetchNewsByCategory(category, 1, resultsPerCategory)
-  );
-
-  const results = await Promise.all(promises);
+  const results = [];
+  
+  for (const category of categories) {
+    // Add delay between requests to respect 1 request/second limit
+    // Wait at least 1100ms between requests (slightly more than 1 second for safety)
+    if (results.length > 0) {
+      await new Promise((resolve) => setTimeout(resolve, 1100));
+    }
+    
+    const result = await fetchNewsByCategory(category, 1, resultsPerCategory);
+    results.push(result);
+  }
 
   // Aggregate results
   const allArticles = results.flatMap((result) => result.articles);

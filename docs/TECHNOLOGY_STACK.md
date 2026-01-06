@@ -36,7 +36,7 @@ Bu dosya projede kullanılan teknolojiler ve karar gerekçelerini içerir.
 
 ### HTTP Client
 
-- **axios**: HTTP client for NewsAPI.org
+- **axios**: HTTP client for The Guardian API
 - **Gerekçe**: Interceptor desteği, kolay hata yönetimi
 
 ## Frontend Technologies
@@ -189,8 +189,8 @@ SUPABASE_ANON_KEY=your_anon_key
 JWT_SECRET=your_jwt_secret_key
 JWT_EXPIRES_IN=7d
 
-# NewsAPI
-NEWSAPI_KEY=your_newsapi_key
+# The Guardian API
+GUARDIAN_API_KEY=your_guardian_api_key
 ```
 
 ### Frontend (.env)
@@ -223,7 +223,7 @@ npm run preview  # Preview production build
 1. **Backend**: Express server runs on port 3000
 2. **Frontend**: Vite dev server runs on port 5173
 3. **Database**: Supabase remote PostgreSQL
-4. **API**: Backend proxies NewsAPI.org requests
+4. **API**: Backend proxies The Guardian API requests
 
 ## Future Considerations
 

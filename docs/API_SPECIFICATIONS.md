@@ -2,71 +2,92 @@
 
 Bu dosya projede kullanılan external API'lerin detaylı spesifikasyonlarını içerir.
 
-## NewsAPI.org
+## The Guardian API
 
 ### Genel Bilgiler
 
-- **URL**: https://newsapi.org/
-- **Endpoint**: `https://newsapi.org/v2/top-headlines`
-- **Free Tier Limits**:
-  - 100 requests per day
+- **URL**: https://open-platform.theguardian.com/
+- **Base URL**: `https://content.guardianapis.com`
+- **Endpoint**: `/search`
+- **Free Tier Limits** (Developer Key):
+  - 500 requests per day
   - 1 request per second
-  - Development only (not for production)
+  - Non-commercial use only
+  - Register at: https://open-platform.theguardian.com/access
 
 ### Desteklenen Kategoriler
 
 ```javascript
 const ALLOWED_CATEGORIES = [
-  'business',      // Business news
-  'entertainment', // Entertainment news
-  'general',       // General news
-  'health',        // Health news
-  'science',       // Science news
-  'sports',        // Sports news
-  'technology'     // Technology news
+  'business',      // Business news → Guardian section: 'business'
+  'entertainment', // Entertainment news → Guardian section: 'culture'
+  'general',       // General news → No section (all sections)
+  'health',        // Health news → Guardian section: 'society'
+  'science',       // Science news → Guardian section: 'science'
+  'sports',        // Sports news → Guardian section: 'sport'
+  'technology'     // Technology news → Guardian section: 'technology'
 ];
 ```
+
+### Kategori Mapping (NewsAPI → The Guardian)
+
+| NewsAPI Category | The Guardian Section |
+|-----------------|---------------------|
+| `business` | `business` |
+| `technology` | `technology` |
+| `sports` | `sport` (singular) |
+| `science` | `science` |
+| `health` | `society` |
+| `entertainment` | `culture` |
+| `general` | `null` (no section parameter - fetch from all sections) |
 
 ### API Parametreleri
 
 **Required Parameters:**
-- `apiKey` - NewsAPI.org API key
-- `category` - News category (required)
+- `api-key` - The Guardian API key (obtained from https://open-platform.theguardian.com/access)
 
 **Optional Parameters:**
-- `pageSize` - Sayfa başına sonuç sayısı (max: 100, default: 20)
-- `page` - Sayfa numarası (default: 1)
+- `section` - Guardian section name (for category filtering). Omit for 'general' category.
+- `page` - Page number (default: 1)
+- `page-size` - Results per page (max: 50, default: 20)
+- `show-fields` - Comma-separated list of fields to include (e.g., `thumbnail,headline,trailText`)
+- `order-by` - Sort order (`newest`, `oldest`, `relevance`)
 
-**Not:** Bu projede sadece `category` parametresi kullanılıyor. Country parametresi kullanılmıyor (NewsAPI.org default davranışı kullanılır).
+**Not:** When category is 'general', the `section` parameter is not sent, which fetches articles from all sections.
 
 ### Request Örnekleri
 
 ```javascript
-// Kategori ile (country parametresi kullanılmıyor)
-GET https://newsapi.org/v2/top-headlines?category=technology&apiKey=YOUR_API_KEY&pageSize=20&page=1
+// Technology category
+GET https://content.guardianapis.com/search?api-key=YOUR_API_KEY&section=technology&page=1&page-size=20&show-fields=thumbnail,headline,trailText&order-by=newest
+
+// General category (all sections)
+GET https://content.guardianapis.com/search?api-key=YOUR_API_KEY&page=1&page-size=20&show-fields=thumbnail,headline,trailText&order-by=newest
 ```
 
-### Response Format (NewsAPI.org)
+### Response Format (The Guardian API)
 
 ```javascript
 {
-  "status": "ok",
-  "totalResults": 100,
-  "articles": [
-    {
-      "source": {
-        "id": "techcrunch",
-        "name": "TechCrunch"
-      },
-      "author": "Author Name",
-      "title": "Article Title",
-      "description": "Article description",
-      "url": "https://...",
-      "urlToImage": "https://...",
-      "publishedAt": "2024-01-05T12:00:00Z",
-      "content": "Article content..."
-    }
-  ]
+  "response": {
+    "status": "ok",
+    "total": 100,
+    "pages": 5,
+    "results": [
+      {
+        "id": "technology/2024/01/05/article-id",
+        "webTitle": "Article Title",
+        "webUrl": "https://www.theguardian.com/...",
+        "webPublicationDate": "2024-01-05T12:00:00Z",
+        "sectionName": "Technology",
+        "fields": {
+          "headline": "Article Title",
+          "trailText": "Article description...",
+          "thumbnail": "https://media.guim.co.uk/..."
+        }
+      }
+    ]
+  }
 }
 ```
 
@@ -99,18 +120,18 @@ Backend'den döndürülecek normalize edilmiş format:
 
 ### Error Handling
 
-NewsAPI.org hataları:
+The Guardian API hataları:
 
 - **401 Unauthorized** - Invalid API key → `NEWS_API_INVALID_KEY`
 - **429 Too Many Requests** - Rate limit exceeded → `NEWS_API_RATE_LIMIT`
-- **500 Internal Server Error** - NewsAPI server error → `NEWS_API_SERVER_ERROR`
+- **500 Internal Server Error** - The Guardian API server error → `NEWS_API_SERVER_ERROR`
 
 ### Rate Limiting Implementation
 
 ```javascript
 // Rate limiting strategy
-- Track daily request count (100/day limit)
-- Implement per-second rate limiting (1/second)
+- Track daily request count (500/day limit for free tier)
+- Implement per-second rate limiting (1/second for free tier)
 - Return cached results when limit reached
 - Log rate limit warnings
 ```
@@ -339,7 +360,10 @@ Authorization: Bearer jwt_token_here
 
 **Query Parameters:**
 - `page` (optional, default: 1)
-- `limit` (optional, default: 20, max: 100)
+- `limit` (optional, default: 20, max: 50)
+- `from` (optional) - Start date filter (YYYY-MM-DD format)
+- `to` (optional) - End date filter (YYYY-MM-DD format)
+- `sort` (optional) - Sort order: newest, oldest, relevance (default: newest)
 
 **Response:**
 ```json
@@ -351,6 +375,235 @@ Authorization: Bearer jwt_token_here
     "page": 1,
     "pageSize": 20
   }
+}
+```
+
+#### GET /api/news/search
+
+**Query Parameters:**
+- `q` (required) - Search query string
+- `page` (optional, default: 1)
+- `limit` (optional, default: 20, max: 50)
+- `from` (optional) - Start date filter (YYYY-MM-DD format)
+- `to` (optional) - End date filter (YYYY-MM-DD format)
+- `sort` (optional) - Sort order: newest, oldest, relevance (default: relevance)
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "articles": [...],
+    "totalResults": 100,
+    "page": 1,
+    "pageSize": 20
+  }
+}
+```
+
+### Saved Articles Endpoints
+
+#### POST /api/user/saved-articles
+
+**Headers:**
+```
+Authorization: Bearer jwt_token_here
+```
+
+**Request:**
+```json
+{
+  "articleUrl": "https://www.theguardian.com/...",
+  "articleTitle": "Article Title",
+  "articleImageUrl": "https://media.guim.co.uk/..."
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "uuid",
+    "articleUrl": "https://www.theguardian.com/...",
+    "articleTitle": "Article Title",
+    "articleImageUrl": "https://media.guim.co.uk/...",
+    "savedAt": "2024-01-05T12:00:00Z"
+  }
+}
+```
+
+#### GET /api/user/saved-articles
+
+**Headers:**
+```
+Authorization: Bearer jwt_token_here
+```
+
+**Query Parameters:**
+- `page` (optional, default: 1)
+- `limit` (optional, default: 20, max: 100)
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "articles": [
+      {
+        "id": "uuid",
+        "articleUrl": "https://www.theguardian.com/...",
+        "articleTitle": "Article Title",
+        "articleImageUrl": "https://media.guim.co.uk/...",
+        "savedAt": "2024-01-05T12:00:00Z"
+      }
+    ],
+    "totalResults": 10,
+    "page": 1,
+    "pageSize": 20
+  }
+}
+```
+
+#### DELETE /api/user/saved-articles/:id
+
+**Headers:**
+```
+Authorization: Bearer jwt_token_here
+```
+
+**Path Parameters:**
+- `id` - Saved article UUID
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Saved article deleted successfully"
+}
+```
+
+### Reading History Endpoints
+
+#### POST /api/user/reading-history
+
+**Headers:**
+```
+Authorization: Bearer jwt_token_here
+```
+
+**Request:**
+```json
+{
+  "articleUrl": "https://www.theguardian.com/...",
+  "articleTitle": "Article Title",
+  "articleImageUrl": "https://media.guim.co.uk/..."
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "uuid",
+    "articleUrl": "https://www.theguardian.com/...",
+    "articleTitle": "Article Title",
+    "articleImageUrl": "https://media.guim.co.uk/...",
+    "readAt": "2024-01-05T12:00:00Z"
+  }
+}
+```
+
+#### GET /api/user/reading-history
+
+**Headers:**
+```
+Authorization: Bearer jwt_token_here
+```
+
+**Query Parameters:**
+- `page` (optional, default: 1)
+- `limit` (optional, default: 20, max: 100)
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "history": [
+      {
+        "id": "uuid",
+        "articleUrl": "https://www.theguardian.com/...",
+        "articleTitle": "Article Title",
+        "articleImageUrl": "https://media.guim.co.uk/...",
+        "readAt": "2024-01-05T12:00:00Z"
+      }
+    ],
+    "totalResults": 50,
+    "page": 1,
+    "pageSize": 20
+  }
+}
+```
+
+#### DELETE /api/user/reading-history
+
+**Headers:**
+```
+Authorization: Bearer jwt_token_here
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Reading history cleared successfully"
+}
+```
+
+### Profile Endpoints
+
+#### GET /api/user/profile
+
+**Headers:**
+```
+Authorization: Bearer jwt_token_here
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "uuid",
+    "email": "user@example.com",
+    "name": "John Doe",
+    "createdAt": "2024-01-01T00:00:00Z"
+  }
+}
+```
+
+#### PUT /api/user/password
+
+**Headers:**
+```
+Authorization: Bearer jwt_token_here
+```
+
+**Request:**
+```json
+{
+  "currentPassword": "OldPassword123!",
+  "newPassword": "NewPassword123!"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Password updated successfully"
 }
 ```
 

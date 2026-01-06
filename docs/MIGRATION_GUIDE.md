@@ -12,8 +12,10 @@ backend/
     └── migrations/
         ├── 001_create_users_table.sql
         ├── 002_create_user_preferences_table.sql
-        ├── 003_enable_rls_policies.sql (optional)
-        └── 004_remove_country_column.sql
+        ├── 003_create_saved_articles_table.sql
+        ├── 004_create_reading_history_table.sql
+        ├── 005_remove_country_column.sql
+        └── 006_enable_rls_policies.sql (optional)
 ```
 
 ### Naming Convention
@@ -80,6 +82,55 @@ COMMENT ON COLUMN user_preferences.categories IS 'Array of preferred news catego
 COMMENT ON COLUMN user_preferences.user_id IS 'Foreign key to users table';
 ```
 
+### 003_create_saved_articles_table.sql
+
+```sql
+-- Create saved_articles table
+CREATE TABLE IF NOT EXISTS saved_articles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL,
+  article_url VARCHAR(500) NOT NULL,
+  article_title VARCHAR(500) NOT NULL,
+  article_image_url VARCHAR(500),
+  saved_at TIMESTAMP DEFAULT NOW(),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  UNIQUE(user_id, article_url)
+);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_saved_articles_user_id ON saved_articles(user_id);
+CREATE INDEX IF NOT EXISTS idx_saved_articles_saved_at ON saved_articles(saved_at DESC);
+
+-- Add comments
+COMMENT ON TABLE saved_articles IS 'User saved articles for later reading';
+COMMENT ON COLUMN saved_articles.article_url IS 'URL of the saved article (unique per user)';
+COMMENT ON COLUMN saved_articles.saved_at IS 'Timestamp when article was saved';
+```
+
+### 004_create_reading_history_table.sql
+
+```sql
+-- Create reading_history table
+CREATE TABLE IF NOT EXISTS reading_history (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL,
+  article_url VARCHAR(500) NOT NULL,
+  article_title VARCHAR(500) NOT NULL,
+  article_image_url VARCHAR(500),
+  read_at TIMESTAMP DEFAULT NOW(),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Create indexes
+CREATE INDEX IF NOT EXISTS idx_reading_history_user_id ON reading_history(user_id);
+CREATE INDEX IF NOT EXISTS idx_reading_history_read_at ON reading_history(user_id, read_at DESC);
+
+-- Add comments
+COMMENT ON TABLE reading_history IS 'User reading history (auto-tracked)';
+COMMENT ON COLUMN reading_history.article_url IS 'URL of the read article';
+COMMENT ON COLUMN reading_history.read_at IS 'Timestamp when article was read';
+```
+
 ## Migration Çalıştırma
 
 ### Supabase SQL Editor ile (Önerilen)
@@ -98,6 +149,10 @@ COMMENT ON COLUMN user_preferences.user_id IS 'Foreign key to users table';
 
 1. `001_create_users_table.sql` - Önce users tablosu oluşturulmalı
 2. `002_create_user_preferences_table.sql` - Sonra preferences tablosu (foreign key için)
+3. `003_create_saved_articles_table.sql` - Saved articles tablosu (foreign key için users gerekli)
+4. `004_create_reading_history_table.sql` - Reading history tablosu (foreign key için users gerekli)
+5. `005_remove_country_column.sql` - Country kolonunu kaldır (user_preferences tablosu için)
+6. `006_enable_rls_policies.sql` (optional) - Row Level Security politikaları
 
 ## Migration Best Practices
 

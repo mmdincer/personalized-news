@@ -103,7 +103,7 @@
 ## 5. feat/backend-news-api
 
 ### Görevler
-- [x] News service layer: `services/newsService.js` oluştur (SRP: pure business logic, no HTTP concerns), NewsAPI.org entegrasyonu (axios instance, API key interceptor, 10s timeout, network error handling) - bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)
+- [x] News service layer: `services/newsService.js` oluştur (SRP: pure business logic, no HTTP concerns), The Guardian API entegrasyonu (axios instance, API key interceptor, 10s timeout, network error handling) - bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)
 - [x] News fetching logic: kategori bazlı haber çekme (category validation, pageSize: 20, max 100), response normalization
 - [x] News endpoints: `GET /api/news` (genel haberler), `GET /api/news/:category` (kategori bazlı), query parameters (page, limit)
 - [x] Rate limiting: daily request tracking (100/day), per-second limiting (1/second), cached results when limit reached, logging - bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md) 
@@ -111,7 +111,7 @@
 - [x] Configuration: CORS yapılandırması, response caching (15 minutes) - bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md) 
 
 ### Başarı Kriterleri
-- [x] NewsAPI.org'dan haberler çekiliyor ✅ (US country ile test edildi, gerçek haberler geliyor)
+- [x] The Guardian API'den haberler çekiliyor ✅ (Kategori mapping ile test edildi, gerçek haberler geliyor)
 - [x] 7 kategori filtreleme çalışıyor (bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)) ✅ (Tüm kategoriler test edildi)
 - [x] API key güvenli şekilde yönetiliyor (sadece backend'de) ✅ (Kod kontrolü geçti, manuel test gerekli - bakınız: [MANUAL_TEST_NEWS_API.md](./MANUAL_TEST_NEWS_API.md))
 - [x] Haberler normalize edilmiş formatta döndürülüyor ✅ (API_SPECIFICATIONS.md formatına tam uyumlu, tüm fields mevcut)
@@ -161,9 +161,11 @@
 ## 8. feat/frontend-news-and-preferences
 
 ### Görevler
-- [x] News components: NewsFeed ve NewsCard component'leri, kategori bazlı haber filtreleme, loading skeleton, empty/error state handling, responsive grid layout
+- [x] News components: NewsFeed ve NewsCard component'leri, kategori bazlı haber filtreleme (NewsPage'de aktif, HomePage'de devre dışı), loading skeleton, empty/error state handling, responsive grid layout
 - [x] Preferences components: CategorySelector (checkbox/button UI, visual feedback), UserPreferences page component, kullanıcı tercihlerini yükleme ve güncelleme fonksiyonları
 - [x] Notifications: success/error notifications (`react-hot-toast`)
+- [x] HomePage: Sadece kullanıcı preferences'larına göre haberler gösterilir, kategori filtreleme yok
+- [x] NewsPage: Kategori filtreleme aktif, kullanıcı istediği kategoriyi seçebilir
 
 ### Başarı Kriterleri
 - [x] Haberler başarıyla gösteriliyor
@@ -201,23 +203,139 @@
 ## 10. feat/responsive-and-config
 
 ### Görevler
-- [ ] Responsive design: mobile-first CSS (Tailwind), breakpoint yapılandırması (sm/md/lg/xl/2xl), responsive navigation (hamburger menu), responsive news grid, touch-friendly button sizes, mobile form optimizasyonu
-- [ ] Environment configuration: production/development ayrımı, `.env.example` güncelleme, environment variable validation, build script optimizasyonu, deployment hazırlığı
+- [x] Responsive design: mobile-first CSS (Tailwind), breakpoint yapılandırması (sm/md/lg/xl/2xl), responsive navigation (hamburger menu), responsive news grid, touch-friendly button sizes, mobile form optimizasyonu
+- [x] Environment configuration: production/development ayrımı, `.env.example` güncelleme, environment variable validation, build script optimizasyonu, deployment hazırlığı
 
 ### Başarı Kriterleri
-- [ ] Mobil cihazlarda düzgün görünüyor
-- [ ] Tablet görünümü optimize edildi
-- [ ] Touch interactions çalışıyor
-- [ ] Environment'lar doğru yapılandırıldı
-- [ ] Build işlemleri başarılı
-- [ ] Production hazır
+- [x] Mobil cihazlarda düzgün görünüyor
+- [x] Tablet görünümü optimize edildi
+- [x] Touch interactions çalışıyor
+- [x] Environment'lar doğru yapılandırıldı
+- [x] Build işlemleri başarılı
+- [x] Production hazır
 
 ---
 
-## 11. docs/readme-documentation
+## 11. feat/saved-articles
 
 ### Görevler
-- [ ] README.md: proje açıklaması, kurulum talimatları, Supabase setup guide (hesap oluşturma, proje kurulumu, database schema), environment setup (Supabase credentials, NewsAPI.org API key), running instructions (dev ve production) - bakınız: [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md), [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)
+- [ ] Database migration: `saved_articles` tablosu oluştur (user_id, article_url, article_title, article_image_url, saved_at, UNIQUE constraint user_id + article_url)
+- [ ] Backend API endpoints: `POST /api/user/saved-articles` (kaydet), `GET /api/user/saved-articles` (listele), `DELETE /api/user/saved-articles/:id` (sil), authentication middleware
+- [ ] Frontend SavedArticles component: kaydedilen haberleri listele, kaydet/sil butonları, NewsCard ile gösterim
+- [ ] Frontend SavedArticles page: `/saved` route, saved articles listesi
+- [ ] NewsCard'a "Save" butonu ekle: kaydedilmiş mi kontrolü, toggle functionality
+
+### Başarı Kriterleri
+- [ ] Kullanıcılar haberleri kaydedebiliyor
+- [ ] Kaydedilen haberler listeleniyor
+- [ ] Kaydedilen haberler silinebiliyor
+- [ ] Kaydedilmiş durumu görsel olarak gösteriliyor
+- [ ] Duplicate kayıtlar engelleniyor
+
+---
+
+## 12. feat/search-and-filters
+
+### Görevler
+- [ ] Backend search endpoint: `GET /api/news/search?q=query&page=1&limit=20` (The Guardian API search endpoint kullanarak)
+- [ ] Backend date filter: `GET /api/news?from=YYYY-MM-DD&to=YYYY-MM-DD` (The Guardian API `from-date` ve `to-date` parametreleri)
+- [ ] Backend sorting: `GET /api/news?sort=newest|oldest|relevance` (The Guardian API `order-by` parametresi)
+- [ ] Frontend SearchBar component: arama input'u, debounce (300ms), loading state, error handling
+- [ ] Frontend SearchPage: `/search` route, search results display, pagination
+- [ ] Frontend DateFilter component: date range picker, from/to date selection
+- [ ] Frontend SortDropdown component: newest/oldest/relevance seçenekleri
+- [ ] NewsFeed'e filter entegrasyonu: date filter ve sort dropdown ekle
+
+### Başarı Kriterleri
+- [ ] Arama çalışıyor (The Guardian API search)
+- [ ] Tarih filtresi çalışıyor
+- [ ] Sıralama çalışıyor (newest/oldest/relevance)
+- [ ] SearchBar debounce ile optimize edilmiş
+- [ ] Filter'lar URL query parametrelerinde saklanıyor
+- [ ] Loading ve error states handle ediliyor
+
+---
+
+## 13. feat/reading-history
+
+### Görevler
+- [ ] Database migration: `reading_history` tablosu oluştur (user_id, article_url, article_title, article_image_url, read_at, INDEX on user_id + read_at DESC)
+- [ ] Backend API endpoints: `POST /api/user/reading-history` (okuma geçmişine ekle), `GET /api/user/reading-history` (listele, pagination), `DELETE /api/user/reading-history` (temizle), authentication middleware
+- [ ] Backend auto-track: NewsCard tıklandığında otomatik olarak reading history'ye ekle (frontend'den POST request)
+- [ ] Frontend ReadingHistory component: okuma geçmişini listele, tarih sıralaması (en yeni üstte), NewsCard ile gösterim
+- [ ] Frontend ReadingHistory page: `/history` route, reading history listesi, clear history butonu
+- [ ] NewsCard'a click tracking: article'a tıklandığında reading history'ye ekle
+
+### Başarı Kriterleri
+- [ ] Okuma geçmişi otomatik olarak kaydediliyor
+- [ ] Okuma geçmişi listeleniyor (tarih sıralaması ile)
+- [ ] Okuma geçmişi temizlenebiliyor
+- [ ] Duplicate kayıtlar engelleniyor (aynı article için en son okuma zamanı güncelleniyor)
+- [ ] Pagination çalışıyor
+
+---
+
+## 14. feat/profile-management
+
+### Görevler
+- [ ] Backend password update endpoint: `PUT /api/user/password` (current password, new password validation, bcrypt hash update), authentication middleware
+- [ ] Backend profile endpoint: `GET /api/user/profile` (user bilgileri: name, email, created_at), authentication middleware
+- [ ] Frontend ProfilePage component: `/profile` route, user bilgileri gösterimi, password update form, preferences section (PreferencesPage'den taşı)
+- [ ] Frontend PasswordUpdateForm component: current password, new password, confirm password, validation, error handling
+- [ ] PreferencesPage'i ProfilePage'e taşı: Preferences section'ı ProfilePage içine entegre et
+- [ ] Navigation güncellemesi: Preferences link'ini Profile link'ine çevir, Profile dropdown menu (Profile, Preferences, Logout)
+
+### Başarı Kriterleri
+- [ ] Kullanıcı şifresini güncelleyebiliyor
+- [ ] Şifre güncelleme validation çalışıyor
+- [ ] Profil bilgileri gösteriliyor
+- [ ] Preferences ProfilePage içinde erişilebilir
+- [ ] Navigation güncellendi
+
+---
+
+## 15. chore/docker-support
+
+### Görevler
+- [ ] Backend Dockerfile: Node.js base image, dependencies install, production build, health check
+- [ ] Frontend Dockerfile: Node.js base image, build step, nginx serve static files
+- [ ] docker-compose.yml: backend service, frontend service, environment variables, volumes, networks
+- [ ] .dockerignore dosyaları: node_modules, .git, .env, logs
+- [ ] Docker documentation: README.md'ye Docker setup instructions ekle
+
+### Başarı Kriterleri
+- [ ] Backend Docker container'ı çalışıyor
+- [ ] Frontend Docker container'ı çalışıyor
+- [ ] docker-compose ile tüm servisler başlatılabiliyor
+- [ ] Environment variables Docker ile yönetiliyor
+- [ ] Docker documentation mevcut
+
+---
+
+## 16. chore/deployment
+
+### Görevler
+- [ ] Production environment setup: environment variables, Supabase production credentials, The Guardian API key
+- [ ] Backend deployment: production server setup (VPS/Cloud), PM2 veya process manager, SSL certificate, domain configuration
+- [ ] Frontend deployment: static file hosting (Vercel/Netlify/VPS), build optimization, environment variables
+- [ ] CI/CD pipeline (opsiyonel): GitHub Actions veya benzeri, automated testing, automated deployment
+- [ ] Monitoring setup (opsiyonel): error tracking (Sentry), logging (Winston file logs), uptime monitoring
+- [ ] Deployment documentation: deployment guide, environment setup, troubleshooting
+
+### Başarı Kriterleri
+- [ ] Production environment hazır
+- [ ] Backend production'da çalışıyor
+- [ ] Frontend production'da çalışıyor
+- [ ] SSL certificate yapılandırıldı
+- [ ] Domain yapılandırıldı
+- [ ] Deployment documentation mevcut
+
+---
+
+## 17. docs/readme-documentation
+
+### Görevler
+- [ ] README.md: proje açıklaması, kurulum talimatları, Supabase setup guide (hesap oluşturma, proje kurulumu, database schema), environment setup (Supabase credentials, The Guardian API key), running instructions (dev ve production) - bakınız: [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md), [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)
 - [ ] Documentation: technology stack documentation, API endpoint documentation, Supabase connection troubleshooting, migration troubleshooting, genel troubleshooting section - bakınız: [TECHNOLOGY_STACK.md](./TECHNOLOGY_STACK.md), [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md), [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md)
 
 ### Başarı Kriterleri
@@ -229,7 +347,7 @@
 
 ---
 
-## 12. test/integration-tests (Opsiyonel)
+## 18. test/integration-tests (Opsiyonel)
 
 ### Görevler
 - [ ] Test setup: Jest test framework kurulumu - bakınız: [TECHNOLOGY_STACK.md](./TECHNOLOGY_STACK.md)
@@ -242,7 +360,7 @@
 
 ---
 
-## 13. fix/bug-fixes-and-polish
+## 19. fix/bug-fixes-and-polish
 
 ### Görevler
 - [ ] Bug fixes: kullanıcı testleri sonrası bug fix'ler
@@ -269,9 +387,15 @@
 8. feat/frontend-news-and-preferences → main
 9. refactor/security-and-error-handling → main
 10. feat/responsive-and-config → main
-11. docs/readme-documentation → main
-12. test/integration-tests → main (opsiyonel)
-13. fix/bug-fixes-and-polish → main
+11. feat/saved-articles → main
+12. feat/search-and-filters → main
+13. feat/reading-history → main
+14. feat/profile-management → main
+15. chore/docker-support → main
+16. chore/deployment → main
+17. docs/readme-documentation → main
+18. test/integration-tests → main (opsiyonel)
+19. fix/bug-fixes-and-polish → main
 
 ---
 

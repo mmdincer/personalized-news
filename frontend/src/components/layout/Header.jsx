@@ -34,7 +34,7 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 inset-x-0 flex flex-wrap md:justify-start md:flex-nowrap z-50 w-full text-sm">
-      <nav className="mt-4 relative max-w-4xl w-full bg-white border border-gray-200 rounded-[24px] mx-2 flex flex-wrap md:flex-nowrap items-center justify-between p-2 ps-4 md:py-2 sm:mx-auto">
+      <nav className="mt-4 relative max-w-6xl w-full bg-white border border-gray-200 rounded-lg mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap md:flex-nowrap items-center justify-between py-2">
         <div className="flex items-center">
           {/* App Name */}
           <Link
@@ -47,10 +47,10 @@ const Header = () => {
         </div>
 
         <div className="flex items-center gap-1 md:order-4 md:ml-4">
-          {/* Logout Button */}
+          {/* Desktop Logout Button */}
           <button
             onClick={handleLogout}
-            className="w-full sm:w-auto whitespace-nowrap py-2 px-3 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-full border border-transparent bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:bg-red-700 disabled:opacity-50 disabled:pointer-events-none"
+            className="hidden md:inline-flex whitespace-nowrap py-2 px-3 justify-center items-center gap-x-2 text-sm font-medium rounded-full border border-transparent bg-red-600 text-white hover:bg-red-700 active:bg-red-800 focus:outline-none focus:bg-red-700 disabled:opacity-50 disabled:pointer-events-none touch-manipulation"
           >
             Logout
           </button>
@@ -60,7 +60,7 @@ const Header = () => {
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="flex justify-center items-center w-9.5 h-9.5 border border-gray-200 text-gray-500 rounded-full hover:bg-gray-200 focus:outline-none focus:bg-gray-200"
+              className="flex justify-center items-center w-11 h-11 min-w-[44px] min-h-[44px] border border-gray-200 text-gray-500 rounded-full hover:bg-gray-200 active:bg-gray-300 focus:outline-none focus:bg-gray-200 touch-manipulation"
               aria-expanded={isMobileMenuOpen}
               aria-controls="mobile-menu"
               aria-label="Toggle navigation"
@@ -126,6 +126,17 @@ const Header = () => {
                 {link.label}
               </Link>
             ))}
+            
+            {/* Mobile Logout Button */}
+            <button
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                handleLogout();
+              }}
+              className="md:hidden w-full text-center py-2 px-4 border-l-2 border-transparent text-red-600 hover:text-red-700 hover:border-red-600 font-medium focus:outline-none touch-manipulation"
+            >
+              Logout
+            </button>
           </div>
         </div>
       </nav>
