@@ -11,7 +11,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getNews, getNewsByCategory, searchNews } from '../../services/newsService';
 import { getPreferences } from '../../services/preferencesService';
 import { getSavedArticles } from '../../services/savedArticlesService';
@@ -28,24 +28,33 @@ import toast from 'react-hot-toast';
 const NewsFeed = ({ showCategoryFilter = true }) => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [savedArticlesMap, setSavedArticlesMap] = useState(new Map());
   const categories = getAllCategoriesWithNames();
-  // Default to first category if filter is enabled, null otherwise (for preferences)
-  const [selectedCategory, setSelectedCategory] = useState(
-    showCategoryFilter && categories.length > 0 ? categories[0].code : null
-  );
+  
+  // Initialize state from URL query parameters
+  const getInitialCategory = () => {
+    const categoryParam = searchParams.get('category');
+    if (categoryParam && showCategoryFilter) {
+      return categoryParam;
+    }
+    return showCategoryFilter && categories.length > 0 ? categories[0].code : null;
+  };
+  
+  const [selectedCategory, setSelectedCategory] = useState(getInitialCategory());
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [userPreferences, setUserPreferences] = useState([]);
   const [dateFilters, setDateFilters] = useState({
-    fromDate: null,
-    toDate: null,
+    fromDate: searchParams.get('from') || null,
+    toDate: searchParams.get('to') || null,
   });
-  const [sort, setSort] = useState('newest');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [sort, setSort] = useState(searchParams.get('sort') || 'newest');
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const sentinelRef = useRef(null);
   const observerRef = useRef(null);
@@ -202,6 +211,68 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
     fetchNews(categoryToUse, 1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCategory, showCategoryFilter, dateFilters, sort, searchQuery]);
+
+  // Update URL query parameters when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    
+    // Add category if filter is enabled
+    if (showCategoryFilter && selectedCategory) {
+      params.set('category', selectedCategory);
+    }
+    
+    // Add date filters
+    if (dateFilters.fromDate) {
+      params.set('from', dateFilters.fromDate);
+    }
+    if (dateFilters.toDate) {
+      params.set('to', dateFilters.toDate);
+    }
+    
+    // Add sort
+    if (sort && sort !== 'newest') {
+      params.set('sort', sort);
+    }
+    
+    // Add search query
+    if (searchQuery && searchQuery.trim().length >= 2) {
+      params.set('q', searchQuery.trim());
+    }
+    
+    // Update URL without causing navigation
+    setSearchParams(params, { replace: true });
+  }, [selectedCategory, dateFilters, sort, searchQuery, showCategoryFilter, setSearchParams]);
+
+  // Update URL query parameters when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    
+    // Add category if filter is enabled
+    if (showCategoryFilter && selectedCategory) {
+      params.set('category', selectedCategory);
+    }
+    
+    // Add date filters
+    if (dateFilters.fromDate) {
+      params.set('from', dateFilters.fromDate);
+    }
+    if (dateFilters.toDate) {
+      params.set('to', dateFilters.toDate);
+    }
+    
+    // Add sort
+    if (sort && sort !== 'newest') {
+      params.set('sort', sort);
+    }
+    
+    // Add search query
+    if (searchQuery && searchQuery.trim().length >= 2) {
+      params.set('q', searchQuery.trim());
+    }
+    
+    // Update URL without causing navigation
+    setSearchParams(params, { replace: true });
+  }, [selectedCategory, dateFilters, sort, searchQuery, showCategoryFilter, setSearchParams]);
 
   // Handle category change
   const handleCategoryChange = (category) => {
