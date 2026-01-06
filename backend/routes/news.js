@@ -40,6 +40,17 @@ const paginationValidation = [
     .toInt(),
 ];
 
+const dateFilterValidation = [
+  query('from')
+    .optional()
+    .matches(/^\d{4}-\d{2}-\d{2}$/)
+    .withMessage('From date must be in YYYY-MM-DD format'),
+  query('to')
+    .optional()
+    .matches(/^\d{4}-\d{2}-\d{2}$/)
+    .withMessage('To date must be in YYYY-MM-DD format'),
+];
+
 const searchValidation = [
   query('q')
     .trim()
@@ -93,7 +104,7 @@ router.get(
 router.get(
   '/:category',
   newsLimiter,
-  [...categoryValidation, ...paginationValidation],
+  [...categoryValidation, ...paginationValidation, ...dateFilterValidation],
   newsController.getNewsByCategory
 );
 
@@ -113,7 +124,7 @@ router.get(
   '/',
   newsLimiter,
   authenticateToken,
-  paginationValidation,
+  [...paginationValidation, ...dateFilterValidation],
   newsController.getPersonalizedNews
 );
 

@@ -77,10 +77,13 @@ const requestLog = [];
  * @param {string} category - News category
  * @param {number} page - Page number
  * @param {number} pageSize - Results per page
+ * @param {string} [fromDate] - Start date filter (YYYY-MM-DD format)
+ * @param {string} [toDate] - End date filter (YYYY-MM-DD format)
  * @returns {string} Cache key
  */
-const getCacheKey = (category, page, pageSize) => {
-  return `news:${category || 'all'}:${page}:${pageSize}`;
+const getCacheKey = (category, page, pageSize, fromDate = null, toDate = null) => {
+  const datePart = fromDate || toDate ? `:${fromDate || ''}:${toDate || ''}` : '';
+  return `news:${category || 'all'}:${page}:${pageSize}${datePart}`;
 };
 
 /**
@@ -499,20 +502,25 @@ const validatePagination = (page, pageSize) => {
  * @param {string} category - News category
  * @param {number} page - Page number (default: 1)
  * @param {number} pageSize - Results per page (default: 20)
+ * @param {string} [fromDate] - Start date filter (YYYY-MM-DD format)
+ * @param {string} [toDate] - End date filter (YYYY-MM-DD format)
  * @returns {Promise<Object>} Normalized news data
  * @throws {Error} On validation or API errors
  */
 const fetchNewsByCategory = async (
   category,
   page = 1,
-  pageSize = DEFAULT_PAGE_SIZE
+  pageSize = DEFAULT_PAGE_SIZE,
+  fromDate = null,
+  toDate = null
 ) => {
   // Validate inputs
   validateCategory(category);
   validatePagination(page, pageSize);
+  validateDateFilter(fromDate, toDate);
 
   // Check cache first
-  const cacheKey = getCacheKey(category, page, pageSize);
+  const cacheKey = getCacheKey(category, page, pageSize, fromDate, toDate);
   const cached = getCachedNews(cacheKey);
   if (cached) {
     return cached;
@@ -560,6 +568,14 @@ const fetchNewsByCategory = async (
   
   // Add section parameter (all categories now map to Guardian sections)
   requestParams.section = guardianSection;
+
+  // Add date filters if provided
+  if (fromDate) {
+    requestParams['from-date'] = fromDate;
+  }
+  if (toDate) {
+    requestParams['to-date'] = toDate;
+  }
   
   // Log API request
   logger.info('Fetching news from The Guardian API', {
@@ -567,6 +583,8 @@ const fetchNewsByCategory = async (
     guardianSection: guardianSection || 'all-sections',
     page,
     pageSize,
+    fromDate,
+    toDate,
     cacheKey,
   });
 
@@ -605,13 +623,17 @@ const fetchNewsByCategory = async (
  * @param {Array<string>} categories - User's preferred categories
  * @param {number} page - Page number (applied after aggregation)
  * @param {number} pageSize - Results per page
+ * @param {string} [fromDate] - Start date filter (YYYY-MM-DD format)
+ * @param {string} [toDate] - End date filter (YYYY-MM-DD format)
  * @returns {Promise<Object>} Aggregated news from all categories
  * @throws {Error} On validation or API errors
  */
 const fetchNewsByPreferences = async (
   categories,
   page = 1,
-  pageSize = DEFAULT_PAGE_SIZE
+  pageSize = DEFAULT_PAGE_SIZE,
+  fromDate = null,
+  toDate = null
 ) => {
   if (!Array.isArray(categories) || categories.length === 0) {
     const error = new Error('At least one category is required');
@@ -623,6 +645,7 @@ const fetchNewsByPreferences = async (
   // Validate all categories
   categories.forEach((category) => validateCategory(category));
   validatePagination(page, pageSize);
+  validateDateFilter(fromDate, toDate);
 
   // Fetch news from all categories sequentially to respect rate limits
   // The Guardian API free tier allows 1 request/second, so we serialize requests
@@ -636,7 +659,7 @@ const fetchNewsByPreferences = async (
       await new Promise((resolve) => setTimeout(resolve, 1100));
     }
     
-    const result = await fetchNewsByCategory(category, 1, resultsPerCategory);
+    const result = await fetchNewsByCategory(category, 1, resultsPerCategory, fromDate, toDate);
     results.push(result);
   }
 

@@ -36,9 +36,11 @@ const getNewsByCategory = async (req, res, next) => {
     const { category } = req.params;
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;
+    const fromDate = req.query.from || null;
+    const toDate = req.query.to || null;
 
     // Call service layer
-    const news = await newsService.fetchNewsByCategory(category, page, limit);
+    const news = await newsService.fetchNewsByCategory(category, page, limit, fromDate, toDate);
 
     // Send success response
     res.json({
@@ -77,6 +79,8 @@ const getPersonalizedNews = async (req, res, next) => {
     // Note: req.user is guaranteed to exist here because authenticateToken middleware runs before this controller
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;
+    const fromDate = req.query.from || null;
+    const toDate = req.query.to || null;
 
     // Get user preferences from request (attached by auth middleware)
     const { categories } = req.user;
@@ -93,7 +97,9 @@ const getPersonalizedNews = async (req, res, next) => {
     const news = await newsService.fetchNewsByPreferences(
       categories,
       page,
-      limit
+      limit,
+      fromDate,
+      toDate
     );
 
     // Send success response
