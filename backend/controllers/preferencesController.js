@@ -1,4 +1,5 @@
 const preferencesService = require('../services/preferencesService');
+const { clearPreferencesCache } = require('../middleware/auth');
 
 /**
  * Get user preferences
@@ -81,6 +82,9 @@ const updatePreferences = async (req, res, next) => {
       userId,
       preferences
     );
+
+    // Clear preferences cache for this user (cache invalidation)
+    clearPreferencesCache(userId);
 
     // Return success response
     res.status(200).json({

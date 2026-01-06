@@ -52,7 +52,9 @@ const getCacheKey = (category, country, page, pageSize) => {
  */
 const getCachedNews = (key) => {
   const cached = cache.get(key);
-  if (!cached) return null;
+  if (!cached) {
+    return null;
+  }
 
   const now = Date.now();
   if (now - cached.timestamp > CACHE_DURATION_MS) {
@@ -172,43 +174,6 @@ const checkRateLimitAndReserve = () => {
   };
 };
 
-/**
- * Check if rate limit is exceeded (non-reserving, for stats only)
- * @returns {{allowed: boolean, dailyCount: number, message: string}} Rate limit status
- */
-const checkRateLimit = () => {
-  const now = Date.now();
-  const oneDayAgo = now - 24 * 60 * 60 * 1000;
-  const oneSecondAgo = now - 1000;
-
-  // Clean old entries (older than 24 hours)
-  const recentRequests = requestLog.filter((timestamp) => timestamp > oneDayAgo);
-
-  // Check daily limit
-  if (recentRequests.length >= MAX_REQUESTS_PER_DAY) {
-    return {
-      allowed: false,
-      dailyCount: recentRequests.length,
-      message: 'Daily rate limit exceeded (100 requests/day)',
-    };
-  }
-
-  // Check per-second limit
-  const requestsLastSecond = recentRequests.filter((timestamp) => timestamp > oneSecondAgo);
-  if (requestsLastSecond.length >= MAX_REQUESTS_PER_SECOND) {
-    return {
-      allowed: false,
-      dailyCount: recentRequests.length,
-      message: 'Per-second rate limit exceeded (1 request/second)',
-    };
-  }
-
-  return {
-    allowed: true,
-    dailyCount: recentRequests.length,
-    message: 'Rate limit OK',
-  };
-};
 
 /**
  * Get rate limit statistics
@@ -455,30 +420,25 @@ const fetchNewsByCategory = async (
     throw error;
   }
 
-  try {
-    // Make API request
-    const response = await newsApiClient.get(NEWSAPI_ENDPOINT, {
-      params: {
-        category: category.toLowerCase(),
-        country: country.toLowerCase(),
-        page,
-        pageSize,
-      },
-    });
+  // Make API request
+  const response = await newsApiClient.get(NEWSAPI_ENDPOINT, {
+    params: {
+      category: category.toLowerCase(),
+      country: country.toLowerCase(),
+      page,
+      pageSize,
+    },
+  });
 
-    // Note: Request already logged in checkRateLimitAndReserve()
+  // Note: Request already logged in checkRateLimitAndReserve()
 
-    // Normalize response
-    const normalizedData = normalizeNewsResponse(response.data, page, pageSize);
+  // Normalize response
+  const normalizedData = normalizeNewsResponse(response.data, page, pageSize);
 
-    // Cache result
-    setCachedNews(cacheKey, normalizedData);
+  // Cache result
+  setCachedNews(cacheKey, normalizedData);
 
-    return normalizedData;
-  } catch (error) {
-    // Re-throw with proper error structure
-    throw error;
-  }
+  return normalizedData;
 };
 
 /**

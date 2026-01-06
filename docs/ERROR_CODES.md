@@ -29,6 +29,7 @@ Tüm API error response'ları aşağıdaki formatta döndürülmelidir:
 - `AUTH_TOKEN_EXPIRED` - JWT token has expired
 - `AUTH_TOKEN_INVALID` - JWT token is invalid
 - `AUTH_UNAUTHORIZED` - No token provided
+- `AUTH_FORBIDDEN` - Insufficient permissions (admin access required)
 
 ### User Preference Errors (PREF_*)
 
@@ -125,6 +126,7 @@ const ERROR_MESSAGES_EN = {
   AUTH_TOKEN_EXPIRED: "Session expired. Please login again",
   AUTH_TOKEN_INVALID: "Invalid session. Please login again",
   AUTH_UNAUTHORIZED: "You need to login for this operation",
+  AUTH_FORBIDDEN: "You don't have permission for this operation",
   
   // User Preferences
   PREF_INVALID_CATEGORY: "Invalid category selected",
