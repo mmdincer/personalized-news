@@ -264,8 +264,8 @@
 ### Görevler
 - [x] Backend password update endpoint: `PUT /api/user/password` (current password, new password validation, bcrypt hash update), authentication middleware
 - [x] Backend profile endpoint: `GET /api/user/profile` (user bilgileri: name, email, created_at), authentication middleware
-- [ ] Frontend ProfilePage component: `/profile` route, user bilgileri gösterimi, password update form, preferences section (PreferencesPage'den taşı)
-- [ ] Frontend PasswordUpdateForm component: current password, new password, confirm password, validation, error handling
+- [x] Frontend ProfilePage component: `/profile` route, user bilgileri gösterimi, password update form, preferences section (PreferencesPage'den taşı)
+- [x] Frontend PasswordUpdateForm component: current password, new password, confirm password, validation, error handling
 - [ ] PreferencesPage'i ProfilePage'e taşı: Preferences section'ı ProfilePage içine entegre et
 - [ ] Navigation güncellemesi: Preferences link'ini Profile link'ine çevir, Profile dropdown menu (Profile, Preferences, Logout)
 

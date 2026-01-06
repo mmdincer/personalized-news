@@ -16,6 +16,7 @@ import RegisterPage from './pages/RegisterPage';
 import HomePage from './pages/HomePage';
 import NewsPage from './pages/NewsPage';
 import PreferencesPage from './pages/PreferencesPage';
+import ProfilePage from './pages/ProfilePage';
 import SavedArticlesPage from './pages/SavedArticlesPage';
 import SearchPage from './pages/SearchPage';
 import ArticleDetailPage from './pages/ArticleDetailPage';
@@ -59,6 +60,16 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <PreferencesPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <ProfilePage />
                 </Layout>
               </ProtectedRoute>
             }
