@@ -245,7 +245,7 @@
 - [x] Frontend DateFilter component: date range picker, from/to date selection
 - [x] Frontend SortDropdown component: newest/oldest/relevance seçenekleri
 - [x] NewsFeed'e filter entegrasyonu: date filter ve sort dropdown ekle
-- [ ] Infinite scroll: Intersection Observer API ile otomatik sayfa yükleme, sayfa sonuna gelindiğinde bir sonraki sayfa otomatik yüklenir, loading indicator gösterilir, "Load More" butonu opsiyonel olarak kalabilir veya kaldırılabilir
+- [x] Infinite scroll: Intersection Observer API ile otomatik sayfa yükleme, sayfa sonuna gelindiğinde bir sonraki sayfa otomatik yüklenir, loading indicator gösterilir, "Load More" butonu opsiyonel olarak kalabilir veya kaldırılabilir
 
 ### Başarı Kriterleri
 - [ ] Arama çalışıyor (The Guardian API search)

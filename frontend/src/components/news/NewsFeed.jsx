@@ -10,7 +10,7 @@
  * @param {boolean} showCategoryFilter - Whether to show category filter buttons (default: true)
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { getNews, getNewsByCategory } from '../../services/newsService';
 import { getPreferences } from '../../services/preferencesService';
 import { getSavedArticles } from '../../services/savedArticlesService';
@@ -42,6 +42,9 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
     toDate: null,
   });
   const [sort, setSort] = useState('newest');
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const sentinelRef = useRef(null);
+  const observerRef = useRef(null);
 
   const limit = 20;
 
@@ -140,22 +143,36 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
 
       if (response.success && response.data) {
         const newArticles = response.data.articles || [];
+        const total = response.data.totalResults || 0;
+        
         if (pageNum === 1) {
           setArticles(newArticles);
+          // Check if there are more pages
+          setHasMore(newArticles.length === limit && newArticles.length < total);
         } else {
-          setArticles((prev) => [...prev, ...newArticles]);
+          setArticles((prev) => {
+            const updatedArticles = [...prev, ...newArticles];
+            // Check if there are more pages
+            setHasMore(newArticles.length === limit && updatedArticles.length < total);
+            return updatedArticles;
+          });
         }
-        setHasMore(newArticles.length === limit);
       } else {
         throw new Error(response.error?.message || 'Failed to fetch news');
       }
     } catch (err) {
       const errorMessage = extractErrorMessage(err);
       setError(errorMessage);
-      toast.error(errorMessage);
-      setArticles([]);
+      // Only show toast for initial load, not for load more
+      if (pageNum === 1) {
+        toast.error(errorMessage);
+      }
+      if (pageNum === 1) {
+        setArticles([]);
+      }
     } finally {
       setLoading(false);
+      setIsLoadingMore(false);
     }
   }, [limit, showCategoryFilter, dateFilters, sort]);
 
@@ -175,12 +192,61 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
   };
 
   // Handle load more
-  const handleLoadMore = () => {
-    const nextPage = page + 1;
-    setPage(nextPage);
-    const categoryToUse = showCategoryFilter ? selectedCategory : null;
-    fetchNews(categoryToUse, nextPage);
-  };
+  const handleLoadMore = useCallback(() => {
+    if (!loading && !isLoadingMore && hasMore) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      setIsLoadingMore(true);
+      const categoryToUse = showCategoryFilter ? selectedCategory : null;
+      fetchNews(categoryToUse, nextPage).finally(() => {
+        setIsLoadingMore(false);
+      });
+    }
+  }, [loading, isLoadingMore, hasMore, page, showCategoryFilter, selectedCategory, fetchNews]);
+
+  // Set up Intersection Observer for infinite scroll
+  useEffect(() => {
+    // Don't set up observer if no more pages or loading
+    if (!hasMore || loading || isLoadingMore) {
+      // Clean up existing observer
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+        observerRef.current = null;
+      }
+      return;
+    }
+
+    // Create Intersection Observer
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry.isIntersecting) {
+          // User has scrolled to the bottom, load more
+          handleLoadMore();
+        }
+      },
+      {
+        root: null, // Use viewport as root
+        rootMargin: '200px', // Start loading 200px before reaching the bottom
+        threshold: 0.1, // Trigger when 10% of sentinel is visible
+      }
+    );
+
+    observerRef.current = observer;
+
+    // Observe the sentinel element
+    if (sentinelRef.current) {
+      observer.observe(sentinelRef.current);
+    }
+
+    // Cleanup function
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+        observerRef.current = null;
+      }
+    };
+  }, [hasMore, loading, isLoadingMore, handleLoadMore]);
 
   // Handle date filter change
   const handleDateFilterChange = ({ fromDate, toDate }) => {
@@ -336,7 +402,7 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
               />
             ))}
             {/* Loading more skeletons */}
-            {loading && articles.length > 0 && (
+            {(loading || isLoadingMore) && articles.length > 0 && (
               <>
                 {[...Array(2)].map((_, index) => (
                   <NewsCardSkeleton key={`skeleton-${index}`} />
@@ -345,16 +411,59 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
             )}
           </div>
 
-          {/* Load More Button */}
+          {/* Infinite Scroll Sentinel */}
           {hasMore && !loading && (
+            <div
+              ref={sentinelRef}
+              className="h-20 flex items-center justify-center"
+              aria-hidden="true"
+            >
+              {/* Loading indicator for infinite scroll */}
+              {isLoadingMore && (
+                <div className="flex items-center gap-2 text-gray-500">
+                  <svg
+                    className="animate-spin h-5 w-5"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  <span className="text-sm">Loading more articles...</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Optional Load More Button (can be removed if infinite scroll is preferred) */}
+          {hasMore && !loading && !isLoadingMore && (
             <div className="text-center">
               <button
                 onClick={handleLoadMore}
-                disabled={loading}
+                disabled={loading || isLoadingMore}
                 className="px-6 py-3 min-h-[48px] bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium touch-manipulation"
               >
                 Load More
               </button>
+            </div>
+          )}
+
+          {/* End of Results */}
+          {!hasMore && articles.length > 0 && (
+            <div className="text-center py-8 text-gray-500">
+              <p>You've reached the end of the results</p>
             </div>
           )}
         </>
