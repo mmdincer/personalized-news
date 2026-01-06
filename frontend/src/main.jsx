@@ -8,12 +8,14 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <App />
     <Toaster
-      position="top-right"
+      position="bottom-right"
       toastOptions={{
         duration: 4000,
         style: {
           background: '#363636',
           color: '#fff',
+          borderRadius: '8px',
+          padding: '12px 16px',
         },
         success: {
           duration: 3000,

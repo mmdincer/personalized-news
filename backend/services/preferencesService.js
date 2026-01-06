@@ -2,6 +2,7 @@ const supabase = require('../config/database');
 const {
   validateCategories,
   normalizeCategories,
+  DEFAULT_CATEGORIES,
 } = require('../constants/categories');
 
 /**
@@ -29,7 +30,7 @@ const getUserPreferences = async (userId) => {
     if (error.code === 'PGRST116') {
       // PostgreSQL "no rows" error
       return {
-        categories: ['general', 'technology'], // Default categories
+        categories: DEFAULT_CATEGORIES, // Default categories
       };
     }
     throw new Error(`Failed to fetch user preferences: ${error.message}`);
@@ -37,7 +38,7 @@ const getUserPreferences = async (userId) => {
 
   // Return preferences
   return {
-    categories: data.categories || ['general', 'technology'],
+    categories: data.categories || DEFAULT_CATEGORIES,
   };
 };
 
@@ -137,7 +138,7 @@ const createDefaultPreferences = async (userId) => {
     .from('user_preferences')
     .insert({
       user_id: userId,
-      categories: ['general', 'technology'], // Default categories
+      categories: DEFAULT_CATEGORIES, // Default categories
     })
     .select('categories')
     .single();

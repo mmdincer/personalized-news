@@ -3,8 +3,8 @@
  *
  * SRP: Pure business logic for The Guardian API integration
  * - Handles The Guardian API calls
- * - Implements caching strategy (15 minutes)
- * - Manages rate limiting (500/day, 1/sec)
+ * - Implements caching strategy (15 minutes backend, 5 minutes frontend)
+ * - Manages rate limiting (500/day, 1/sec - Guardian API limits)
  * - Normalizes API responses
  * - NO HTTP concerns (controllers handle that)
  */
@@ -59,8 +59,9 @@ const GUARDIAN_BASE_URL = 'https://content.guardianapis.com';
 const GUARDIAN_ENDPOINT = '/search';
 const REQUEST_TIMEOUT_MS = 10000; // 10 seconds
 const CACHE_DURATION_MS = 15 * 60 * 1000; // 15 minutes
-const MAX_REQUESTS_PER_DAY = 500; // The Guardian API free tier: 500/day
-const MAX_REQUESTS_PER_SECOND = 1; // The Guardian API free tier: 1/sec
+// Rate limits - more lenient in development
+const MAX_REQUESTS_PER_DAY = process.env.NODE_ENV === 'production' ? 500 : 10000; // The Guardian API free tier: 500/day, but allow more in dev
+const MAX_REQUESTS_PER_SECOND = process.env.NODE_ENV === 'production' ? 1 : 5; // The Guardian API free tier: 1/sec, but allow more in dev
 const DEFAULT_PAGE_SIZE = 20;
 const MAX_PAGE_SIZE = 50; // The Guardian API max page-size is 50
 
@@ -169,9 +170,14 @@ const stopCacheCleanup = () => {
 /**
  * Check rate limit and reserve a slot atomically
  * This prevents race conditions where multiple requests pass the check simultaneously
+ * In development mode, rate limiting is more lenient
  * @returns {{allowed: boolean, dailyCount: number, message: string}} Rate limit status
  */
 const checkRateLimitAndReserve = () => {
+  // In development, be more lenient with rate limiting
+  // Still track requests but allow more through
+  const isDevelopment = process.env.NODE_ENV !== 'production';
+  
   const now = Date.now();
   const oneDayAgo = now - 24 * 60 * 60 * 1000;
   const oneSecondAgo = now - 1000;
@@ -181,7 +187,18 @@ const checkRateLimitAndReserve = () => {
   requestLog.length = 0;
   requestLog.push(...recentRequests);
 
-  // Check daily limit
+  // In development, only warn but don't block (unless extremely high)
+  if (isDevelopment && recentRequests.length < MAX_REQUESTS_PER_DAY * 0.9) {
+    // Reserve slot atomically (before API call)
+    requestLog.push(now);
+    return {
+      allowed: true,
+      dailyCount: recentRequests.length + 1,
+      message: 'Rate limit OK',
+    };
+  }
+
+  // Check daily limit (stricter check)
   if (recentRequests.length >= MAX_REQUESTS_PER_DAY) {
     return {
       allowed: false,
@@ -190,9 +207,18 @@ const checkRateLimitAndReserve = () => {
     };
   }
 
-  // Check per-second limit
+  // Check per-second limit (more lenient in development)
   const requestsLastSecond = recentRequests.filter((timestamp) => timestamp > oneSecondAgo);
   if (requestsLastSecond.length >= MAX_REQUESTS_PER_SECOND) {
+    // In development, allow slight overage
+    if (isDevelopment && requestsLastSecond.length < MAX_REQUESTS_PER_SECOND * 2) {
+      requestLog.push(now);
+      return {
+        allowed: true,
+        dailyCount: recentRequests.length + 1,
+        message: 'Rate limit OK (development mode)',
+      };
+    }
     return {
       allowed: false,
       dailyCount: recentRequests.length,
@@ -316,13 +342,51 @@ guardianApiClient.interceptors.response.use(
 // ===========================
 
 /**
+ * Get placeholder image URL based on category
+ * Uses Unsplash Source API for category-specific placeholder images
+ * @param {string} category - News category/section
+ * @returns {string} Placeholder image URL
+ */
+const getPlaceholderImageUrl = (category) => {
+  // Map categories to relevant Unsplash search terms
+  const categoryKeywords = {
+    business: 'business',
+    technology: 'technology',
+    science: 'science',
+    sport: 'sports',
+    culture: 'culture',
+    news: 'news',
+    world: 'world',
+    politics: 'politics',
+    environment: 'nature',
+    society: 'people',
+    lifeandstyle: 'lifestyle',
+    food: 'food',
+    travel: 'travel',
+    fashion: 'fashion',
+    books: 'books',
+    music: 'music',
+    film: 'cinema',
+    games: 'gaming',
+    education: 'education',
+    media: 'media',
+  };
+
+  const keyword = categoryKeywords[category?.toLowerCase()] || 'news';
+  // Unsplash Source API - random image by keyword
+  // Size: 800x600 (good for news cards)
+  return `https://source.unsplash.com/800x600/?${keyword}`;
+};
+
+/**
  * Normalize The Guardian API response to internal format
  * @param {Object} apiResponse - Raw The Guardian API response
  * @param {number} page - Current page number
  * @param {number} pageSize - Results per page
+ * @param {string} category - Category/section name (for placeholder images)
  * @returns {Object} Normalized response
  */
-const normalizeNewsResponse = (apiResponse, page, pageSize) => {
+const normalizeNewsResponse = (apiResponse, page, pageSize, category = null) => {
   // Guardian API wraps response in 'response' object
   const guardianResponse = apiResponse?.response;
   
@@ -338,12 +402,18 @@ const normalizeNewsResponse = (apiResponse, page, pageSize) => {
   // Normalize articles from Guardian format
   const articles = guardianResponse.results.map((result) => {
     const fields = result.fields || {};
+    const sectionName = result.sectionName?.toLowerCase() || category?.toLowerCase() || 'news';
+    
+    // Use thumbnail if available, otherwise use category-based placeholder
+    const imageUrl = fields.thumbnail || getPlaceholderImageUrl(sectionName);
     
     return {
+      id: result.id || result.webUrl, // Use article ID or URL as unique identifier
       title: fields.headline || result.webTitle || 'No title',
       description: fields.trailText || fields.bodyText?.substring(0, 200) || '',
+      content: fields.bodyText || null, // Full article content
       url: result.webUrl || '',
-      imageUrl: fields.thumbnail || null,
+      imageUrl, // Always has an image (thumbnail or placeholder)
       publishedAt: result.webPublicationDate || new Date().toISOString(),
       source: {
         name: result.sectionName || 'The Guardian',
@@ -473,14 +543,12 @@ const fetchNewsByCategory = async (
   const requestParams = {
     'page': page,
     'page-size': pageSize,
-    'show-fields': 'thumbnail,headline,trailText',
+    'show-fields': 'thumbnail,headline,trailText,bodyText',
     'order-by': 'newest',
   };
   
-  // Add section parameter only if not 'general' category
-  if (guardianSection) {
-    requestParams.section = guardianSection;
-  }
+  // Add section parameter (all categories now map to Guardian sections)
+  requestParams.section = guardianSection;
   
   // Log API request
   logger.info('Fetching news from The Guardian API', {
@@ -499,7 +567,7 @@ const fetchNewsByCategory = async (
   // Note: Request already logged in checkRateLimitAndReserve()
 
   // Normalize response
-  const normalizedData = normalizeNewsResponse(response.data, page, pageSize);
+  const normalizedData = normalizeNewsResponse(response.data, page, pageSize, category);
 
   // Cache result
   setCachedNews(cacheKey, normalizedData);
@@ -579,6 +647,121 @@ const fetchNewsByPreferences = async (
   };
 };
 
+/**
+ * Fetch a single article by ID or URL
+ * @param {string} articleIdOrUrl - Article ID (e.g., "technology/2024/jan/05/article-id") or full URL
+ * @returns {Promise<Object>} Single article data with full content
+ * @throws {Error} On validation or API errors
+ */
+const fetchArticleById = async (articleIdOrUrl) => {
+  if (!articleIdOrUrl || typeof articleIdOrUrl !== 'string') {
+    const error = new Error('Article ID or URL is required');
+    error.code = 'VAL_MISSING_FIELD';
+    error.statusCode = 400;
+    throw error;
+  }
+
+  // Extract article ID from URL if needed
+  // Guardian URL format: https://www.theguardian.com/section/date/article-id
+  // Article ID format: section/date/article-id
+  let articleId = articleIdOrUrl;
+  if (articleIdOrUrl.startsWith('http')) {
+    // Extract ID from URL
+    const urlMatch = articleIdOrUrl.match(/theguardian\.com\/(.+)$/);
+    if (urlMatch) {
+      articleId = urlMatch[1];
+    } else {
+      const error = new Error('Invalid article URL format');
+      error.code = 'VAL_INVALID_FORMAT';
+      error.statusCode = 400;
+      throw error;
+    }
+  }
+
+  // Check cache first
+  const cacheKey = `article:${articleId}`;
+  const cached = getCachedNews(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  // Check rate limit and reserve slot atomically
+  const rateLimit = checkRateLimitAndReserve();
+  if (!rateLimit.allowed) {
+    const remaining = MAX_REQUESTS_PER_DAY - rateLimit.dailyCount;
+    const error = new Error(
+      `Rate limit exceeded. ${remaining >= 0 ? remaining : 0} requests remaining today. Please try again later.`
+    );
+    error.code = 'NEWS_RATE_LIMIT_EXCEEDED';
+    error.statusCode = 429;
+    throw error;
+  }
+
+  // Build request parameters - use ids parameter to fetch specific article
+  const requestParams = {
+    'ids': articleId,
+    'show-fields': 'thumbnail,headline,trailText,bodyText',
+  };
+
+  // Log API request
+  logger.info('Fetching article from The Guardian API', {
+    articleId,
+    cacheKey,
+  });
+
+  try {
+    // Make API request to The Guardian API
+    const response = await guardianApiClient.get(GUARDIAN_ENDPOINT, {
+      params: requestParams,
+    });
+
+    // Normalize response
+    // Extract category from article ID if available (format: section/date/article-id)
+    const articleCategory = articleId.split('/')[0] || null;
+    const normalizedData = normalizeNewsResponse(response.data, 1, 1, articleCategory);
+
+    // Check if article was found
+    if (!normalizedData.articles || normalizedData.articles.length === 0) {
+      const error = new Error('Article not found');
+      error.code = 'NEWS_ARTICLE_NOT_FOUND';
+      error.statusCode = 404;
+      throw error;
+    }
+
+    // Return single article
+    const article = normalizedData.articles[0];
+
+    // Cache result
+    setCachedNews(cacheKey, article);
+
+    logger.info('Article fetched and cached successfully', {
+      cacheKey,
+      articleId,
+    });
+
+    return article;
+  } catch (error) {
+    // If it's already our custom error, re-throw it
+    if (error.code && error.statusCode) {
+      throw error;
+    }
+
+    // Handle API errors
+    if (error.response) {
+      const { status } = error.response;
+      if (status === 404) {
+        const notFoundError = new Error('Article not found');
+        notFoundError.code = 'NEWS_ARTICLE_NOT_FOUND';
+        notFoundError.statusCode = 404;
+        throw notFoundError;
+      }
+    }
+
+    // Re-throw other errors
+    throw error;
+  }
+};
+
 // ===========================
 // Module Exports
 // ===========================
@@ -587,6 +770,7 @@ module.exports = {
   // Core functions
   fetchNewsByCategory,
   fetchNewsByPreferences,
+  fetchArticleById,
 
   // Cache management
   clearCache,

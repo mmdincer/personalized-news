@@ -29,13 +29,14 @@ const Header = () => {
   const navLinks = [
     { path: '/', label: 'Home' },
     { path: '/news', label: 'News' },
+    { path: '/saved', label: 'Saved' },
     { path: '/preferences', label: 'Preferences' },
   ];
 
   return (
     <header className="sticky top-0 inset-x-0 flex flex-wrap md:justify-start md:flex-nowrap z-50 w-full text-sm">
       <nav className="mt-4 relative max-w-6xl w-full bg-white border border-gray-200 rounded-lg mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap md:flex-nowrap items-center justify-between py-2">
-        <div className="flex items-center">
+        <div className="flex items-center md:flex-none">
           {/* App Name */}
           <Link
             to="/"
@@ -46,7 +47,7 @@ const Header = () => {
           </Link>
         </div>
 
-        <div className="flex items-center gap-1 md:order-4 md:ml-4">
+        <div className="flex items-center gap-1 md:order-4 md:flex-none">
           {/* Desktop Logout Button */}
           <button
             onClick={handleLogout}
@@ -110,7 +111,7 @@ const Header = () => {
             isMobileMenuOpen ? 'block' : 'hidden'
           } md:block overflow-hidden transition-all duration-300 basis-full grow md:block`}
         >
-          <div className="flex flex-col md:flex-row md:items-center md:justify-end gap-2 md:gap-3 mt-3 md:mt-0 py-2 md:py-0 md:pl-7">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-center gap-2 md:gap-3 mt-3 md:mt-0 py-2 md:py-0">
             {navLinks.map((link) => (
               <Link
                 key={link.path}

@@ -13,23 +13,44 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getNews, getNewsByCategory } from '../../services/newsService';
 import { getPreferences } from '../../services/preferencesService';
+import { getSavedArticles } from '../../services/savedArticlesService';
 import { extractErrorMessage } from '../../utils/errorHandler';
 import { getAllCategoriesWithNames, getCategoryDisplayName } from '../../constants/categories';
+import { useAuth } from '../../contexts/AuthContext';
 import NewsCard from './NewsCard';
 import NewsCardSkeleton from './NewsCardSkeleton';
 import toast from 'react-hot-toast';
 
 const NewsFeed = ({ showCategoryFilter = true }) => {
+  const { isAuthenticated } = useAuth();
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [savedArticlesMap, setSavedArticlesMap] = useState(new Map());
+  const categories = getAllCategoriesWithNames();
+  // Default to first category if filter is enabled, null otherwise (for preferences)
+  const [selectedCategory, setSelectedCategory] = useState(
+    showCategoryFilter && categories.length > 0 ? categories[0].code : null
+  );
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [userPreferences, setUserPreferences] = useState([]);
 
-  const categories = getAllCategoriesWithNames();
   const limit = 20;
+
+  // Update selectedCategory when showCategoryFilter changes
+  useEffect(() => {
+    if (showCategoryFilter && categories.length > 0) {
+      // If filter is enabled and no category selected, select first category
+      if (!selectedCategory) {
+        setSelectedCategory(categories[0].code);
+      }
+    } else {
+      // If filter is disabled, clear selection (will use preferences)
+      setSelectedCategory(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showCategoryFilter]);
 
   // Load user preferences on mount
   useEffect(() => {
@@ -47,6 +68,35 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
     loadPreferences();
   }, []);
 
+  // Load saved articles once on mount (if authenticated)
+  // This creates a Map for fast lookup in NewsCard components
+  useEffect(() => {
+    const loadSavedArticles = async () => {
+      if (!isAuthenticated) {
+        setSavedArticlesMap(new Map());
+        return;
+      }
+
+      try {
+        const response = await getSavedArticles();
+        if (response.success && response.data) {
+          // Create a Map with article_url as key for O(1) lookup
+          const map = new Map();
+          response.data.forEach((savedArticle) => {
+            map.set(savedArticle.article_url, savedArticle);
+          });
+          setSavedArticlesMap(map);
+        }
+      } catch (err) {
+        // Silently fail - saved articles check is optional
+        console.error('Failed to load saved articles:', err);
+        setSavedArticlesMap(new Map());
+      }
+    };
+
+    loadSavedArticles();
+  }, [isAuthenticated]);
+
   // Fetch news based on selected category
   // If showCategoryFilter is false, always use preferences (category = null)
   const fetchNews = useCallback(async (category = null, pageNum = 1) => {
@@ -58,10 +108,12 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
       // If category filter is disabled, always fetch personalized news
       if (!showCategoryFilter) {
         response = await getNews({ page: pageNum, limit });
-      } else if (category) {
-        response = await getNewsByCategory({ category, page: pageNum, limit });
       } else {
-        response = await getNews({ page: pageNum, limit });
+        // Category filter is enabled - always fetch by category (category is required)
+        if (!category) {
+          throw new Error('Category is required when filter is enabled');
+        }
+        response = await getNewsByCategory({ category, page: pageNum, limit });
       }
 
       if (response.success && response.data) {
@@ -97,8 +149,7 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
 
   // Handle category change
   const handleCategoryChange = (category) => {
-    const newCategory = category === selectedCategory ? null : category;
-    setSelectedCategory(newCategory);
+    setSelectedCategory(category);
   };
 
   // Handle load more
@@ -116,24 +167,8 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
         <div className="bg-white rounded-lg shadow p-4">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">Filter by Category</h2>
-            {selectedCategory === null && userPreferences.length > 0 && (
-              <div className="text-sm text-gray-600">
-                <span className="font-medium">Using your preferences:</span>{' '}
-                {userPreferences.map((cat) => getCategoryDisplayName(cat)).join(', ')}
-              </div>
-            )}
           </div>
           <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => handleCategoryChange(null)}
-              className={`px-4 py-3 sm:py-2 rounded-full text-sm font-medium transition-colors min-h-[44px] sm:min-h-0 touch-manipulation ${
-                selectedCategory === null
-                  ? 'bg-blue-600 text-white active:bg-blue-700'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
-              }`}
-            >
-              All (Your Preferences)
-            </button>
             {categories.map((category) => (
               <button
                 key={category.code}
@@ -163,8 +198,8 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
 
       {/* Loading State */}
       {loading && articles.length === 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(6)].map((_, index) => (
+        <div className="grid lg:grid-cols-2 lg:gap-y-16 gap-10">
+          {[...Array(4)].map((_, index) => (
             <NewsCardSkeleton key={index} />
           ))}
         </div>
@@ -230,7 +265,11 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
         <>
           <div className="grid lg:grid-cols-2 lg:gap-y-16 gap-10">
             {articles.map((article, index) => (
-              <NewsCard key={article.url || index} article={article} />
+              <NewsCard
+                key={article.url || index}
+                article={article}
+                savedArticlesMap={savedArticlesMap}
+              />
             ))}
             {/* Loading more skeletons */}
             {loading && articles.length > 0 && (

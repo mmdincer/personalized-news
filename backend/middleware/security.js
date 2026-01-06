@@ -16,11 +16,13 @@ const rateLimit = require('express-rate-limit');
 
 /**
  * General API rate limiter
- * Limits: 100 requests per 15 minutes per IP
+ * Limits: 500 requests per 15 minutes per IP (production)
+ * Limits: 5000 requests per 15 minutes per IP (development)
+ * Increased due to frontend caching (5 min) reducing actual API calls
  */
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  max: process.env.NODE_ENV === 'production' ? 500 : 5000, // Much higher limit for development
   message: {
     success: false,
     error: {
@@ -63,11 +65,13 @@ const authLimiter = rateLimit({
 
 /**
  * News API rate limiter
- * Limits: 50 requests per 15 minutes per IP
+ * Limits: 300 requests per 15 minutes per IP (production)
+ * Limits: 5000 requests per 15 minutes per IP (development)
+ * Increased due to caching (frontend: 5 min, backend: 15 min) reducing actual Guardian API calls
  */
 const newsLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 50, // Limit each IP to 50 requests per windowMs
+  max: process.env.NODE_ENV === 'production' ? 300 : 5000, // Much higher limit for development
   message: {
     success: false,
     error: {

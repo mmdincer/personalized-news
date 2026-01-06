@@ -15,31 +15,59 @@ Bu dosya projede kullanılan external API'lerin detaylı spesifikasyonlarını i
   - Non-commercial use only
   - Register at: https://open-platform.theguardian.com/access
 
-### Desteklenen Kategoriler
+### Desteklenen Kategoriler (Guardian API Sections)
 
 ```javascript
 const ALLOWED_CATEGORIES = [
-  'business',      // Business news → Guardian section: 'business'
-  'entertainment', // Entertainment news → Guardian section: 'culture'
-  'general',       // General news → No section (all sections)
-  'health',        // Health news → Guardian section: 'society'
-  'science',       // Science news → Guardian section: 'science'
-  'sports',        // Sports news → Guardian section: 'sport'
-  'technology'     // Technology news → Guardian section: 'technology'
+  'business',      // Business news
+  'technology',    // Technology news
+  'science',       // Science news
+  'sport',         // Sports news (Guardian uses singular 'sport')
+  'culture',       // Culture/Entertainment news
+  'news',          // General news
+  'world',         // World news
+  'politics',      // Politics news
+  'environment',   // Environment news
+  'society',       // Society news (includes health, social issues)
+  'lifeandstyle',  // Life and style
+  'food',          // Food news
+  'travel',        // Travel news
+  'fashion',       // Fashion news
+  'books',         // Books news
+  'music',         // Music news
+  'film',          // Film news
+  'games',         // Games news
+  'education',     // Education news
+  'media',         // Media news
 ];
 ```
 
-### Kategori Mapping (NewsAPI → The Guardian)
+### Kategori Mapping
 
-| NewsAPI Category | The Guardian Section |
-|-----------------|---------------------|
-| `business` | `business` |
-| `technology` | `technology` |
-| `sports` | `sport` (singular) |
-| `science` | `science` |
-| `health` | `society` |
-| `entertainment` | `culture` |
-| `general` | `null` (no section parameter - fetch from all sections) |
+Kategoriler doğrudan Guardian API section ID'leri kullanılmaktadır. 1:1 mapping vardır:
+
+| Category | Guardian Section | Description |
+|----------|-----------------|-------------|
+| `business` | `business` | Business news |
+| `technology` | `technology` | Technology news |
+| `science` | `science` | Science news |
+| `sport` | `sport` | Sports news |
+| `culture` | `culture` | Culture/Entertainment news |
+| `news` | `news` | General news |
+| `world` | `world` | World news |
+| `politics` | `politics` | Politics news |
+| `environment` | `environment` | Environment news |
+| `society` | `society` | Society news (includes health) |
+| `lifeandstyle` | `lifeandstyle` | Life and style |
+| `food` | `food` | Food news |
+| `travel` | `travel` | Travel news |
+| `fashion` | `fashion` | Fashion news |
+| `books` | `books` | Books news |
+| `music` | `music` | Music news |
+| `film` | `film` | Film news |
+| `games` | `games` | Games news |
+| `education` | `education` | Education news |
+| `media` | `media` | Media news |
 
 ### API Parametreleri
 
@@ -188,6 +216,44 @@ CREATE INDEX idx_user_preferences_user_id ON user_preferences(user_id);
 CREATE INDEX idx_user_preferences_categories ON user_preferences USING GIN(categories);
 ```
 
+#### Saved Articles Table
+
+```sql
+CREATE TABLE saved_articles (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL,
+  article_url VARCHAR(500) NOT NULL,
+  article_title VARCHAR(500) NOT NULL,
+  article_image_url VARCHAR(500),
+  article_description TEXT,
+  article_content TEXT,
+  article_source_name VARCHAR(100),
+  article_published_at TIMESTAMP WITH TIME ZONE,
+  saved_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  UNIQUE(user_id, article_url)
+);
+
+-- Create indexes for performance
+CREATE INDEX idx_saved_articles_user_id ON saved_articles(user_id);
+CREATE INDEX idx_saved_articles_saved_at ON saved_articles(saved_at DESC);
+CREATE INDEX idx_saved_articles_published_at ON saved_articles(article_published_at DESC);
+```
+
+**Column Descriptions:**
+- `id`: Unique saved article identifier (UUID)
+- `user_id`: Reference to users table (foreign key)
+- `article_url`: URL of the saved article (unique per user, combined with user_id)
+- `article_title`: Title of the saved article
+- `article_image_url`: Image URL of the saved article (optional)
+- `article_description`: Short description/trail text of the article (optional, fetched from Guardian API)
+- `article_content`: Full article content/body text (optional, fetched from Guardian API)
+- `article_source_name`: Source name (e.g., The Guardian, section name) (optional, fetched from Guardian API)
+- `article_published_at`: Original publication date of the article (optional, fetched from Guardian API)
+- `saved_at`: Timestamp when article was saved
+
+**Note:** When saving an article, the backend automatically fetches full article details (description, content, source, published date) from The Guardian API and stores them in the database. This allows offline access to saved articles and reduces API calls when viewing saved articles.
+
 ### Supabase Client Usage
 
 ```javascript
@@ -220,7 +286,7 @@ const { data, error } = await supabase
   .from('user_preferences')
   .upsert({ 
     user_id, 
-    categories: ['general', 'technology'],
+    categories: ['news', 'technology'],
     updated_at: new Date().toISOString()
   })
   .select();
@@ -303,7 +369,7 @@ Authorization: Bearer jwt_token_here
 {
   "success": true,
   "data": {
-    "categories": ["general", "technology"]
+    "categories": ["news", "technology"]
   }
 }
 ```
@@ -413,9 +479,9 @@ Authorization: Bearer jwt_token_here
 **Request:**
 ```json
 {
-  "articleUrl": "https://www.theguardian.com/...",
-  "articleTitle": "Article Title",
-  "articleImageUrl": "https://media.guim.co.uk/..."
+  "article_url": "https://www.theguardian.com/...",
+  "article_title": "Article Title",
+  "article_image_url": "https://media.guim.co.uk/..."
 }
 ```
 
@@ -425,13 +491,19 @@ Authorization: Bearer jwt_token_here
   "success": true,
   "data": {
     "id": "uuid",
-    "articleUrl": "https://www.theguardian.com/...",
-    "articleTitle": "Article Title",
-    "articleImageUrl": "https://media.guim.co.uk/...",
-    "savedAt": "2024-01-05T12:00:00Z"
+    "article_url": "https://www.theguardian.com/...",
+    "article_title": "Article Title",
+    "article_image_url": "https://media.guim.co.uk/...",
+    "article_description": "Short description/trail text of the article",
+    "article_content": "Full article content/body text",
+    "article_source_name": "The Guardian",
+    "article_published_at": "2024-01-05T12:00:00Z",
+    "saved_at": "2024-01-06T10:00:00Z"
   }
 }
 ```
+
+**Note:** When saving an article, the backend automatically fetches full article details (description, content, source, published date) from The Guardian API and stores them in the database. This allows offline access to saved articles.
 
 #### GET /api/user/saved-articles
 
@@ -448,22 +520,23 @@ Authorization: Bearer jwt_token_here
 ```json
 {
   "success": true,
-  "data": {
-    "articles": [
-      {
-        "id": "uuid",
-        "articleUrl": "https://www.theguardian.com/...",
-        "articleTitle": "Article Title",
-        "articleImageUrl": "https://media.guim.co.uk/...",
-        "savedAt": "2024-01-05T12:00:00Z"
-      }
-    ],
-    "totalResults": 10,
-    "page": 1,
-    "pageSize": 20
-  }
+  "data": [
+    {
+      "id": "uuid",
+      "article_url": "https://www.theguardian.com/...",
+      "article_title": "Article Title",
+      "article_image_url": "https://media.guim.co.uk/...",
+      "article_description": "Short description/trail text of the article",
+      "article_content": "Full article content/body text",
+      "article_source_name": "The Guardian",
+      "article_published_at": "2024-01-05T12:00:00Z",
+      "saved_at": "2024-01-06T10:00:00Z"
+    }
+  ]
 }
 ```
+
+**Note:** Returns an array of saved articles ordered by `saved_at` DESC (newest first). All article details including full content are included.
 
 #### DELETE /api/user/saved-articles/:id
 

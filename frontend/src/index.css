@@ -7,11 +7,11 @@
   .touch-manipulation {
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
-  }
+}
 }
 
 @layer base {
-  body {
+body {
     @apply bg-gray-50 text-gray-900 antialiased;
   }
 }

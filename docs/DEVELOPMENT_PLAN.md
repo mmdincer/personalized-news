@@ -85,14 +85,14 @@
 - [x] Constants files: `constants/categories.js` (ALLOWED_CATEGORIES, validation helper, display names mapping) - bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)
 - [x] Preferences endpoints: `GET /api/user/preferences` (Supabase query, JSONB categories, JWT user ID), `PUT /api/user/preferences` (upsert, JSONB update, category validation, JWT user ID)
 - [x] Validation logic: category validation (ALLOWED_CATEGORIES check, reject invalid, reject empty array, remove duplicates) - bakınız: [ERROR_CODES.md](./ERROR_CODES.md)
-- [x] Default preferences: register endpoint'inde default categories ['general', 'technology'] ile preferences insert (atomic operation - preferences oluşturulamazsa user silinir)
+- [x] Default preferences: register endpoint'inde default categories ['news', 'technology'] ile preferences insert (atomic operation - preferences oluşturulamazsa user silinir)
 - [x] Database optimization: parameterized queries (SQL injection prevention), JSONB operators, GIN index on categories (optional)
 
 ### Başarı Kriterleri
 - [x] Kullanıcı tercihleri Supabase'den okunabiliyor (Terminal testi geçti)
 - [x] Tercihler Supabase'de güncellenebiliyor (Terminal testi geçti)
-- [x] Sadece 7 geçerli kategori kabul ediliyor (bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)) (Terminal testi geçti)
-- [x] Default preferences yeni kullanıcılara atanıyor (general, technology) (Terminal testi geçti)
+- [x] Sadece 20 geçerli kategori kabul ediliyor (bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)) (Terminal testi geçti)
+- [x] Default preferences yeni kullanıcılara atanıyor (news, technology) (Terminal testi geçti)
 - [x] JSONB array işlemleri doğru çalışıyor (Terminal testi geçti)
 - [x] Invalid kategoriler reddediliyor (Terminal testi geçti)
 - [x] Duplicate kategoriler otomatik temizleniyor (Terminal testi geçti)
@@ -219,18 +219,18 @@
 ## 11. feat/saved-articles
 
 ### Görevler
-- [ ] Database migration: `saved_articles` tablosu oluştur (user_id, article_url, article_title, article_image_url, saved_at, UNIQUE constraint user_id + article_url)
-- [ ] Backend API endpoints: `POST /api/user/saved-articles` (kaydet), `GET /api/user/saved-articles` (listele), `DELETE /api/user/saved-articles/:id` (sil), authentication middleware
-- [ ] Frontend SavedArticles component: kaydedilen haberleri listele, kaydet/sil butonları, NewsCard ile gösterim
-- [ ] Frontend SavedArticles page: `/saved` route, saved articles listesi
-- [ ] NewsCard'a "Save" butonu ekle: kaydedilmiş mi kontrolü, toggle functionality
+- [x] Database migration: `saved_articles` tablosu oluştur (user_id, article_url, article_title, article_image_url, saved_at, UNIQUE constraint user_id + article_url)
+- [x] Backend API endpoints: `POST /api/user/saved-articles` (kaydet), `GET /api/user/saved-articles` (listele), `DELETE /api/user/saved-articles/:id` (sil), authentication middleware
+- [x] Frontend SavedArticles component: kaydedilen haberleri listele, kaydet/sil butonları, NewsCard ile gösterim
+- [x] Frontend SavedArticles page: `/saved` route, saved articles listesi
+- [x] NewsCard'a "Save" butonu ekle: kaydedilmiş mi kontrolü, toggle functionality
 
 ### Başarı Kriterleri
-- [ ] Kullanıcılar haberleri kaydedebiliyor
-- [ ] Kaydedilen haberler listeleniyor
-- [ ] Kaydedilen haberler silinebiliyor
-- [ ] Kaydedilmiş durumu görsel olarak gösteriliyor
-- [ ] Duplicate kayıtlar engelleniyor
+- [x] Kullanıcılar haberleri kaydedebiliyor
+- [x] Kaydedilen haberler listeleniyor
+- [x] Kaydedilen haberler silinebiliyor
+- [x] Kaydedilmiş durumu görsel olarak gösteriliyor
+- [x] Duplicate kayıtlar engelleniyor
 
 ---
 
@@ -245,6 +245,7 @@
 - [ ] Frontend DateFilter component: date range picker, from/to date selection
 - [ ] Frontend SortDropdown component: newest/oldest/relevance seçenekleri
 - [ ] NewsFeed'e filter entegrasyonu: date filter ve sort dropdown ekle
+- [ ] Infinite scroll: Intersection Observer API ile otomatik sayfa yükleme, sayfa sonuna gelindiğinde bir sonraki sayfa otomatik yüklenir, loading indicator gösterilir, "Load More" butonu opsiyonel olarak kalabilir veya kaldırılabilir
 
 ### Başarı Kriterleri
 - [ ] Arama çalışıyor (The Guardian API search)
@@ -253,6 +254,9 @@
 - [ ] SearchBar debounce ile optimize edilmiş
 - [ ] Filter'lar URL query parametrelerinde saklanıyor
 - [ ] Loading ve error states handle ediliyor
+- [ ] Infinite scroll çalışıyor (sayfa sonuna gelindiğinde otomatik yükleme)
+- [ ] Loading state infinite scroll sırasında gösteriliyor
+- [ ] Tüm haberler yüklendiğinde infinite scroll duruyor
 
 ---
 

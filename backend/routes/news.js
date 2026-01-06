@@ -7,7 +7,7 @@
 const express = require('express');
 const { query, param } = require('express-validator');
 const newsController = require('../controllers/newsController');
-const { authenticateToken, requireAdmin } = require('../middleware/auth');
+const { authenticateToken, optionalAuth, requireAdmin } = require('../middleware/auth');
 const { ALLOWED_CATEGORIES } = require('../constants/categories');
 const { newsLimiter } = require('../middleware/security');
 
@@ -45,10 +45,24 @@ const paginationValidation = [
 // ===========================
 
 /**
+ * @route   GET /api/news/article/:id
+ * @desc    Get single article by ID or URL (with full content)
+ * @access  Public (but UUIDs require authentication for saved articles)
+ * @params  id - Article ID (e.g., "technology/2024/jan/05/article-id"), full URL, or saved article UUID
+ * @note    UUID format requests require authentication (saved articles)
+ */
+router.get(
+  '/article/:id(*)',
+  newsLimiter,
+  optionalAuth, // Optional auth - controller checks if UUID requires auth
+  newsController.getArticleById
+);
+
+/**
  * @route   GET /api/news/:category
  * @desc    Get news by category
  * @access  Public
- * @params  category - One of: business, entertainment, general, health, science, sports, technology
+ * @params  category - One of: business, technology, science, sport, culture, news, world, politics, environment, society, lifeandstyle, food, travel, fashion, books, music, film, games, education, media
  * @query   page (optional) - Page number (default: 1)
  * @query   limit (optional) - Results per page (default: 20, max: 100)
  */

@@ -201,12 +201,12 @@ describe('News API Integration Tests', () => {
 
       // First request (cache miss)
       const start1 = Date.now();
-      await request(app).get('/api/news/sports').expect(200);
+      await request(app).get('/api/news/sport').expect(200);
       const duration1 = Date.now() - start1;
 
       // Second request (cache hit - should be faster)
       const start2 = Date.now();
-      await request(app).get('/api/news/sports').expect(200);
+      await request(app).get('/api/news/sport').expect(200);
       const duration2 = Date.now() - start2;
 
       // Cache hit should generally be faster

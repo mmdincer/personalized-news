@@ -64,7 +64,7 @@ describe('User Registration with Default Preferences', () => {
     expect(prefsResponse.status).toBe(200);
     expect(prefsResponse.body.success).toBe(true);
     expect(prefsResponse.body.data).toEqual({
-      categories: ['general', 'technology'],
+      categories: ['news', 'technology'],
     });
   });
 
@@ -92,7 +92,7 @@ describe('User Registration with Default Preferences', () => {
 
     expect(error).toBeNull();
     expect(prefs).toBeDefined();
-    expect(prefs.categories).toEqual(['general', 'technology']);
+    expect(prefs.categories).toEqual(['news', 'technology']);
   });
 
   test('default preferences should match specification', async () => {
@@ -118,9 +118,9 @@ describe('User Registration with Default Preferences', () => {
 
     // Verify default categories
     expect(categories).toHaveLength(2);
-    expect(categories).toContain('general');
+    expect(categories).toContain('news');
     expect(categories).toContain('technology');
-    expect(categories).toEqual(expect.arrayContaining(['general', 'technology']));
+    expect(categories).toEqual(expect.arrayContaining(['news', 'technology']));
   });
 });
 
@@ -248,7 +248,7 @@ describe('Default Preferences Consistency', () => {
         .set('Authorization', `Bearer ${token}`);
 
       expect(prefsResponse.body.data.categories).toEqual([
-        'general',
+        'news',
         'technology',
       ]);
     }
