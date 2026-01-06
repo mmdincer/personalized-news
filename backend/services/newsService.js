@@ -59,8 +59,8 @@ const NEWSAPI_BASE_URL = 'https://newsapi.org/v2';
 const NEWSAPI_ENDPOINT = '/top-headlines';
 const REQUEST_TIMEOUT_MS = 10000; // 10 seconds
 const CACHE_DURATION_MS = 15 * 60 * 1000; // 15 minutes
-const MAX_REQUESTS_PER_DAY = 100;
-const MAX_REQUESTS_PER_SECOND = 1;
+const MAX_REQUESTS_PER_DAY = 200; // Increased from 100
+const MAX_REQUESTS_PER_SECOND = 3; // Increased from 1 (allows 3 requests per second)
 const DEFAULT_PAGE_SIZE = 20;
 const MAX_PAGE_SIZE = 100;
 
@@ -186,7 +186,7 @@ const checkRateLimitAndReserve = () => {
     return {
       allowed: false,
       dailyCount: recentRequests.length,
-      message: 'Daily rate limit exceeded (100 requests/day)',
+      message: `Daily rate limit exceeded (${MAX_REQUESTS_PER_DAY} requests/day)`,
     };
   }
 
@@ -196,7 +196,7 @@ const checkRateLimitAndReserve = () => {
     return {
       allowed: false,
       dailyCount: recentRequests.length,
-      message: 'Per-second rate limit exceeded (1 request/second)',
+      message: `Per-second rate limit exceeded (${MAX_REQUESTS_PER_SECOND} requests/second)`,
     };
   }
 

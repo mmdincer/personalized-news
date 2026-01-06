@@ -10,6 +10,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { getNews, getNewsByCategory } from '../../services/newsService';
+import { getPreferences } from '../../services/preferencesService';
 import { extractErrorMessage } from '../../utils/errorHandler';
 import { getAllCategoriesWithNames, getCategoryDisplayName } from '../../constants/categories';
 import NewsCard from './NewsCard';
@@ -23,9 +24,26 @@ const NewsFeed = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
+  const [userPreferences, setUserPreferences] = useState([]);
 
   const categories = getAllCategoriesWithNames();
   const limit = 20;
+
+  // Load user preferences on mount
+  useEffect(() => {
+    const loadPreferences = async () => {
+      try {
+        const response = await getPreferences();
+        if (response.success && response.data) {
+          setUserPreferences(response.data.categories || []);
+        }
+      } catch (err) {
+        // Silently fail - preferences are optional for display
+        console.error('Failed to load preferences:', err);
+      }
+    };
+    loadPreferences();
+  }, []);
 
   // Fetch news based on selected category
   const fetchNews = useCallback(async (category = null, pageNum = 1) => {
@@ -59,14 +77,15 @@ const NewsFeed = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [limit]);
 
   // Initial load and when category changes
   useEffect(() => {
     setPage(1);
     setArticles([]);
     fetchNews(selectedCategory, 1);
-  }, [selectedCategory, fetchNews]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCategory]);
 
   // Handle category change
   const handleCategoryChange = (category) => {
@@ -85,7 +104,15 @@ const NewsFeed = () => {
     <div className="space-y-6">
       {/* Category Filter */}
       <div className="bg-white rounded-lg shadow p-4">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Filter by Category</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-gray-900">Filter by Category</h2>
+          {selectedCategory === null && userPreferences.length > 0 && (
+            <div className="text-sm text-gray-600">
+              <span className="font-medium">Using your preferences:</span>{' '}
+              {userPreferences.map((cat) => getCategoryDisplayName(cat)).join(', ')}
+            </div>
+          )}
+        </div>
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => handleCategoryChange(null)}
@@ -95,7 +122,7 @@ const NewsFeed = () => {
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            All
+            All (Your Preferences)
           </button>
           {categories.map((category) => (
             <button
