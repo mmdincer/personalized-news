@@ -28,7 +28,7 @@ const getPreferences = async (req, res, next) => {
     let message = error.message || 'Failed to fetch user preferences';
 
     if (error.message.includes('User ID is required')) {
-      errorCode = 'VALIDATION_ERROR';
+      errorCode = 'VAL_MISSING_FIELD';
       statusCode = 400;
       message = 'User ID is required';
     }
@@ -63,7 +63,7 @@ const updatePreferences = async (req, res, next) => {
         'At least one field (categories or country) must be provided'
       );
       error.statusCode = 400;
-      error.errorCode = 'VALIDATION_ERROR';
+      error.errorCode = 'VAL_MISSING_FIELD';
       return next(error);
     }
 
@@ -97,11 +97,12 @@ const updatePreferences = async (req, res, next) => {
     let message = error.message || 'Failed to update user preferences';
 
     // Validation errors
-    if (
-      error.message.includes('Categories must be an array') ||
-      error.message.includes('At least one category must be selected')
-    ) {
-      errorCode = 'VALIDATION_ERROR';
+    if (error.message.includes('Categories must be an array')) {
+      errorCode = 'VAL_INVALID_FORMAT';
+      statusCode = 400;
+      message = error.message;
+    } else if (error.message.includes('At least one category must be selected')) {
+      errorCode = 'VAL_MISSING_FIELD';
       statusCode = 400;
       message = error.message;
     } else if (error.message.includes('Invalid categories')) {
@@ -113,17 +114,21 @@ const updatePreferences = async (req, res, next) => {
       statusCode = 400;
       message = error.message;
     } else if (error.message.includes('Country must be a string')) {
-      errorCode = 'VALIDATION_ERROR';
+      errorCode = 'VAL_INVALID_FORMAT';
       statusCode = 400;
       message = error.message;
     } else if (error.message.includes('User ID is required')) {
-      errorCode = 'VALIDATION_ERROR';
+      errorCode = 'VAL_MISSING_FIELD';
       statusCode = 400;
       message = 'User ID is required';
     } else if (error.message.includes('Preferences object is required')) {
-      errorCode = 'VALIDATION_ERROR';
+      errorCode = 'VAL_MISSING_FIELD';
       statusCode = 400;
       message = 'Preferences object is required';
+    } else if (error.message.includes('Failed to update user preferences')) {
+      errorCode = 'PREF_UPDATE_FAILED';
+      statusCode = 500;
+      message = error.message;
     }
 
     // Pass error to error handling middleware

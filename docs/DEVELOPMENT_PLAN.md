@@ -85,7 +85,7 @@
 ### Görevler
 - [x] Constants files: `constants/categories.js` (ALLOWED_CATEGORIES, validation helper, display names mapping), `constants/countries.js` (SUPPORTED_COUNTRIES: tr/us/de/fr/es, validation helper, country-to-language mapping, default: 'tr') - bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)
 - [x] Preferences endpoints: `GET /api/user/preferences` (Supabase query, JSONB categories + country, default 'tr', JWT user ID), `PUT /api/user/preferences` (upsert, JSONB update, category/country validation, JWT user ID)
-- [ ] Validation logic: category validation (ALLOWED_CATEGORIES check, reject invalid, reject empty array, remove duplicates), country validation (must be tr/us/de/fr/es) - bakınız: [ERROR_CODES.md](./ERROR_CODES.md)
+- [x] Validation logic: category validation (ALLOWED_CATEGORIES check, reject invalid, reject empty array, remove duplicates), country validation (must be tr/us/de/fr/es) - bakınız: [ERROR_CODES.md](./ERROR_CODES.md)
 - [ ] Default preferences: register endpoint'inde default categories ['general', 'technology'] ve country 'tr' ile preferences insert (atomic operation - preferences oluşturulamazsa user silinir)
 - [ ] Database optimization: parameterized queries (SQL injection prevention), JSONB operators, GIN index on categories (optional)
 

@@ -17,7 +17,7 @@ const handleValidationErrors = (req, res, next) => {
     return res.status(400).json({
       success: false,
       error: {
-        code: 'VALIDATION_ERROR',
+        code: 'SYS_VALIDATION_ERROR',
         message: 'Validation failed',
         details: formattedErrors,
         timestamp: new Date().toISOString(),
