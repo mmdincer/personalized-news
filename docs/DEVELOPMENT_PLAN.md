@@ -237,7 +237,7 @@
 ## 12. feat/search-and-filters
 
 ### Görevler
-- [ ] Backend search endpoint: `GET /api/news/search?q=query&page=1&limit=20` (The Guardian API search endpoint kullanarak)
+- [x] Backend search endpoint: `GET /api/news/search?q=query&page=1&limit=20` (The Guardian API search endpoint kullanarak)
 - [ ] Backend date filter: `GET /api/news?from=YYYY-MM-DD&to=YYYY-MM-DD` (The Guardian API `from-date` ve `to-date` parametreleri)
 - [ ] Backend sorting: `GET /api/news?sort=newest|oldest|relevance` (The Guardian API `order-by` parametresi)
 - [ ] Frontend SearchBar component: arama input'u, debounce (300ms), loading state, error handling

@@ -84,6 +84,17 @@ const getCacheKey = (category, page, pageSize) => {
 };
 
 /**
+ * Generate cache key for search requests
+ * @param {string} query - Search query
+ * @param {number} page - Page number
+ * @param {number} pageSize - Results per page
+ * @returns {string} Cache key
+ */
+const getSearchCacheKey = (query, page, pageSize) => {
+  return `search:${query.toLowerCase().trim()}:${page}:${pageSize}`;
+};
+
+/**
  * Get cached news data
  * @param {string} key - Cache key
  * @returns {Object|null} Cached data or null if not found/expired
@@ -762,6 +773,104 @@ const fetchArticleById = async (articleIdOrUrl) => {
   }
 };
 
+/**
+ * Search news articles
+ * @param {string} query - Search query
+ * @param {number} page - Page number (default: 1)
+ * @param {number} pageSize - Results per page (default: 20)
+ * @returns {Promise<Object>} Normalized news data
+ * @throws {Error} On validation or API errors
+ */
+const searchNews = async (query, page = 1, pageSize = DEFAULT_PAGE_SIZE) => {
+  // Validate inputs
+  if (!query || typeof query !== 'string' || query.trim().length === 0) {
+    const error = new Error('Search query is required');
+    error.code = 'VAL_MISSING_FIELD';
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (query.trim().length < 2) {
+    const error = new Error('Search query must be at least 2 characters');
+    error.code = 'VAL_INVALID_FORMAT';
+    error.statusCode = 400;
+    throw error;
+  }
+
+  validatePagination(page, pageSize);
+
+  // Check cache first
+  const cacheKey = getSearchCacheKey(query, page, pageSize);
+  const cached = getCachedNews(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  // Check rate limit and reserve slot atomically
+  const rateLimit = checkRateLimitAndReserve();
+  if (!rateLimit.allowed) {
+    // Log rate limit exceeded
+    logger.warn(`Rate limit exceeded: ${rateLimit.message}`, {
+      dailyCount: rateLimit.dailyCount,
+      cacheKey,
+    });
+
+    // Rate limit exceeded - try to return cached data (even if expired)
+    const expiredCache = cache.get(cacheKey);
+    if (expiredCache) {
+      logger.info('Returning expired cache due to rate limit', { cacheKey });
+      return expiredCache.data;
+    }
+
+    // No cache available - throw error
+    logger.error('Rate limit exceeded and no cache available', {
+      cacheKey,
+      dailyCount: rateLimit.dailyCount,
+    });
+    const error = new Error(rateLimit.message);
+    error.code = 'NEWS_RATE_LIMIT_EXCEEDED';
+    error.statusCode = 429;
+    throw error;
+  }
+
+  // Build request parameters for search
+  const requestParams = {
+    'q': query.trim(),
+    'page': page,
+    'page-size': pageSize,
+    'show-fields': 'thumbnail,headline,trailText,bodyText',
+    'order-by': 'relevance', // Use relevance for search results
+  };
+
+  // Log API request
+  logger.info('Searching news from The Guardian API', {
+    query: query.trim(),
+    page,
+    pageSize,
+    cacheKey,
+  });
+
+  // Make API request to The Guardian API
+  const response = await guardianApiClient.get(GUARDIAN_ENDPOINT, {
+    params: requestParams,
+  });
+
+  // Normalize response
+  const normalizedData = normalizeNewsResponse(response.data, page, pageSize, null);
+
+  // Cache result
+  setCachedNews(cacheKey, normalizedData);
+
+  logger.info('News search completed and cached successfully', {
+    cacheKey,
+    query: query.trim(),
+    articleCount: normalizedData.articles.length,
+    totalResults: normalizedData.totalResults,
+  });
+
+  return normalizedData;
+};
+
 // ===========================
 // Module Exports
 // ===========================
@@ -771,6 +880,7 @@ module.exports = {
   fetchNewsByCategory,
   fetchNewsByPreferences,
   fetchArticleById,
+  searchNews,
 
   // Cache management
   clearCache,

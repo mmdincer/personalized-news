@@ -241,6 +241,55 @@ const getArticleById = async (req, res, next) => {
 };
 
 /**
+ * Search news articles
+ * GET /api/news/search
+ *
+ * Searches news articles using The Guardian API search endpoint
+ *
+ * @param {Object} req - Express request
+ * @param {Object} res - Express response
+ * @param {Function} next - Express next middleware
+ */
+const searchNews = async (req, res, next) => {
+  try {
+    // Check validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const error = new Error('Validation failed');
+      error.code = 'VAL_INVALID_FORMAT';
+      error.statusCode = 400;
+      error.details = errors.array();
+      return next(error);
+    }
+
+    // Extract parameters
+    const query = req.query.q;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+
+    // Validate query parameter
+    if (!query) {
+      const error = new Error('Search query (q) is required');
+      error.code = 'VAL_MISSING_FIELD';
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    // Call service layer
+    const news = await newsService.searchNews(query, page, limit);
+
+    // Send success response
+    res.json({
+      success: true,
+      data: news,
+    });
+  } catch (error) {
+    // Pass error to error handler middleware
+    next(error);
+  }
+};
+
+/**
  * Clear news cache (admin only)
  * POST /api/news/cache/clear
  *
@@ -268,5 +317,6 @@ module.exports = {
   getPersonalizedNews,
   getArticleById,
   getRateLimitStats,
+  searchNews,
   clearNewsCache,
 };

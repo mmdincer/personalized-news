@@ -40,9 +40,33 @@ const paginationValidation = [
     .toInt(),
 ];
 
+const searchValidation = [
+  query('q')
+    .trim()
+    .isLength({ min: 2 })
+    .withMessage('Search query must be at least 2 characters')
+    .escape(),
+  ...paginationValidation,
+];
+
 // ===========================
 // Public Routes
 // ===========================
+
+/**
+ * @route   GET /api/news/search
+ * @desc    Search news articles
+ * @access  Public
+ * @query   q - Search query (required, min 2 characters)
+ * @query   page (optional) - Page number (default: 1)
+ * @query   limit (optional) - Results per page (default: 20, max: 50)
+ */
+router.get(
+  '/search',
+  newsLimiter,
+  searchValidation,
+  newsController.searchNews
+);
 
 /**
  * @route   GET /api/news/article/:id
