@@ -220,7 +220,7 @@
 
 ### Görevler
 - [x] Database migration: `saved_articles` tablosu oluştur (user_id, article_url, article_title, article_image_url, saved_at, UNIQUE constraint user_id + article_url)
-- [ ] Backend API endpoints: `POST /api/user/saved-articles` (kaydet), `GET /api/user/saved-articles` (listele), `DELETE /api/user/saved-articles/:id` (sil), authentication middleware
+- [x] Backend API endpoints: `POST /api/user/saved-articles` (kaydet), `GET /api/user/saved-articles` (listele), `DELETE /api/user/saved-articles/:id` (sil), authentication middleware
 - [ ] Frontend SavedArticles component: kaydedilen haberleri listele, kaydet/sil butonları, NewsCard ile gösterim
 - [ ] Frontend SavedArticles page: `/saved` route, saved articles listesi
 - [ ] NewsCard'a "Save" butonu ekle: kaydedilmiş mi kontrolü, toggle functionality
