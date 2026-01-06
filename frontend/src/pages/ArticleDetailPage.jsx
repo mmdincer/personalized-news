@@ -20,6 +20,11 @@ const ArticleDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Scroll to top when component mounts or route changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   useEffect(() => {
     const fetchArticle = async () => {
       try {
@@ -181,20 +186,14 @@ const ArticleDetailPage = () => {
       </div>
 
       {/* Article Content */}
-      <div className="prose prose-lg max-w-none">
-        {article.content ? (
-          <div className="text-gray-800 leading-relaxed whitespace-pre-wrap">
-            {article.content.split('\n').map((paragraph, index) => (
-              paragraph.trim() && (
-                <p key={index} className="mb-4">
-                  {paragraph}
-                </p>
-              )
-            ))}
-          </div>
-        ) : (
-          <div className="text-gray-600">
-            <p className="mb-4">{article.description || 'No content available.'}</p>
+      {article.content ? (
+        <div 
+          className="prose prose-lg max-w-none prose-p:text-gray-800 prose-p:leading-relaxed prose-strong:font-semibold prose-strong:text-gray-900 prose-headings:text-gray-900 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline"
+          dangerouslySetInnerHTML={{ __html: article.content }}
+        />
+      ) : (
+        <div className="prose prose-lg max-w-none text-gray-600">
+          <p className="mb-4">{article.description || 'No content available.'}</p>
             {article.url && (
               <a
                 href={article.url}
@@ -217,9 +216,8 @@ const ArticleDetailPage = () => {
                 </svg>
               </a>
             )}
-          </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Footer Actions */}
       <div className="mt-12 pt-8 border-t border-gray-200">

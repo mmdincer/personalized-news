@@ -73,9 +73,10 @@ const NewsCard = ({ article }) => {
 
           {/* Description */}
           {article.description && (
-            <p className="mt-3 text-gray-600 line-clamp-2">
-              {article.description}
-            </p>
+            <p 
+              className="mt-3 text-gray-600 line-clamp-2"
+              dangerouslySetInnerHTML={{ __html: article.description }}
+            />
           )}
 
           {/* Read More Link */}
