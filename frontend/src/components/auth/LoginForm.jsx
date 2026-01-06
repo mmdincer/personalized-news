@@ -9,12 +9,14 @@
  */
 
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { extractErrorMessage } from '../../utils/errorHandler';
 import toast from 'react-hot-toast';
 import { useState } from 'react';
 
 const LoginForm = () => {
+  const navigate = useNavigate();
   const { login, loading: authLoading } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -29,11 +31,7 @@ const LoginForm = () => {
       setIsSubmitting(true);
       await login({ email: data.email, password: data.password });
       toast.success('Login successful!');
-      // Redirect will be handled by Router when set up
-      // For now, redirect to home
-      setTimeout(() => {
-        window.location.href = '/';
-      }, 500);
+      navigate('/');
     } catch (error) {
       const errorMessage = extractErrorMessage(error);
       toast.error(errorMessage);

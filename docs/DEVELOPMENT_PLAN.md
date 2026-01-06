@@ -145,7 +145,7 @@
 
 ### Görevler
 - [x] Auth forms: LoginForm ve RegisterForm component'leri (`react-hook-form`), form validation (RegisterForm: name, email, password, confirm password; LoginForm: email, password), error message display, loading states, Tailwind CSS styling, success redirect handling - bakınız: [ERROR_CODES.md](./ERROR_CODES.md)
-- [ ] Routing: React Router yapılandırması, route tanımlamaları (/, /login, /register, /news, /preferences), protected/public route wrappers entegrasyonu, 404 page
+- [x] Routing: React Router yapılandırması, route tanımlamaları (/, /login, /register, /news, /preferences), protected/public route wrappers entegrasyonu, 404 page
 - [ ] Navigation: Header/Navbar component
 
 ### Başarı Kriterleri
