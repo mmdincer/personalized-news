@@ -13,7 +13,7 @@ const router = express.Router();
 const profileController = require('../controllers/profileController');
 const { authenticateToken } = require('../middleware/auth');
 const { body } = require('express-validator');
-const { validate } = require('../middleware/validation');
+const { handleValidationErrors } = require('../middleware/validation');
 
 /**
  * @route   GET /api/user/profile
@@ -72,7 +72,7 @@ router.put(
       .isLength({ min: 8, max: 100 })
       .withMessage('New password must be between 8 and 100 characters'),
   ],
-  validate,
+  handleValidationErrors,
   profileController.updatePassword
 );
 
