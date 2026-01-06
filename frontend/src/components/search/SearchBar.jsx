@@ -142,9 +142,9 @@ const SearchBar = ({
         {/* Search Input */}
         <div className="relative">
           {/* Search Icon */}
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <svg
-              className="h-5 w-5 text-gray-400"
+              className="h-4 w-4 text-gray-400"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               fill="none"
@@ -167,20 +167,21 @@ const SearchBar = ({
             placeholder={placeholder}
             disabled={disabled}
             className={`
-              w-full pl-12 pr-12 py-3 
-              border border-gray-300 rounded-lg
+              w-full pl-10 pr-10 py-2 h-[38px]
+              border border-gray-300 rounded-lg text-sm
               focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
               disabled:bg-gray-100 disabled:cursor-not-allowed
               text-gray-900 placeholder-gray-400
               transition-all duration-200
               ${error ? 'border-red-300 focus:ring-red-500' : ''}
+              ${className.includes('border-0') ? 'border-0 shadow-none' : ''}
             `}
             aria-label="Search news"
             aria-describedby={error ? 'search-error' : undefined}
           />
 
           {/* Loading Indicator / Clear Button */}
-          <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
+          <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
             {isLoading ? (
               <svg
                 className="animate-spin h-5 w-5 text-blue-600"

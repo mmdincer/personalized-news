@@ -11,6 +11,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getNews, getNewsByCategory } from '../../services/newsService';
 import { getPreferences } from '../../services/preferencesService';
 import { getSavedArticles } from '../../services/savedArticlesService';
@@ -19,6 +20,7 @@ import { getAllCategoriesWithNames, getCategoryDisplayName } from '../../constan
 import { useAuth } from '../../contexts/AuthContext';
 import DateFilter from '../filters/DateFilter';
 import SortDropdown from '../filters/SortDropdown';
+import SearchBar from '../search/SearchBar';
 import NewsCard from './NewsCard';
 import NewsCardSkeleton from './NewsCardSkeleton';
 import toast from 'react-hot-toast';
@@ -261,50 +263,100 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
     setSort(newSort);
   };
 
+  // Handle search
+  const handleSearch = (query) => {
+    if (query && query.trim().length >= 2) {
+      navigate(`/search?q=${encodeURIComponent(query.trim())}`);
+    }
+  };
+
+  // Check if any filters are active
+  const hasActiveFilters = dateFilters.fromDate || dateFilters.toDate || sort !== 'newest';
+
   return (
     <div className="space-y-6">
       {/* Filters Section */}
-      <div className="space-y-4">
-        {/* Category Filter - Only show if enabled */}
-        {showCategoryFilter && (
-          <div className="bg-white rounded-lg shadow p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Filter by Category</h2>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {categories.map((category) => (
-                <button
-                  key={category.code}
-                  onClick={() => handleCategoryChange(category.code)}
-                  className={`px-4 py-3 sm:py-2 rounded-full text-sm font-medium transition-colors min-h-[44px] sm:min-h-0 touch-manipulation ${
-                    selectedCategory === category.code
-                      ? 'bg-blue-600 text-white active:bg-blue-700'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
-                  }`}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-visible">
+        {/* Filters Header */}
+        <div className="px-4 py-2.5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 bg-blue-100 rounded">
+                <svg
+                  className="w-4 h-4 text-blue-600"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 >
-                  {category.name}
-                </button>
-              ))}
+                  <path d="M3 6h18" />
+                  <path d="M7 12h10" />
+                  <path d="M11 18h2" />
+                </svg>
+              </div>
+              <div>
+                <h2 className="text-sm font-semibold text-gray-900">Filters</h2>
+              </div>
             </div>
+            {hasActiveFilters && (
+              <button
+                onClick={() => {
+                  setDateFilters({ fromDate: null, toDate: null });
+                  setSort('newest');
+                }}
+                className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 transition-colors"
+              >
+                <svg
+                  className="w-3.5 h-3.5"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M18 6L6 18" />
+                  <path d="M6 6l12 12" />
+                </svg>
+                Clear All
+              </button>
+            )}
           </div>
-        )}
+        </div>
 
-        {/* Date Filter and Sort */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {/* Date Filter */}
-          <DateFilter
-            fromDate={dateFilters.fromDate}
-            toDate={dateFilters.toDate}
-            onChange={handleDateFilterChange}
-            disabled={loading}
-          />
+        {/* Filters Content */}
+        <div className="p-4">
+          {/* Single Row Filters */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+            {/* Search Bar */}
+            <div className="md:col-span-1">
+              <SearchBar
+                onSearch={handleSearch}
+                placeholder="Search news..."
+                debounceMs={300}
+                minLength={2}
+                disabled={loading}
+                className="border-0 shadow-none"
+              />
+            </div>
 
-          {/* Sort Dropdown */}
-          <div className="flex items-end">
-            <div className="w-full">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Sort By
-              </label>
+            {/* Date Filter - Compact */}
+            <div className="md:col-span-2 flex items-center">
+              <DateFilter
+                fromDate={dateFilters.fromDate}
+                toDate={dateFilters.toDate}
+                onChange={handleDateFilterChange}
+                disabled={loading}
+                className="border-0 shadow-none p-0 compact w-full"
+              />
+            </div>
+
+            {/* Sort Dropdown */}
+            <div className="md:col-span-1 relative z-10">
               <SortDropdown
                 value={sort}
                 onChange={handleSortChange}
@@ -313,6 +365,109 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
               />
             </div>
           </div>
+
+          {/* Category Filter - Only show if enabled */}
+          {showCategoryFilter && (
+            <div className="mt-4">
+              <div className="flex items-center gap-1.5 mb-2.5">
+                <svg
+                  className="w-3.5 h-3.5 text-gray-500"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+                </svg>
+                <label className="text-xs font-semibold text-gray-700">Category</label>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {categories.map((category) => (
+                  <button
+                    key={category.code}
+                    onClick={() => handleCategoryChange(category.code)}
+                    className={`
+                      px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200
+                      min-h-[36px] sm:min-h-0 touch-manipulation
+                      flex items-center gap-1.5
+                      ${
+                        selectedCategory === category.code
+                          ? 'bg-blue-600 text-white shadow-sm hover:bg-blue-700 active:bg-blue-800'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
+                      }
+                    `}
+                  >
+                    {selectedCategory === category.code && (
+                      <svg
+                        className="w-3 h-3"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M20 6L9 17l-5-5" />
+                      </svg>
+                    )}
+                    {category.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Active Filters Summary */}
+          {hasActiveFilters && (
+            <div className="pt-3 border-t border-gray-200">
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="text-xs font-medium text-gray-500">Active:</span>
+                {dateFilters.fromDate && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">
+                    From {dateFilters.fromDate}
+                    <button
+                      onClick={() => handleDateFilterChange({ fromDate: null, toDate: dateFilters.toDate })}
+                      className="hover:text-blue-900"
+                    >
+                      <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </span>
+                )}
+                {dateFilters.toDate && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">
+                    To {dateFilters.toDate}
+                    <button
+                      onClick={() => handleDateFilterChange({ fromDate: dateFilters.fromDate, toDate: null })}
+                      className="hover:text-blue-900"
+                    >
+                      <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </span>
+                )}
+                {sort !== 'newest' && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">
+                    Sort: {sort === 'oldest' ? 'Oldest' : 'Relevance'}
+                    <button
+                      onClick={() => handleSortChange('newest')}
+                      className="hover:text-blue-900"
+                    >
+                      <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

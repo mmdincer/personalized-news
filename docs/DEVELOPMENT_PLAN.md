@@ -254,7 +254,6 @@
 - [ ] SearchBar debounce ile optimize edilmiş
 - [ ] Filter'lar URL query parametrelerinde saklanıyor
 - [ ] Loading ve error states handle ediliyor
-- [ ] Infinite scroll çalışıyor (sayfa sonuna gelindiğinde otomatik yükleme)
 - [ ] Loading state infinite scroll sırasında gösteriliyor
 - [ ] Tüm haberler yüklendiğinde infinite scroll duruyor
 

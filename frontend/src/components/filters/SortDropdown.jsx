@@ -75,14 +75,15 @@ const SortDropdown = ({
         onClick={handleToggle}
         disabled={disabled}
         className={`
-          w-full sm:w-auto px-4 py-2.5
+          w-full px-3 py-2 h-[38px] whitespace-nowrap
           bg-white border border-gray-300 rounded-lg
           flex items-center justify-between gap-2
           text-sm font-medium text-gray-700
-          hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+          hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
           disabled:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50
           transition-all duration-200
-          ${isOpen ? 'ring-2 ring-blue-500 border-transparent' : ''}
+          ${isOpen ? 'ring-2 ring-blue-500 border-blue-500' : ''}
+          ${value !== 'newest' ? 'bg-blue-50 border-blue-200' : ''}
         `}
         aria-label="Sort options"
         aria-expanded={isOpen}
@@ -126,7 +127,7 @@ const SortDropdown = ({
       {/* Dropdown Menu */}
       {isOpen && (
         <div
-          className="absolute z-50 mt-2 w-full sm:w-56 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden"
+          className="absolute z-[100] mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden"
           role="listbox"
         >
           {availableOptions.map((option) => {
@@ -137,8 +138,8 @@ const SortDropdown = ({
                 type="button"
                 onClick={() => handleSelect(option.value)}
                 className={`
-                  w-full px-4 py-3 text-left text-sm
-                  flex items-center justify-between
+                  w-full px-3 py-2.5 text-left text-sm
+                  flex items-center gap-2
                   transition-colors duration-150
                   ${
                     isSelected
@@ -146,30 +147,29 @@ const SortDropdown = ({
                       : 'text-gray-700 hover:bg-gray-50'
                   }
                   focus:outline-none focus:bg-gray-50
+                  first:rounded-t-lg last:rounded-b-lg
                 `}
                 role="option"
                 aria-selected={isSelected}
               >
-                <div className="flex items-center gap-3">
-                  {/* Check Icon (for selected option) */}
-                  {isSelected ? (
-                    <svg
-                      className="w-4 h-4 text-blue-600"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M20 6L9 17l-5-5" />
-                    </svg>
-                  ) : (
-                    <div className="w-4 h-4" /> // Spacer for alignment
-                  )}
-                  <span>{option.label}</span>
-                </div>
+                {/* Check Icon (for selected option) */}
+                {isSelected ? (
+                  <svg
+                    className="w-4 h-4 text-blue-600 flex-shrink-0"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
+                ) : (
+                  <div className="w-4 h-4 flex-shrink-0" />
+                )}
+                <span className="flex-1">{option.label}</span>
               </button>
             );
           })}

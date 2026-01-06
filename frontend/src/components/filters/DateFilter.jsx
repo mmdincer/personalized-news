@@ -134,12 +134,12 @@ const DateFilter = ({
 
   return (
     <div className={`w-full ${className}`}>
-      <div className="bg-white rounded-lg border border-gray-300 p-4">
+      <div className={`${className.includes('border-0') ? '' : 'bg-white rounded-lg border border-gray-300'} ${className.includes('p-0') ? '' : 'p-4'}`}>
         {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
+        {!className.includes('border-0') && (
+          <div className="flex items-center gap-1.5 mb-2.5">
             <svg
-              className="w-5 h-5 text-gray-600"
+              className="w-3.5 h-3.5 text-gray-500"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               fill="none"
@@ -153,83 +153,152 @@ const DateFilter = ({
               <line x1="8" y1="2" x2="8" y2="6" />
               <line x1="3" y1="10" x2="21" y2="10" />
             </svg>
-            <h3 className="text-sm font-semibold text-gray-900">Filter by Date</h3>
+            <label className="text-xs font-semibold text-gray-700">Date Range</label>
+            {hasFilters && (
+              <button
+                type="button"
+                onClick={handleClear}
+                className="ml-auto text-xs text-blue-600 hover:text-blue-700 font-medium transition-colors"
+                disabled={disabled}
+              >
+                Clear
+              </button>
+            )}
           </div>
-          {hasFilters && (
-            <button
-              type="button"
-              onClick={handleClear}
-              className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-              disabled={disabled}
-            >
-              Clear
-            </button>
-          )}
-        </div>
+        )}
 
         {/* Date Inputs */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* From Date */}
-          <div>
-            <label
-              htmlFor="from-date"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              From Date
-            </label>
-            <div className="relative">
-              <input
-                id="from-date"
-                type="date"
-                value={localFromDate}
-                onChange={handleFromDateChange}
-                max={localToDate || getTodayDate()}
-                disabled={disabled}
-                className={`
-                  w-full px-4 py-2 border rounded-lg
-                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                  disabled:bg-gray-100 disabled:cursor-not-allowed
-                  text-gray-900
-                  transition-all duration-200
-                  ${error && error.includes('from') ? 'border-red-300 focus:ring-red-500' : 'border-gray-300'}
-                `}
-                aria-label="From date"
-                aria-describedby={error && error.includes('from') ? 'date-error' : undefined}
-              />
+        {className.includes('compact') ? (
+          <div className="flex items-center gap-2 w-full">
+            {/* From Date */}
+            <div className="flex items-center gap-1.5 flex-1">
+              <label
+                htmlFor="from-date"
+                className="text-xs font-medium text-gray-600 whitespace-nowrap"
+              >
+                From:
+              </label>
+              <div className="relative flex-1">
+                <input
+                  id="from-date"
+                  type="date"
+                  value={localFromDate}
+                  onChange={handleFromDateChange}
+                  max={localToDate || getTodayDate()}
+                  disabled={disabled}
+                  className={`
+                    w-full px-3 py-2 border border-gray-300 rounded-lg text-sm h-[38px]
+                    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                    disabled:bg-gray-100 disabled:cursor-not-allowed
+                    text-gray-900 placeholder-gray-400
+                    transition-all duration-200
+                    ${error && error.includes('from') ? 'border-red-300 focus:ring-red-500' : ''}
+                    ${localFromDate ? 'bg-blue-50 border-blue-200' : ''}
+                  `}
+                  aria-label="From date"
+                  aria-describedby={error && error.includes('from') ? 'date-error' : undefined}
+                />
+              </div>
             </div>
-          </div>
 
-          {/* To Date */}
-          <div>
-            <label
-              htmlFor="to-date"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              To Date
-            </label>
-            <div className="relative">
-              <input
-                id="to-date"
-                type="date"
-                value={localToDate}
-                onChange={handleToDateChange}
-                min={localFromDate || undefined}
-                max={getTodayDate()}
-                disabled={disabled}
-                className={`
-                  w-full px-4 py-2 border rounded-lg
-                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                  disabled:bg-gray-100 disabled:cursor-not-allowed
-                  text-gray-900
-                  transition-all duration-200
-                  ${error && error.includes('to') ? 'border-red-300 focus:ring-red-500' : 'border-gray-300'}
-                `}
-                aria-label="To date"
-                aria-describedby={error && error.includes('to') ? 'date-error' : undefined}
-              />
+            {/* To Date */}
+            <div className="flex items-center gap-1.5 flex-1">
+              <label
+                htmlFor="to-date"
+                className="text-xs font-medium text-gray-600 whitespace-nowrap"
+              >
+                To:
+              </label>
+              <div className="relative flex-1">
+                <input
+                  id="to-date"
+                  type="date"
+                  value={localToDate}
+                  onChange={handleToDateChange}
+                  min={localFromDate || undefined}
+                  max={getTodayDate()}
+                  disabled={disabled}
+                  className={`
+                    w-full px-3 py-2 border border-gray-300 rounded-lg text-sm h-[38px]
+                    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                    disabled:bg-gray-100 disabled:cursor-not-allowed
+                    text-gray-900 placeholder-gray-400
+                    transition-all duration-200
+                    ${error && error.includes('to') ? 'border-red-300 focus:ring-red-500' : ''}
+                    ${localToDate ? 'bg-blue-50 border-blue-200' : ''}
+                  `}
+                  aria-label="To date"
+                  aria-describedby={error && error.includes('to') ? 'date-error' : undefined}
+                />
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* From Date */}
+            <div>
+              <label
+                htmlFor="from-date"
+                className="block text-xs font-medium text-gray-600 mb-1.5"
+              >
+                From Date
+              </label>
+              <div className="relative">
+                <input
+                  id="from-date"
+                  type="date"
+                  value={localFromDate}
+                  onChange={handleFromDateChange}
+                  max={localToDate || getTodayDate()}
+                  disabled={disabled}
+                  className={`
+                    w-full px-3 py-2 border rounded-lg text-sm
+                    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                    disabled:bg-gray-100 disabled:cursor-not-allowed
+                    text-gray-900 placeholder-gray-400
+                    transition-all duration-200
+                    ${error && error.includes('from') ? 'border-red-300 focus:ring-red-500' : 'border-gray-300'}
+                    ${localFromDate ? 'bg-blue-50 border-blue-200' : ''}
+                  `}
+                  aria-label="From date"
+                  aria-describedby={error && error.includes('from') ? 'date-error' : undefined}
+                />
+              </div>
+            </div>
+
+            {/* To Date */}
+            <div>
+              <label
+                htmlFor="to-date"
+                className="block text-xs font-medium text-gray-600 mb-1.5"
+              >
+                To Date
+              </label>
+              <div className="relative">
+                <input
+                  id="to-date"
+                  type="date"
+                  value={localToDate}
+                  onChange={handleToDateChange}
+                  min={localFromDate || undefined}
+                  max={getTodayDate()}
+                  disabled={disabled}
+                  className={`
+                    w-full px-3 py-2 border rounded-lg text-sm
+                    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                    disabled:bg-gray-100 disabled:cursor-not-allowed
+                    text-gray-900 placeholder-gray-400
+                    transition-all duration-200
+                    ${error && error.includes('to') ? 'border-red-300 focus:ring-red-500' : 'border-gray-300'}
+                    ${localToDate ? 'bg-blue-50 border-blue-200' : ''}
+                  `}
+                  aria-label="To date"
+                  aria-describedby={error && error.includes('to') ? 'date-error' : undefined}
+                />
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Error Message */}
         {error && (
@@ -256,14 +325,17 @@ const DateFilter = ({
           </div>
         )}
 
-        {/* Helper Text */}
-        {!error && hasFilters && (
-          <div className="mt-3 text-xs text-gray-500">
+        {/* Helper Text - Only show if not in compact mode */}
+        {!className.includes('border-0') && !error && hasFilters && (
+          <div className="mt-2 text-xs text-gray-500 flex items-center gap-1">
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
             {localFromDate && localToDate
-              ? `Showing articles from ${localFromDate} to ${localToDate}`
+              ? `${localFromDate} to ${localToDate}`
               : localFromDate
-              ? `Showing articles from ${localFromDate} onwards`
-              : `Showing articles up to ${localToDate}`}
+              ? `From ${localFromDate}`
+              : `Up to ${localToDate}`}
           </div>
         )}
       </div>
