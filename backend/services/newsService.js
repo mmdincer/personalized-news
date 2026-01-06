@@ -747,22 +747,27 @@ const fetchNewsByPreferences = async (
 
   // Fetch news from all categories sequentially to respect rate limits
   // The Guardian API free tier allows 1 request/second, so we serialize requests
-  const resultsPerCategory = Math.ceil(pageSize / categories.length);
+  // Fetch enough articles to support pagination (fetch multiple pages worth)
+  const PREFETCH_PAGES = 3; // Fetch 3 pages worth of data for better pagination
+  const resultsPerCategory = Math.ceil((pageSize * PREFETCH_PAGES) / categories.length);
   const results = [];
-  
+
   for (const category of categories) {
     // Add delay between requests to respect 1 request/second limit
     // Wait at least 1100ms between requests (slightly more than 1 second for safety)
     if (results.length > 0) {
       await new Promise((resolve) => setTimeout(resolve, 1100));
     }
-    
+
     const result = await fetchNewsByCategory(category, 1, resultsPerCategory, fromDate, toDate, normalizedSort);
     results.push(result);
   }
 
   // Aggregate results
   const allArticles = results.flatMap((result) => result.articles);
+
+  // Calculate total available from all categories
+  const totalAvailable = results.reduce((sum, result) => sum + (result.totalResults || 0), 0);
 
   // Sort articles based on sort parameter
   if (normalizedSort === 'oldest') {
@@ -780,9 +785,13 @@ const fetchNewsByPreferences = async (
   const startIndex = (page - 1) * pageSize;
   const paginatedArticles = allArticles.slice(startIndex, startIndex + pageSize);
 
+  // Calculate if there are more results available
+  // Use the larger of: actual fetched articles or reported total from API
+  const effectiveTotalResults = Math.max(allArticles.length, totalAvailable);
+
   return {
     articles: paginatedArticles,
-    totalResults: allArticles.length, // Actual available articles (not sum of all categories)
+    totalResults: effectiveTotalResults,
     page,
     pageSize,
   };

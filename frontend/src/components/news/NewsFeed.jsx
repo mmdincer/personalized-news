@@ -158,12 +158,19 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
         if (pageNum === 1) {
           setArticles(newArticles);
           // Check if there are more pages
-          setHasMore(newArticles.length === limit && newArticles.length < total);
+          // If we got a full page (limit), assume there might be more
+          // If totalResults is available and we have less than total, there's more
+          const hasMorePages = newArticles.length === limit || (total > 0 && newArticles.length < total);
+          setHasMore(hasMorePages);
         } else {
           setArticles((prev) => {
             const updatedArticles = [...prev, ...newArticles];
+            const updatedTotal = updatedArticles.length;
             // Check if there are more pages
-            setHasMore(newArticles.length === limit && updatedArticles.length < total);
+            // If we got a full page (limit), assume there might be more
+            // If totalResults is available and we have less than total, there's more
+            const hasMorePages = newArticles.length === limit || (total > 0 && updatedTotal < total);
+            setHasMore(hasMorePages);
             return updatedArticles;
           });
         }
@@ -216,8 +223,8 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
 
   // Set up Intersection Observer for infinite scroll
   useEffect(() => {
-    // Don't set up observer if no more pages or loading
-    if (!hasMore || loading || isLoadingMore) {
+    // Don't set up observer if no more pages or currently loading initial page
+    if (!hasMore || loading) {
       // Clean up existing observer
       if (observerRef.current) {
         observerRef.current.disconnect();
@@ -226,18 +233,23 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
       return;
     }
 
+    // Don't observe if already loading more (prevent duplicate requests)
+    if (isLoadingMore) {
+      return;
+    }
+
     // Create Intersection Observer
     const observer = new IntersectionObserver(
       (entries) => {
         const [entry] = entries;
-        if (entry.isIntersecting) {
+        if (entry.isIntersecting && hasMore && !loading && !isLoadingMore) {
           // User has scrolled to the bottom, load more
           handleLoadMore();
         }
       },
       {
         root: null, // Use viewport as root
-        rootMargin: '200px', // Start loading 200px before reaching the bottom
+        rootMargin: '300px', // Start loading 300px before reaching the bottom
         threshold: 0.1, // Trigger when 10% of sentinel is visible
       }
     );
@@ -587,11 +599,11 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
             )}
           </div>
 
-          {/* Infinite Scroll Sentinel */}
-          {hasMore && !loading && (
+          {/* Infinite Scroll Sentinel - Always render when articles exist */}
+          {articles.length > 0 && !loading && (
             <div
               ref={sentinelRef}
-              className="h-20 flex items-center justify-center"
+              className="h-20 flex items-center justify-center mt-8"
               aria-hidden="true"
             >
               {/* Loading indicator for infinite scroll */}
@@ -620,19 +632,6 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
                   <span className="text-sm">Loading more articles...</span>
                 </div>
               )}
-            </div>
-          )}
-
-          {/* Optional Load More Button (can be removed if infinite scroll is preferred) */}
-          {hasMore && !loading && !isLoadingMore && (
-            <div className="text-center">
-              <button
-                onClick={handleLoadMore}
-                disabled={loading || isLoadingMore}
-                className="px-6 py-3 min-h-[48px] bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium touch-manipulation"
-              >
-                Load More
-              </button>
             </div>
           )}
 

@@ -24,8 +24,8 @@ import './App.css';
 
 function App() {
   return (
-    <ErrorBoundary>
-      <BrowserRouter>
+    <BrowserRouter>
+      <ErrorBoundary>
         <AuthProvider>
           <Routes>
           {/* Public Routes */}
@@ -105,8 +105,8 @@ function App() {
           />
         </Routes>
       </AuthProvider>
+      </ErrorBoundary>
     </BrowserRouter>
-    </ErrorBoundary>
   );
 }
 
