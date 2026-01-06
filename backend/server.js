@@ -14,20 +14,66 @@ try {
   console.error('Please check your .env file and ensure SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set');
 }
 
+// Initialize News Service cache cleanup (if news service is available)
+try {
+  const newsService = require('./services/newsService');
+  if (newsService.startCacheCleanup) {
+    newsService.startCacheCleanup();
+    // eslint-disable-next-line no-console
+    console.log('✓ News service cache cleanup started');
+  }
+} catch (error) {
+  // News service not available yet (not an error)
+  // eslint-disable-next-line no-console
+  console.log('ℹ News service cache cleanup skipped (service not available)');
+}
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// ===========================
+// CORS Configuration
+// ===========================
+
+// CORS configuration per SECURITY_GUIDELINES.md
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN || 'http://localhost:5173', // Vite dev server default
+  credentials: true, // Allow cookies/auth headers
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 200, // Some legacy browsers (IE11) choke on 204
+};
+
+// In production, allow multiple origins if needed
+if (process.env.NODE_ENV === 'production' && process.env.CORS_ORIGINS) {
+  const allowedOrigins = process.env.CORS_ORIGINS.split(',').map((origin) =>
+    origin.trim()
+  );
+  corsOptions.origin = (origin, callback) => {
+    // Allow requests with no origin (mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  };
+}
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
 const authRoutes = require('./routes/auth');
 const preferencesRoutes = require('./routes/preferences');
+const newsRoutes = require('./routes/news');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user/preferences', preferencesRoutes);
+app.use('/api/news', newsRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

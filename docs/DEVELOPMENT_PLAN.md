@@ -22,10 +22,9 @@
 
 ### Görevler
 - [x] Proje kök dizin yapısını oluştur (backend/, frontend/, docs/)
-- [x] Tüm klasör yapılarını kur (backend: config/, controllers/, middleware/, routes/, services/, utils/, constants/, database/migrations/; frontend: components/, services/, utils/, contexts/, config/, i18n/, locales/, pages/) - bakınız: [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)
+- [x] Tüm klasör yapılarını kur (backend: config/, controllers/, middleware/, routes/, services/, utils/, constants/, database/migrations/; frontend: components/, services/, utils/, contexts/, config/, pages/) - bakınız: [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)
 - [x] Backend setup: `package.json`, dependencies, `server.js`, Express.js sunucusu, health check endpoint (`GET /api/health`) - bakınız: [TECHNOLOGY_STACK.md](./TECHNOLOGY_STACK.md)
 - [x] Frontend setup: Vite + React projesi, `package.json`, `vite.config.js`, Tailwind CSS kurulumu ve yapılandırması, dependencies - bakınız: [TECHNOLOGY_STACK.md](./TECHNOLOGY_STACK.md)
-- [x] i18n kurulumu: react-i18next paketleri, dil dosyaları yapısı (locales/tr, en, de, fr, es), i18n config, default language: 'tr'
 - [x] Konfigürasyon dosyaları: `.gitignore`, `.env.example` (backend ve frontend), ESLint, Prettier
 
 ### Başarı Kriterleri
@@ -83,23 +82,20 @@
 ## 4. feat/backend-user-preferences
 
 ### Görevler
-- [x] Constants files: `constants/categories.js` (ALLOWED_CATEGORIES, validation helper, display names mapping), `constants/countries.js` (SUPPORTED_COUNTRIES: tr/us/de/fr/es, validation helper, country-to-language mapping, default: 'tr') - bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)
-- [x] Preferences endpoints: `GET /api/user/preferences` (Supabase query, JSONB categories + country, default 'tr', JWT user ID), `PUT /api/user/preferences` (upsert, JSONB update, category/country validation, JWT user ID)
-- [x] Validation logic: category validation (ALLOWED_CATEGORIES check, reject invalid, reject empty array, remove duplicates), country validation (must be tr/us/de/fr/es) - bakınız: [ERROR_CODES.md](./ERROR_CODES.md)
-- [ ] Default preferences: register endpoint'inde default categories ['general', 'technology'] ve country 'tr' ile preferences insert (atomic operation - preferences oluşturulamazsa user silinir)
+- [x] Constants files: `constants/categories.js` (ALLOWED_CATEGORIES, validation helper, display names mapping) - bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)
+- [x] Preferences endpoints: `GET /api/user/preferences` (Supabase query, JSONB categories, JWT user ID), `PUT /api/user/preferences` (upsert, JSONB update, category validation, JWT user ID)
+- [x] Validation logic: category validation (ALLOWED_CATEGORIES check, reject invalid, reject empty array, remove duplicates) - bakınız: [ERROR_CODES.md](./ERROR_CODES.md)
+- [x] Default preferences: register endpoint'inde default categories ['general', 'technology'] ile preferences insert (atomic operation - preferences oluşturulamazsa user silinir)
 - [x] Database optimization: parameterized queries (SQL injection prevention), JSONB operators, GIN index on categories (optional)
 
 ### Başarı Kriterleri
 - [x] Kullanıcı tercihleri Supabase'den okunabiliyor (Terminal testi geçti)
 - [x] Tercihler Supabase'de güncellenebiliyor (Terminal testi geçti)
 - [x] Sadece 7 geçerli kategori kabul ediliyor (bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)) (Terminal testi geçti)
-- [x] Default preferences yeni kullanıcılara atanıyor (general, technology, country: 'tr') (Terminal testi geçti)
-- [x] Country field doğru şekilde kaydediliyor ve okunuyor (Terminal testi geçti)
-- [x] Sadece 5 geçerli ülke kabul ediliyor (tr, us, de, fr, es) (Terminal testi geçti)
+- [x] Default preferences yeni kullanıcılara atanıyor (general, technology) (Terminal testi geçti)
 - [x] JSONB array işlemleri doğru çalışıyor (Terminal testi geçti)
 - [x] Invalid kategoriler reddediliyor (Terminal testi geçti)
 - [x] Duplicate kategoriler otomatik temizleniyor (Terminal testi geçti)
-- [x] Invalid country kodları reddediliyor (Terminal testi geçti)
 - [x] **Manuel Kontroller:** Supabase Dashboard ve SQL Editor kontrolleri - bakınız: [MANUAL_TEST_CHECKLIST.md](./MANUAL_TEST_CHECKLIST.md)
 
 ---
@@ -107,25 +103,23 @@
 ## 5. feat/backend-news-api
 
 ### Görevler
-- [ ] News service layer: `services/newsService.js` oluştur (SRP: pure business logic, no HTTP concerns), NewsAPI.org entegrasyonu (axios instance, API key interceptor, 10s timeout, network error handling) - bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)
-- [ ] News fetching logic: kategori bazlı haber çekme (category validation, country parameter from user preferences/default 'tr', pageSize: 20, max 100), user country preference'e göre haber çekme, response normalization
-- [ ] News endpoints: `GET /api/news` (genel haberler), `GET /api/news/:category` (kategori bazlı), query parameters (page, limit)
-- [ ] Rate limiting: daily request tracking (100/day), per-second limiting (1/second), cached results when limit reached, logging - bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)
-- [ ] Error handling ve response transformation: API error handling, response normalization - bakınız: [ERROR_CODES.md](./ERROR_CODES.md), [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)
-- [ ] Configuration: NewsAPI.org API key `.env`'e ekle, CORS yapılandırması, response caching (15 minutes) - bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md)
+- [x] News service layer: `services/newsService.js` oluştur (SRP: pure business logic, no HTTP concerns), NewsAPI.org entegrasyonu (axios instance, API key interceptor, 10s timeout, network error handling) - bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)
+- [x] News fetching logic: kategori bazlı haber çekme (category validation, pageSize: 20, max 100), response normalization
+- [x] News endpoints: `GET /api/news` (genel haberler), `GET /api/news/:category` (kategori bazlı), query parameters (page, limit)
+- [x] Rate limiting: daily request tracking (100/day), per-second limiting (1/second), cached results when limit reached, logging - bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md) 
+- [x] Error handling ve response transformation: API error handling, response normalization - bakınız: [ERROR_CODES.md](./ERROR_CODES.md), [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md) 
+- [x] Configuration: CORS yapılandırması, response caching (15 minutes) - bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md) 
 
 ### Başarı Kriterleri
-- [ ] NewsAPI.org'dan haberler çekiliyor
-- [ ] 7 kategori filtreleme çalışıyor (bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md))
-- [ ] Country parametresi ile haberler çekiliyor (user preference'e göre)
-- [ ] Default country 'tr' kullanılıyor (eğer user preference yoksa)
-- [ ] API key güvenli şekilde yönetiliyor (sadece backend'de)
-- [ ] Haberler normalize edilmiş formatta döndürülüyor
-- [ ] Pagination çalışıyor (page, limit)
-- [ ] CORS doğru yapılandırıldı (Vite dev server için)
-- [ ] Rate limiting kontrolleri aktif (100/day, 1/second)
-- [ ] API hataları uygun şekilde handle ediliyor
-- [ ] Response caching çalışıyor (15 dakika)
+- [x] NewsAPI.org'dan haberler çekiliyor ✅ (US country ile test edildi, gerçek haberler geliyor)
+- [x] 7 kategori filtreleme çalışıyor (bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)) ✅ (Tüm kategoriler test edildi)
+- [x] API key güvenli şekilde yönetiliyor (sadece backend'de) ✅ (Kod kontrolü geçti, manuel test gerekli - bakınız: [MANUAL_TEST_NEWS_API.md](./MANUAL_TEST_NEWS_API.md))
+- [x] Haberler normalize edilmiş formatta döndürülüyor ✅ (API_SPECIFICATIONS.md formatına tam uyumlu, tüm fields mevcut)
+- [x] Pagination çalışıyor (page, limit) ✅ (Test edildi ve çalışıyor)
+- [x] CORS doğru yapılandırıldı (Vite dev server için) ✅ (Headers doğru, browser testi gerekli - bakınız: [MANUAL_TEST_NEWS_API.md](./MANUAL_TEST_NEWS_API.md))
+- [x] Rate limiting kontrolleri aktif (100/day, 1/second) ✅ (Stats çalışıyor, per-second limit çalışıyor, manuel test gerekli - bakınız: [MANUAL_TEST_NEWS_API.md](./MANUAL_TEST_NEWS_API.md))
+- [x] API hataları uygun şekilde handle ediliyor ✅ (Validation errors test edildi)
+- [x] Response caching çalışıyor (15 dakika) ✅ (Cache hit/miss test edildi)
 
 ---
 
@@ -169,17 +163,12 @@
 ### Görevler
 - [ ] News components: NewsFeed ve NewsCard component'leri, kategori bazlı haber filtreleme, loading skeleton, empty/error state handling, responsive grid layout
 - [ ] Preferences components: CategorySelector (checkbox/button UI, visual feedback), UserPreferences page component, kullanıcı tercihlerini yükleme ve güncelleme fonksiyonları
-- [ ] Country/Language selector: CountrySelector component (5 ülke: tr/us/de/fr/es, bayraklar ve isimler), UI dilini değiştirme (i18n.changeLanguage), country preference backend'e kaydetme, country değiştiğinde haberleri yeniden çekme, loading states
-- [ ] i18n entegrasyonu: tüm UI metinlerini translation dosyalarına taşıma, useTranslation hook kullanımı, dil değiştiğinde UI güncelleme, 5 dil dosyası (tr/en/de/fr/es.json)
 - [ ] Notifications: success/error notifications (`react-hot-toast`)
 
 ### Başarı Kriterleri
 - [ ] Haberler başarıyla gösteriliyor
 - [ ] Kategori filtreleme çalışıyor
 - [ ] Kullanıcı tercihleri yükleniyor ve güncellenebiliyor
-- [ ] Country/Language seçimi çalışıyor
-- [ ] UI dili seçilen ülkeye göre değişiyor (5 dil desteği)
-- [ ] Haberler seçilen ülkeye göre çekiliyor
 - [ ] Loading, empty ve error states handle ediliyor
 - [ ] Tercihler kaydediliyor
 - [ ] Bildirimler gösteriliyor (seçilen dile göre)
@@ -190,15 +179,13 @@
 ## 9. refactor/security-and-error-handling
 
 ### Görevler
-- [ ] Error handling: global error boundary component (React), backend error response standardizasyonu, frontend error handling utilities, user-friendly error mesajları (multi-language), error logging (`winston`), network error handling - bakınız: [ERROR_CODES.md](./ERROR_CODES.md)
+- [ ] Error handling: global error boundary component (React), backend error response standardizasyonu, frontend error handling utilities, user-friendly error mesajları (English), error logging (`winston`), network error handling - bakınız: [ERROR_CODES.md](./ERROR_CODES.md)
 - [ ] Security hardening: backend input validation middleware güçlendirme, frontend form validation iyileştirmeleri, XSS prevention (HTML sanitization, CSP headers), SQL injection prevention (parameterized queries), Supabase RLS policies gözden geçirme, rate limiting middleware (`express-rate-limit`), request size limiting, Supabase connection pool yönetimi, OWASP Top 10 checklist - bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md)
 
 ### Başarı Kriterleri
 - [ ] Error boundary çalışıyor ve kullanıcı dostu mesajlar gösteriyor
 - [ ] Tüm error'lar standardize edilmiş formatta döndürülüyor
 - [ ] Error codes catalog'da tanımlı ve tutarlı (bakınız: [ERROR_CODES.md](./ERROR_CODES.md))
-- [ ] Multi-language error messages kullanıcı dostu ve actionable (5 dil: tr, en, de, fr, es)
-- [ ] Error mesajları seçilen dile göre gösteriliyor
 - [ ] Winston logging aktif (error.log, combined.log)
 - [ ] Tüm input'lar validate ediliyor (frontend ve backend)
 - [ ] XSS koruması aktif (HTML sanitization, CSP headers)

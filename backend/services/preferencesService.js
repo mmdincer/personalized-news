@@ -3,12 +3,11 @@ const {
   validateCategories,
   normalizeCategories,
 } = require('../constants/categories');
-const { isValidCountry, getDefaultCountry } = require('../constants/countries');
 
 /**
  * Get user preferences from database
  * @param {string} userId - User ID (UUID)
- * @returns {Promise<{categories: Array<string>, country: string}>} User preferences
+ * @returns {Promise<{categories: Array<string>}>} User preferences
  * @throws {Error} If user ID is invalid or query fails
  */
 const getUserPreferences = async (userId) => {
@@ -20,7 +19,7 @@ const getUserPreferences = async (userId) => {
   // Query user preferences
   const { data, error } = await supabase
     .from('user_preferences')
-    .select('categories, country')
+    .select('categories')
     .eq('user_id', userId)
     .single();
 
@@ -31,7 +30,6 @@ const getUserPreferences = async (userId) => {
       // PostgreSQL "no rows" error
       return {
         categories: ['general', 'technology'], // Default categories
-        country: getDefaultCountry(), // Default country ('tr')
       };
     }
     throw new Error(`Failed to fetch user preferences: ${error.message}`);
@@ -40,7 +38,6 @@ const getUserPreferences = async (userId) => {
   // Return preferences
   return {
     categories: data.categories || ['general', 'technology'],
-    country: data.country || getDefaultCountry(),
   };
 };
 
@@ -49,8 +46,7 @@ const getUserPreferences = async (userId) => {
  * @param {string} userId - User ID (UUID)
  * @param {Object} preferences - Preferences to update
  * @param {Array<string>} [preferences.categories] - News categories
- * @param {string} [preferences.country] - Country code
- * @returns {Promise<{categories: Array<string>, country: string}>} Updated preferences
+ * @returns {Promise<{categories: Array<string>}>} Updated preferences
  * @throws {Error} If validation fails or query fails
  */
 const updateUserPreferences = async (userId, preferences) => {
@@ -103,24 +99,6 @@ const updateUserPreferences = async (userId, preferences) => {
     updateData.categories = normalizedCategories;
   }
 
-  // Validate and add country if provided
-  if (preferences.country !== undefined) {
-    // Validate country
-    if (typeof preferences.country !== 'string') {
-      throw new Error('Country must be a string');
-    }
-
-    const countryCode = preferences.country.toLowerCase().trim();
-
-    if (!isValidCountry(countryCode)) {
-      throw new Error(
-        `Invalid country code: ${countryCode}. Supported: tr, us, de, fr, es`
-      );
-    }
-
-    updateData.country = countryCode;
-  }
-
   // Perform upsert (insert or update)
   const { data, error } = await supabase
     .from('user_preferences')
@@ -128,7 +106,7 @@ const updateUserPreferences = async (userId, preferences) => {
       onConflict: 'user_id', // Update if user_id exists
       returning: 'representation', // Return updated row
     })
-    .select('categories, country')
+    .select('categories')
     .single();
 
   // Handle query errors
@@ -139,14 +117,13 @@ const updateUserPreferences = async (userId, preferences) => {
   // Return updated preferences
   return {
     categories: data.categories,
-    country: data.country,
   };
 };
 
 /**
  * Create default preferences for a new user
  * @param {string} userId - User ID (UUID)
- * @returns {Promise<{categories: Array<string>, country: string}>} Created preferences
+ * @returns {Promise<{categories: Array<string>}>} Created preferences
  * @throws {Error} If user ID is invalid or creation fails
  */
 const createDefaultPreferences = async (userId) => {
@@ -161,9 +138,8 @@ const createDefaultPreferences = async (userId) => {
     .insert({
       user_id: userId,
       categories: ['general', 'technology'], // Default categories
-      country: getDefaultCountry(), // Default country ('tr')
     })
-    .select('categories, country')
+    .select('categories')
     .single();
 
   // Handle query errors
@@ -179,7 +155,6 @@ const createDefaultPreferences = async (userId) => {
   // Return created preferences
   return {
     categories: data.categories,
-    country: data.country,
   };
 };
 

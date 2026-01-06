@@ -56,11 +56,9 @@ describe('GET /api/user/preferences', () => {
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
     expect(response.body.data).toHaveProperty('categories');
-    expect(response.body.data).toHaveProperty('country');
     expect(Array.isArray(response.body.data.categories)).toBe(true);
     expect(response.body.data.categories).toContain('general');
     expect(response.body.data.categories).toContain('technology');
-    expect(response.body.data.country).toBe('tr'); // Default country
   });
 
   test('should fail without authentication token', async () => {
@@ -98,36 +96,6 @@ describe('PUT /api/user/preferences', () => {
     expect(response.body.data.categories).toEqual(newCategories);
   });
 
-  test('should update country successfully', async () => {
-    const newCountry = 'us';
-
-    const response = await request(app)
-      .put('/api/user/preferences')
-      .set('Authorization', `Bearer ${authToken}`)
-      .send({ country: newCountry });
-
-    expect(response.status).toBe(200);
-    expect(response.body.success).toBe(true);
-    expect(response.body.data.country).toBe(newCountry);
-  });
-
-  test('should update both categories and country', async () => {
-    const newCategories = ['health', 'sports'];
-    const newCountry = 'de';
-
-    const response = await request(app)
-      .put('/api/user/preferences')
-      .set('Authorization', `Bearer ${authToken}`)
-      .send({
-        categories: newCategories,
-        country: newCountry,
-      });
-
-    expect(response.status).toBe(200);
-    expect(response.body.success).toBe(true);
-    expect(response.body.data.categories).toEqual(newCategories);
-    expect(response.body.data.country).toBe(newCountry);
-  });
 
   test('should fail with invalid category', async () => {
     const invalidCategories = ['invalid_category', 'technology'];
@@ -142,18 +110,6 @@ describe('PUT /api/user/preferences', () => {
     expect(response.body.error.code).toBe('PREF_INVALID_CATEGORY');
   });
 
-  test('should fail with invalid country', async () => {
-    const invalidCountry = 'xx';
-
-    const response = await request(app)
-      .put('/api/user/preferences')
-      .set('Authorization', `Bearer ${authToken}`)
-      .send({ country: invalidCountry });
-
-    expect(response.status).toBe(400);
-    expect(response.body.success).toBe(false);
-    expect(response.body.error.code).toBe('PREF_INVALID_COUNTRY');
-  });
 
   test('should fail with empty categories array', async () => {
     const response = await request(app)
@@ -182,7 +138,7 @@ describe('PUT /api/user/preferences', () => {
 
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
-    expect(response.body.error.code).toBe('VALIDATION_ERROR');
+    expect(response.body.error.code).toBe('VAL_MISSING_FIELD');
   });
 
   test('should normalize categories (lowercase, dedup)', async () => {
@@ -213,7 +169,6 @@ describe('Preferences Persistence', () => {
     // Update preferences
     const newPrefs = {
       categories: ['entertainment', 'sports'],
-      country: 'fr',
     };
 
     await request(app)
@@ -228,6 +183,5 @@ describe('Preferences Persistence', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.data.categories).toEqual(newPrefs.categories);
-    expect(response.body.data.country).toBe(newPrefs.country);
   });
 });

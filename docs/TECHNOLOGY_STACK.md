@@ -84,16 +84,6 @@ Bu dosya projede kullanılan teknolojiler ve karar gerekçelerini içerir.
   - Kolay kullanım
   - Modern UI
 
-### Internationalization (i18n)
-
-- **react-i18next**: React i18n framework
-- **i18next**: Core i18n framework
-- **Gerekçe**: 
-  - 5 dil desteği (tr, en, de, fr, es)
-  - Ülke seçimine göre otomatik dil değişimi
-  - Yaygın kullanım
-  - Kolay entegrasyon
-
 ### HTTP Client
 
 - **axios**: HTTP client for API calls

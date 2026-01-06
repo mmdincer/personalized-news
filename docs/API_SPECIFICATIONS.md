@@ -31,77 +31,20 @@ const ALLOWED_CATEGORIES = [
 
 **Required Parameters:**
 - `apiKey` - NewsAPI.org API key
-- `country` veya `category` - En az biri gerekli
+- `category` - News category (required)
 
 **Optional Parameters:**
-- `country` - ISO 3166-1 alpha-2 ülke kodu (örn: us, gb, tr, de, fr, it, es, jp, kr, cn, in, br, mx, ar, au, ca, nl, se, no, dk, fi, pl, cz, hu, ro, gr, pt, be, ch, at, ie, nz, za, eg, ng, ke, ma, ae, sa, il, ae)
 - `pageSize` - Sayfa başına sonuç sayısı (max: 100, default: 20)
 - `page` - Sayfa numarası (default: 1)
 
-**Not:** `language` parametresi top-headlines endpoint'inde desteklenmiyor. Dil filtrelemesi için `everything` endpoint'i kullanılabilir, ancak bu projede top-headlines kullanılıyor.
+**Not:** Bu projede sadece `category` parametresi kullanılıyor. Country parametresi kullanılmıyor (NewsAPI.org default davranışı kullanılır).
 
 ### Request Örnekleri
 
 ```javascript
-// Kategori ile
+// Kategori ile (country parametresi kullanılmıyor)
 GET https://newsapi.org/v2/top-headlines?category=technology&apiKey=YOUR_API_KEY&pageSize=20&page=1
-
-// Ülke ile
-GET https://newsapi.org/v2/top-headlines?country=tr&apiKey=YOUR_API_KEY&pageSize=20&page=1
-
-// Kategori ve ülke ile
-GET https://newsapi.org/v2/top-headlines?category=technology&country=us&apiKey=YOUR_API_KEY&pageSize=20&page=1
 ```
-
-### Desteklenen Ülke/Dil Kodları (Proje İçin)
-
-Projede 5 ülke/dil desteği sağlanacak:
-
-```javascript
-const SUPPORTED_COUNTRIES = [
-  {
-    code: 'tr',
-    name: 'Turkey',
-    language: 'tr',
-    languageName: 'Türkçe',
-    flag: '🇹🇷',
-    default: true  // Default country/language
-  },
-  {
-    code: 'us',
-    name: 'United States',
-    language: 'en',
-    languageName: 'English',
-    flag: '🇺🇸'
-  },
-  {
-    code: 'de',
-    name: 'Germany',
-    language: 'de',
-    languageName: 'Deutsch',
-    flag: '🇩🇪'
-  },
-  {
-    code: 'fr',
-    name: 'France',
-    language: 'fr',
-    languageName: 'Français',
-    flag: '🇫🇷'
-  },
-  {
-    code: 'es',
-    name: 'Spain',
-    language: 'es',
-    languageName: 'Español',
-    flag: '🇪🇸'
-  }
-];
-
-// Default country
-const DEFAULT_COUNTRY = 'tr';
-```
-
-**Not:** Ülke seçimi hem haberlerin kaynağını hem de uygulama dilini belirler. Örneğin Türkiye seçildiğinde haberler Türkiye'den gelecek ve UI Türkçe olacak.
 
 ### Response Format (NewsAPI.org)
 
@@ -214,14 +157,12 @@ CREATE TABLE user_preferences (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL UNIQUE,
   categories JSONB DEFAULT '[]'::jsonb,
-  country VARCHAR(2) DEFAULT 'tr' NOT NULL CHECK (country IN ('tr', 'us', 'de', 'fr', 'es')),
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW(),
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE INDEX idx_user_preferences_user_id ON user_preferences(user_id);
-CREATE INDEX idx_user_preferences_country ON user_preferences(country);
 -- Optional: GIN index for JSONB search
 CREATE INDEX idx_user_preferences_categories ON user_preferences USING GIN(categories);
 ```
@@ -341,8 +282,7 @@ Authorization: Bearer jwt_token_here
 {
   "success": true,
   "data": {
-    "categories": ["general", "technology"],
-    "country": "tr"
+    "categories": ["general", "technology"]
   }
 }
 ```
@@ -357,8 +297,7 @@ Authorization: Bearer jwt_token_here
 **Request:**
 ```json
 {
-  "categories": ["business", "technology", "science"],
-  "country": "us"
+  "categories": ["business", "technology", "science"]
 }
 ```
 
@@ -367,15 +306,10 @@ Authorization: Bearer jwt_token_here
 {
   "success": true,
   "data": {
-    "categories": ["business", "technology", "science"],
-    "country": "us"
+    "categories": ["business", "technology", "science"]
   }
 }
 ```
-
-**Note:** `country` field is optional. If not provided, existing value is kept. Valid values: `tr`, `us`, `de`, `fr`, `es`. Changing country will:
-- Update UI language automatically
-- Change news source country for future requests
 
 ### News Endpoints
 

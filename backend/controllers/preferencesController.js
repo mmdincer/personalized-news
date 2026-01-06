@@ -1,4 +1,5 @@
 const preferencesService = require('../services/preferencesService');
+const { clearPreferencesCache } = require('../middleware/auth');
 
 /**
  * Get user preferences
@@ -18,7 +19,6 @@ const getPreferences = async (req, res, next) => {
       success: true,
       data: {
         categories: preferences.categories,
-        country: preferences.country,
       },
     });
   } catch (error) {
@@ -47,7 +47,6 @@ const getPreferences = async (req, res, next) => {
  * @requires Authentication (JWT token in Authorization header)
  * @body {Object} preferences - Preferences to update
  * @body {Array<string>} [preferences.categories] - News categories
- * @body {string} [preferences.country] - Country code (tr, us, de, fr, es)
  */
 const updatePreferences = async (req, res, next) => {
   try {
@@ -55,26 +54,20 @@ const updatePreferences = async (req, res, next) => {
     const userId = req.user.id;
 
     // Get preferences from request body
-    const { categories, country } = req.body;
+    const { categories } = req.body;
 
     // Validate that at least one field is provided
-    if (categories === undefined && country === undefined) {
-      const error = new Error(
-        'At least one field (categories or country) must be provided'
-      );
+    if (categories === undefined) {
+      const error = new Error('Categories field must be provided');
       error.statusCode = 400;
       error.errorCode = 'VAL_MISSING_FIELD';
       return next(error);
     }
 
-    // Build preferences object (only include provided fields)
-    const preferences = {};
-    if (categories !== undefined) {
-      preferences.categories = categories;
-    }
-    if (country !== undefined) {
-      preferences.country = country;
-    }
+    // Build preferences object
+    const preferences = {
+      categories,
+    };
 
     // Update preferences via service
     const updatedPreferences = await preferencesService.updateUserPreferences(
@@ -82,12 +75,14 @@ const updatePreferences = async (req, res, next) => {
       preferences
     );
 
+    // Clear preferences cache for this user (cache invalidation)
+    clearPreferencesCache(userId);
+
     // Return success response
     res.status(200).json({
       success: true,
       data: {
         categories: updatedPreferences.categories,
-        country: updatedPreferences.country,
       },
     });
   } catch (error) {
@@ -107,14 +102,6 @@ const updatePreferences = async (req, res, next) => {
       message = error.message;
     } else if (error.message.includes('Invalid categories')) {
       errorCode = 'PREF_INVALID_CATEGORY';
-      statusCode = 400;
-      message = error.message;
-    } else if (error.message.includes('Invalid country code')) {
-      errorCode = 'PREF_INVALID_COUNTRY';
-      statusCode = 400;
-      message = error.message;
-    } else if (error.message.includes('Country must be a string')) {
-      errorCode = 'VAL_INVALID_FORMAT';
       statusCode = 400;
       message = error.message;
     } else if (error.message.includes('User ID is required')) {
