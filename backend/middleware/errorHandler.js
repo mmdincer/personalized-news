@@ -19,7 +19,8 @@ const errorHandler = (err, req, res, next) => {
 
   // Default error values
   const statusCode = err.statusCode || err.status || 500;
-  const errorCode = err.errorCode || 'SYS_INTERNAL_ERROR';
+  // Support both errorCode and code properties (for compatibility)
+  const errorCode = err.errorCode || err.code || 'SYS_INTERNAL_ERROR';
   const message = err.message || 'Internal server error';
 
   // Standardized error response format
