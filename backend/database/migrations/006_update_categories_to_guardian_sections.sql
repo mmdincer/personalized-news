@@ -1,4 +1,8 @@
--- Migration: Update categories to Guardian API sections
+-- Migration: 006_update_categories_to_guardian_sections.sql
+-- Description: Updates categories to Guardian API sections
+-- Author: Personalized News Feed Project
+-- Date: 2026-01-06
+-- Version: 1.0.0
 -- This migration updates the default categories and validation constraint
 -- to use Guardian API section IDs instead of NewsAPI categories
 

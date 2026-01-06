@@ -119,10 +119,12 @@ const authRoutes = require('./routes/auth');
 const preferencesRoutes = require('./routes/preferences');
 const newsRoutes = require('./routes/news');
 const savedArticlesRoutes = require('./routes/savedArticles');
+const profileRoutes = require('./routes/profile');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user/preferences', preferencesRoutes);
 app.use('/api/user/saved-articles', savedArticlesRoutes);
+app.use('/api/user/profile', profileRoutes);
 app.use('/api/news', newsRoutes);
 
 // Health check endpoint

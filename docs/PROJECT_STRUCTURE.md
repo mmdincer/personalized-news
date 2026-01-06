@@ -29,7 +29,6 @@ personalized-news/
 │   │   ├── userService.js       # User CRUD operations (Supabase)
 │   │   ├── preferencesService.js # User preferences CRUD (Supabase)
 │   │   ├── savedArticlesService.js # Saved articles CRUD (Supabase)
-│   │   ├── readingHistoryService.js # Reading history CRUD (Supabase)
 │   │   └── profileService.js    # Profile operations (password update)
 │   ├── utils/
 │   │   ├── errors.js            # Custom error classes (AppError, AuthError, etc.)
@@ -40,17 +39,16 @@ personalized-news/
 │   │   ├── news.js              # News routes
 │   │   ├── preferences.js       # Preferences routes
 │   │   ├── savedArticles.js    # Saved articles routes
-│   │   ├── readingHistory.js    # Reading history routes
 │   │   └── profile.js           # Profile routes
 │   ├── database/
 │   │   └── migrations/          # SQL migration files
 │   │       ├── 001_create_users_table.sql
 │   │       ├── 002_create_user_preferences_table.sql
-│   │       ├── 003_create_saved_articles_table.sql
-│   │       ├── 004_create_reading_history_table.sql
-│   │       ├── 005_remove_country_column.sql
-│   │       ├── 007_update_categories_to_guardian_sections.sql
-│   │       └── 006_enable_rls_policies.sql (optional)
+│   │       ├── 003_enable_rls_policies.sql (optional)
+│   │       ├── 004_remove_country_column.sql
+│   │       ├── 005_create_saved_articles_table.sql
+│   │       ├── 006_update_categories_to_guardian_sections.sql
+│   │       └── 007_add_article_details_to_saved_articles.sql
 │   ├── tests/                   # Test files (optional - Branch 12)
 │   │   ├── unit/
 │   │   │   ├── services/
@@ -114,8 +112,7 @@ personalized-news/
 │   │   │   ├── newsService.js   # News API calls
 │   │   │   ├── preferencesService.js  # Preferences API calls
 │   │   │   ├── savedArticlesService.js # Saved articles API calls
-│   │   │   ├── readingHistoryService.js # Reading history API calls
-│   │   │   ├── searchService.js # Search API calls
+│   │   │   ├── newsService.js # News API calls (includes search)
 │   │   │   └── profileService.js # Profile API calls
 │   │   ├── utils/
 │   │   │   ├── errorHandler.js  # Error parsing and display
@@ -125,8 +122,7 @@ personalized-news/
 │   │   │   ├── NewsPage.jsx     # News page with filters
 │   │   │   ├── SearchPage.jsx   # Search results page
 │   │   │   ├── SavedArticlesPage.jsx # Saved articles page
-│   │   │   ├── ReadingHistoryPage.jsx # Reading history page
-│   │   │   ├── ProfilePage.jsx  # Profile management page
+│   │   │   └── ProfilePage.jsx  # Profile management page
 │   │   │   ├── LoginPage.jsx    # Login page
 │   │   │   ├── RegisterPage.jsx # Registration page
 │   │   │   └── NotFoundPage.jsx # 404 page

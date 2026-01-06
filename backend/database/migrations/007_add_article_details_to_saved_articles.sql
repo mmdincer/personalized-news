@@ -1,4 +1,4 @@
--- Migration: 008_add_article_details_to_saved_articles.sql
+-- Migration: 007_add_article_details_to_saved_articles.sql
 -- Description: Adds article details columns to saved_articles table for full article content storage
 -- Author: Personalized News Feed Project
 -- Date: 2026-01-06
