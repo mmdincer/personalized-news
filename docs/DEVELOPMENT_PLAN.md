@@ -129,7 +129,7 @@
 - [x] API configuration: `config/api.js` (base URL, axios instance, request/response interceptors, token auto-injection)
 - [x] Service layer: auth service (login, register, logout), news service (getNews, getNewsByCategory), preferences service (getPreferences, updatePreferences)
 - [x] Error handling: error handling utilities, error parsing ve display - bakınız: [ERROR_CODES.md](./ERROR_CODES.md)
-- [ ] Auth context: `AuthContext.js` ve `AuthProvider` component, login/register/logout fonksiyonları, token storage (`localStorage`), token validation ve auto-logout, protected route wrapper, auth state management (user, isAuthenticated)
+- [x] Auth context: `AuthContext.jsx` ve `AuthProvider` component, login/register/logout fonksiyonları, token storage (`localStorage`), token validation ve auto-logout, protected route wrapper, auth state management (user, isAuthenticated)
 
 ### Başarı Kriterleri
 - [ ] API çağrıları başarıyla yapılıyor
