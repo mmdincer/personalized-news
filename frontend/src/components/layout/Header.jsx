@@ -34,7 +34,7 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 inset-x-0 flex flex-wrap md:justify-start md:flex-nowrap z-50 w-full text-sm">
-      <nav className="mt-4 relative max-w-4xl w-full bg-white border border-gray-200 rounded-[24px] mx-2 flex flex-wrap md:flex-nowrap items-center justify-between p-2 ps-4 md:py-2 sm:mx-auto">
+      <nav className="mt-4 relative max-w-6xl w-full bg-white border border-gray-200 rounded-[24px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap md:flex-nowrap items-center justify-between py-2">
         <div className="flex items-center">
           {/* App Name */}
           <Link

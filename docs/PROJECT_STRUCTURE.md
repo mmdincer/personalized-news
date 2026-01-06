@@ -356,7 +356,8 @@ App (Router)
 │   ├── Navigation
 │   └── Footer
 ├── Pages (Route Components)
-│   ├── Home (NewsFeed)
+│   ├── Home (NewsFeed with showCategoryFilter=false - preferences only)
+│   ├── News (NewsFeed with showCategoryFilter=true - with category filtering)
 │   ├── Login (LoginForm)
 │   ├── Register (RegisterForm)
 │   └── Preferences (CategorySelector)

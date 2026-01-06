@@ -161,9 +161,11 @@
 ## 8. feat/frontend-news-and-preferences
 
 ### Görevler
-- [x] News components: NewsFeed ve NewsCard component'leri, kategori bazlı haber filtreleme, loading skeleton, empty/error state handling, responsive grid layout
+- [x] News components: NewsFeed ve NewsCard component'leri, kategori bazlı haber filtreleme (NewsPage'de aktif, HomePage'de devre dışı), loading skeleton, empty/error state handling, responsive grid layout
 - [x] Preferences components: CategorySelector (checkbox/button UI, visual feedback), UserPreferences page component, kullanıcı tercihlerini yükleme ve güncelleme fonksiyonları
 - [x] Notifications: success/error notifications (`react-hot-toast`)
+- [x] HomePage: Sadece kullanıcı preferences'larına göre haberler gösterilir, kategori filtreleme yok
+- [x] NewsPage: Kategori filtreleme aktif, kullanıcı istediği kategoriyi seçebilir
 
 ### Başarı Kriterleri
 - [x] Haberler başarıyla gösteriliyor
