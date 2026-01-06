@@ -9,6 +9,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
+import Layout from './components/layout/Layout';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import HomePage from './pages/HomePage';
@@ -31,7 +32,9 @@ function App() {
             path="/"
             element={
               <ProtectedRoute>
-                <HomePage />
+                <Layout>
+                  <HomePage />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -39,7 +42,9 @@ function App() {
             path="/news"
             element={
               <ProtectedRoute>
-                <NewsPage />
+                <Layout>
+                  <NewsPage />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -47,7 +52,9 @@ function App() {
             path="/preferences"
             element={
               <ProtectedRoute>
-                <PreferencesPage />
+                <Layout>
+                  <PreferencesPage />
+                </Layout>
               </ProtectedRoute>
             }
           />
