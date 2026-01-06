@@ -3,6 +3,7 @@ const supabase = require('../config/database');
 const { hashPassword, comparePassword } = require('../utils/password');
 const { validateEmail, normalizeEmail } = require('../utils/email');
 const { validatePassword } = require('../utils/passwordValidator');
+const { createDefaultPreferences } = require('./preferencesService');
 
 // JWT configuration
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -128,6 +129,29 @@ const register = async ({ name, email, password }) => {
       throw new Error('Email already exists');
     }
     throw new Error(`User registration failed: ${error.message}`);
+  }
+
+  // Create default preferences for new user (atomic operation)
+  // If preferences creation fails, rollback by deleting the user
+  try {
+    await createDefaultPreferences(user.id);
+  } catch (error) {
+    // Rollback: Delete the user if preferences creation fails
+    // eslint-disable-next-line no-console
+    console.error(
+      `Failed to create default preferences for user ${user.id}:`,
+      error.message
+    );
+    // eslint-disable-next-line no-console
+    console.log(`Rolling back: Deleting user ${user.id}`);
+
+    // Delete user to maintain atomicity
+    await supabase.from('users').delete().eq('id', user.id);
+
+    // Re-throw error to fail registration
+    throw new Error(
+      `User registration failed: Could not create default preferences. ${error.message}`
+    );
   }
 
   // Generate JWT token
