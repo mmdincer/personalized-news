@@ -19,7 +19,8 @@ const AuthContext = createContext(null);
  * AuthProvider Component
  * Wraps the application and provides auth state and functions
  * 
- * Note: Router integration (useNavigate) will be added when React Router is set up
+ * Note: This provider is used within BrowserRouter, so navigation hooks can be used
+ * in components that consume this context.
  */
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -110,15 +111,14 @@ export const AuthProvider = ({ children }) => {
   /**
    * Logout user
    * Clears auth state and redirects to login
-   * Note: Router integration will handle navigation when React Router is set up
+   * Note: For programmatic navigation, use navigate() from react-router-dom in components
    */
   const logout = () => {
     authService.logout();
     setUser(null);
     setIsAuthenticated(false);
-    // Navigation will be handled by Router when integrated
-    // For now, use window.location if Router is not available
-    if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+    // Redirect to login page
+    if (typeof window !== 'undefined') {
       window.location.href = '/login';
     }
   };
@@ -126,14 +126,12 @@ export const AuthProvider = ({ children }) => {
   /**
    * Validate token and update auth state
    * Called when API returns 401 (token expired/invalid)
-   * Note: Navigation handled by API interceptor or Router when integrated
+   * Note: Navigation is handled by API interceptor (api.js)
    */
   const handleTokenExpiration = () => {
     authService.logout();
     setUser(null);
     setIsAuthenticated(false);
-    // Navigation is handled by API interceptor (api.js)
-    // Router integration will use navigate() when React Router is set up
   };
 
   /**
