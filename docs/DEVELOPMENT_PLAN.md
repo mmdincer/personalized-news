@@ -237,26 +237,25 @@
 ## 12. feat/search-and-filters
 
 ### Görevler
-- [ ] Backend search endpoint: `GET /api/news/search?q=query&page=1&limit=20` (The Guardian API search endpoint kullanarak)
-- [ ] Backend date filter: `GET /api/news?from=YYYY-MM-DD&to=YYYY-MM-DD` (The Guardian API `from-date` ve `to-date` parametreleri)
-- [ ] Backend sorting: `GET /api/news?sort=newest|oldest|relevance` (The Guardian API `order-by` parametresi)
-- [ ] Frontend SearchBar component: arama input'u, debounce (300ms), loading state, error handling
-- [ ] Frontend SearchPage: `/search` route, search results display, pagination
-- [ ] Frontend DateFilter component: date range picker, from/to date selection
-- [ ] Frontend SortDropdown component: newest/oldest/relevance seçenekleri
-- [ ] NewsFeed'e filter entegrasyonu: date filter ve sort dropdown ekle
-- [ ] Infinite scroll: Intersection Observer API ile otomatik sayfa yükleme, sayfa sonuna gelindiğinde bir sonraki sayfa otomatik yüklenir, loading indicator gösterilir, "Load More" butonu opsiyonel olarak kalabilir veya kaldırılabilir
+- [x] Backend search endpoint: `GET /api/news/search?q=query&page=1&limit=20` (The Guardian API search endpoint kullanarak)
+- [x] Backend date filter: `GET /api/news?from=YYYY-MM-DD&to=YYYY-MM-DD` (The Guardian API `from-date` ve `to-date` parametreleri)
+- [x] Backend sorting: `GET /api/news?sort=newest|oldest|relevance` (The Guardian API `order-by` parametresi)
+- [x] Frontend SearchBar component: arama input'u, debounce (300ms), loading state, error handling
+- [x] Frontend SearchPage: `/search` route, search results display, pagination
+- [x] Frontend DateFilter component: date range picker, from/to date selection
+- [x] Frontend SortDropdown component: newest/oldest/relevance seçenekleri
+- [x] NewsFeed'e filter entegrasyonu: date filter ve sort dropdown ekle
+- [x] Infinite scroll: Intersection Observer API ile otomatik sayfa yükleme, sayfa sonuna gelindiğinde bir sonraki sayfa otomatik yüklenir, loading indicator gösterilir, "Load More" butonu opsiyonel olarak kalabilir veya kaldırılabilir
 
 ### Başarı Kriterleri
-- [ ] Arama çalışıyor (The Guardian API search)
-- [ ] Tarih filtresi çalışıyor
-- [ ] Sıralama çalışıyor (newest/oldest/relevance)
-- [ ] SearchBar debounce ile optimize edilmiş
-- [ ] Filter'lar URL query parametrelerinde saklanıyor
-- [ ] Loading ve error states handle ediliyor
-- [ ] Infinite scroll çalışıyor (sayfa sonuna gelindiğinde otomatik yükleme)
-- [ ] Loading state infinite scroll sırasında gösteriliyor
-- [ ] Tüm haberler yüklendiğinde infinite scroll duruyor
+- [x] Arama çalışıyor (The Guardian API search)
+- [x] Tarih filtresi çalışıyor
+- [x] Sıralama çalışıyor (newest/oldest/relevance)
+- [x] SearchBar debounce ile optimize edilmiş
+- [x] Filter'lar URL query parametrelerinde saklanıyor
+- [x] Loading ve error states handle ediliyor
+- [x] Loading state infinite scroll sırasında gösteriliyor
+- [x] Tüm haberler yüklendiğinde infinite scroll duruyor
 
 ---
 

@@ -36,9 +36,12 @@ const getNewsByCategory = async (req, res, next) => {
     const { category } = req.params;
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;
+    const fromDate = req.query.from || null;
+    const toDate = req.query.to || null;
+    const sort = req.query.sort || 'newest';
 
     // Call service layer
-    const news = await newsService.fetchNewsByCategory(category, page, limit);
+    const news = await newsService.fetchNewsByCategory(category, page, limit, fromDate, toDate, sort);
 
     // Send success response
     res.json({
@@ -77,6 +80,9 @@ const getPersonalizedNews = async (req, res, next) => {
     // Note: req.user is guaranteed to exist here because authenticateToken middleware runs before this controller
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;
+    const fromDate = req.query.from || null;
+    const toDate = req.query.to || null;
+    const sort = req.query.sort || 'newest';
 
     // Get user preferences from request (attached by auth middleware)
     const { categories } = req.user;
@@ -93,7 +99,10 @@ const getPersonalizedNews = async (req, res, next) => {
     const news = await newsService.fetchNewsByPreferences(
       categories,
       page,
-      limit
+      limit,
+      fromDate,
+      toDate,
+      sort
     );
 
     // Send success response
@@ -241,6 +250,58 @@ const getArticleById = async (req, res, next) => {
 };
 
 /**
+ * Search news articles
+ * GET /api/news/search
+ *
+ * Searches news articles using The Guardian API search endpoint
+ *
+ * @param {Object} req - Express request
+ * @param {Object} res - Express response
+ * @param {Function} next - Express next middleware
+ */
+const searchNews = async (req, res, next) => {
+  try {
+    // Check validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const error = new Error('Validation failed');
+      error.code = 'VAL_INVALID_FORMAT';
+      error.statusCode = 400;
+      error.details = errors.array();
+      return next(error);
+    }
+
+    // Extract parameters
+    const query = req.query.q;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const fromDate = req.query.from || null;
+    const toDate = req.query.to || null;
+    const sort = req.query.sort || 'relevance';
+
+    // Validate query parameter
+    if (!query) {
+      const error = new Error('Search query (q) is required');
+      error.code = 'VAL_MISSING_FIELD';
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    // Call service layer
+    const news = await newsService.searchNews(query, page, limit, fromDate, toDate, sort);
+
+    // Send success response
+    res.json({
+      success: true,
+      data: news,
+    });
+  } catch (error) {
+    // Pass error to error handler middleware
+    next(error);
+  }
+};
+
+/**
  * Clear news cache (admin only)
  * POST /api/news/cache/clear
  *
@@ -268,5 +329,6 @@ module.exports = {
   getPersonalizedNews,
   getArticleById,
   getRateLimitStats,
+  searchNews,
   clearNewsCache,
 };

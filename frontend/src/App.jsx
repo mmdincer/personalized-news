@@ -17,14 +17,15 @@ import HomePage from './pages/HomePage';
 import NewsPage from './pages/NewsPage';
 import PreferencesPage from './pages/PreferencesPage';
 import SavedArticlesPage from './pages/SavedArticlesPage';
+import SearchPage from './pages/SearchPage';
 import ArticleDetailPage from './pages/ArticleDetailPage';
 import NotFoundPage from './pages/NotFoundPage';
 import './App.css';
 
 function App() {
   return (
-    <ErrorBoundary>
-      <BrowserRouter>
+    <BrowserRouter>
+      <ErrorBoundary>
         <AuthProvider>
           <Routes>
           {/* Public Routes */}
@@ -73,6 +74,16 @@ function App() {
             }
           />
           <Route
+            path="/search"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <SearchPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/article/*"
             element={
               <ProtectedRoute>
@@ -94,8 +105,8 @@ function App() {
           />
         </Routes>
       </AuthProvider>
+      </ErrorBoundary>
     </BrowserRouter>
-    </ErrorBoundary>
   );
 }
 

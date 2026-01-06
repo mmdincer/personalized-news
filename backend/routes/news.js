@@ -40,9 +40,53 @@ const paginationValidation = [
     .toInt(),
 ];
 
+const dateFilterValidation = [
+  query('from')
+    .optional()
+    .matches(/^\d{4}-\d{2}-\d{2}$/)
+    .withMessage('From date must be in YYYY-MM-DD format'),
+  query('to')
+    .optional()
+    .matches(/^\d{4}-\d{2}-\d{2}$/)
+    .withMessage('To date must be in YYYY-MM-DD format'),
+];
+
+const sortValidation = [
+  query('sort')
+    .optional()
+    .isIn(['newest', 'oldest', 'relevance'])
+    .withMessage('Sort must be one of: newest, oldest, relevance'),
+];
+
+const searchValidation = [
+  query('q')
+    .trim()
+    .isLength({ min: 2 })
+    .withMessage('Search query must be at least 2 characters')
+    .escape(),
+  ...paginationValidation,
+  ...dateFilterValidation,
+  ...sortValidation,
+];
+
 // ===========================
 // Public Routes
 // ===========================
+
+/**
+ * @route   GET /api/news/search
+ * @desc    Search news articles
+ * @access  Public
+ * @query   q - Search query (required, min 2 characters)
+ * @query   page (optional) - Page number (default: 1)
+ * @query   limit (optional) - Results per page (default: 20, max: 50)
+ */
+router.get(
+  '/search',
+  newsLimiter,
+  searchValidation,
+  newsController.searchNews
+);
 
 /**
  * @route   GET /api/news/article/:id
@@ -69,7 +113,7 @@ router.get(
 router.get(
   '/:category',
   newsLimiter,
-  [...categoryValidation, ...paginationValidation],
+  [...categoryValidation, ...paginationValidation, ...dateFilterValidation, ...sortValidation],
   newsController.getNewsByCategory
 );
 
@@ -89,7 +133,7 @@ router.get(
   '/',
   newsLimiter,
   authenticateToken,
-  paginationValidation,
+  [...paginationValidation, ...dateFilterValidation, ...sortValidation],
   newsController.getPersonalizedNews
 );
 

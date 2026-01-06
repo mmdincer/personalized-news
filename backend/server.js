@@ -69,6 +69,10 @@ if (process.env.NODE_ENV === 'production' && process.env.CORS_ORIGINS) {
       callback(new Error('Not allowed by CORS'));
     }
   };
+} else if (process.env.NODE_ENV === 'production' && !process.env.CORS_ORIGINS) {
+  // In production without CORS_ORIGINS, allow default origin
+  // This is useful for development/testing in production mode
+  corsOptions.origin = process.env.CORS_ORIGIN || 'http://localhost:5173';
 }
 
 // ===========================
