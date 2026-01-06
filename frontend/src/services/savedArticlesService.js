@@ -159,7 +159,32 @@ export const deleteSavedArticleByUrl = async (articleUrl, savedArticlesMap = nul
     throw new Error('Article URL is required');
   }
 
-  // Find the saved article by URL
+  // First try to find in provided map (fastest)
+  if (savedArticlesMap && savedArticlesMap instanceof Map) {
+    const savedArticle = savedArticlesMap.get(articleUrl);
+    if (savedArticle && savedArticle.id) {
+      await deleteSavedArticle(savedArticle.id);
+      return;
+    }
+  }
+
+  // If not found in map, try cache (force refresh to get latest)
+  try {
+    const response = await getSavedArticles(true); // Force refresh cache
+    if (response.success && response.data) {
+      const savedArticle = response.data.find(
+        (item) => item.article_url === articleUrl
+      );
+      if (savedArticle && savedArticle.id) {
+        await deleteSavedArticle(savedArticle.id);
+        return;
+      }
+    }
+  } catch (error) {
+    // Continue to final check
+  }
+
+  // Final fallback: try isArticleSaved (uses cache or API)
   const savedArticle = await isArticleSaved(articleUrl, savedArticlesMap);
   
   if (!savedArticle || !savedArticle.id) {

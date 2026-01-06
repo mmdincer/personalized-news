@@ -13,6 +13,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   saveArticle,
+  deleteSavedArticle,
   deleteSavedArticleByUrl,
   isArticleSaved,
 } from '../../services/savedArticlesService';
@@ -77,8 +78,14 @@ const NewsCard = ({ article, savedArticlesMap = null, onSaveToggle = null }) => 
       setIsSaving(true);
 
       if (isSaved) {
-        // Unsave article
-        await deleteSavedArticleByUrl(article.url, savedArticlesMap);
+        // Unsave article - use savedArticleId if available, otherwise use URL lookup
+        if (savedArticleId) {
+          // Direct delete using ID (fastest and most reliable)
+          await deleteSavedArticle(savedArticleId);
+        } else {
+          // Fallback to URL-based delete
+          await deleteSavedArticleByUrl(article.url, savedArticlesMap);
+        }
         setIsSaved(false);
         setSavedArticleId(null);
         toast.success('Article removed from saved');
