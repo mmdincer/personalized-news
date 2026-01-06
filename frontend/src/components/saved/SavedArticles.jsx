@@ -41,17 +41,18 @@ const SavedArticles = () => {
         setSavedArticlesMap(map);
 
         // Transform saved articles to NewsCard-compatible format
+        // Use saved article ID so NewsCard can link to article detail page
         const transformedArticles = response.data.map((savedArticle) => ({
-          id: savedArticle.id,
+          id: savedArticle.id, // Use saved article ID (UUID)
           url: savedArticle.article_url,
           title: savedArticle.article_title,
           imageUrl: savedArticle.article_image_url,
           urlToImage: savedArticle.article_image_url,
-          publishedAt: savedArticle.saved_at,
+          publishedAt: savedArticle.article_published_at || savedArticle.saved_at,
           source: {
-            name: 'Saved Article',
+            name: savedArticle.article_source_name || 'Saved Article',
           },
-          description: null,
+          description: savedArticle.article_description || null,
         }));
 
         setSavedArticles(transformedArticles);

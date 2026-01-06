@@ -16,7 +16,8 @@ backend/
         ├── 004_remove_country_column.sql
         ├── 005_create_saved_articles_table.sql
         ├── 006_create_reading_history_table.sql (henüz oluşturulmadı)
-        └── 007_update_categories_to_guardian_sections.sql
+        ├── 007_update_categories_to_guardian_sections.sql
+        └── 008_add_article_details_to_saved_articles.sql
 ```
 
 ### Naming Convention
@@ -83,29 +84,53 @@ COMMENT ON COLUMN user_preferences.categories IS 'Array of preferred news catego
 COMMENT ON COLUMN user_preferences.user_id IS 'Foreign key to users table';
 ```
 
-### 003_create_saved_articles_table.sql
+### 005_create_saved_articles_table.sql
 
 ```sql
 -- Create saved_articles table
-CREATE TABLE IF NOT EXISTS saved_articles (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+CREATE TABLE saved_articles (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID NOT NULL,
   article_url VARCHAR(500) NOT NULL,
   article_title VARCHAR(500) NOT NULL,
   article_image_url VARCHAR(500),
-  saved_at TIMESTAMP DEFAULT NOW(),
+  saved_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   UNIQUE(user_id, article_url)
 );
 
--- Create indexes
-CREATE INDEX IF NOT EXISTS idx_saved_articles_user_id ON saved_articles(user_id);
-CREATE INDEX IF NOT EXISTS idx_saved_articles_saved_at ON saved_articles(saved_at DESC);
+-- Create indexes for performance
+CREATE INDEX idx_saved_articles_user_id ON saved_articles(user_id);
+CREATE INDEX idx_saved_articles_saved_at ON saved_articles(saved_at DESC);
 
--- Add comments
+-- Add comment to table
 COMMENT ON TABLE saved_articles IS 'User saved articles for later reading';
-COMMENT ON COLUMN saved_articles.article_url IS 'URL of the saved article (unique per user)';
+COMMENT ON COLUMN saved_articles.id IS 'Unique saved article identifier (UUID)';
+COMMENT ON COLUMN saved_articles.user_id IS 'Reference to users table (foreign key)';
+COMMENT ON COLUMN saved_articles.article_url IS 'URL of the saved article (unique per user, combined with user_id)';
+COMMENT ON COLUMN saved_articles.article_title IS 'Title of the saved article';
+COMMENT ON COLUMN saved_articles.article_image_url IS 'Image URL of the saved article (optional)';
 COMMENT ON COLUMN saved_articles.saved_at IS 'Timestamp when article was saved';
+```
+
+### 008_add_article_details_to_saved_articles.sql
+
+```sql
+-- Add new columns for article details
+ALTER TABLE saved_articles
+  ADD COLUMN IF NOT EXISTS article_description TEXT,
+  ADD COLUMN IF NOT EXISTS article_content TEXT,
+  ADD COLUMN IF NOT EXISTS article_source_name VARCHAR(100),
+  ADD COLUMN IF NOT EXISTS article_published_at TIMESTAMP WITH TIME ZONE;
+
+-- Create index on article_published_at for sorting
+CREATE INDEX IF NOT EXISTS idx_saved_articles_published_at ON saved_articles(article_published_at DESC);
+
+-- Add comments to new columns
+COMMENT ON COLUMN saved_articles.article_description IS 'Short description/trail text of the article';
+COMMENT ON COLUMN saved_articles.article_content IS 'Full article content/body text';
+COMMENT ON COLUMN saved_articles.article_source_name IS 'Source name (e.g., The Guardian, section name)';
+COMMENT ON COLUMN saved_articles.article_published_at IS 'Original publication date of the article';
 ```
 
 ### 004_create_reading_history_table.sql
@@ -155,6 +180,7 @@ COMMENT ON COLUMN reading_history.read_at IS 'Timestamp when article was read';
 5. `005_create_saved_articles_table.sql` - Saved articles tablosu (foreign key için users gerekli)
 6. `006_create_reading_history_table.sql` - Reading history tablosu (foreign key için users gerekli) (henüz oluşturulmadı)
 7. `007_update_categories_to_guardian_sections.sql` - Kategorileri Guardian API section'larına güncelle
+8. `008_add_article_details_to_saved_articles.sql` - Saved articles tablosuna article detayları ekle (description, content, source, published_at)
 
 ## Migration Best Practices
 

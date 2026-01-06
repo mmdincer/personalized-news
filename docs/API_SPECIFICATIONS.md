@@ -216,6 +216,44 @@ CREATE INDEX idx_user_preferences_user_id ON user_preferences(user_id);
 CREATE INDEX idx_user_preferences_categories ON user_preferences USING GIN(categories);
 ```
 
+#### Saved Articles Table
+
+```sql
+CREATE TABLE saved_articles (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL,
+  article_url VARCHAR(500) NOT NULL,
+  article_title VARCHAR(500) NOT NULL,
+  article_image_url VARCHAR(500),
+  article_description TEXT,
+  article_content TEXT,
+  article_source_name VARCHAR(100),
+  article_published_at TIMESTAMP WITH TIME ZONE,
+  saved_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  UNIQUE(user_id, article_url)
+);
+
+-- Create indexes for performance
+CREATE INDEX idx_saved_articles_user_id ON saved_articles(user_id);
+CREATE INDEX idx_saved_articles_saved_at ON saved_articles(saved_at DESC);
+CREATE INDEX idx_saved_articles_published_at ON saved_articles(article_published_at DESC);
+```
+
+**Column Descriptions:**
+- `id`: Unique saved article identifier (UUID)
+- `user_id`: Reference to users table (foreign key)
+- `article_url`: URL of the saved article (unique per user, combined with user_id)
+- `article_title`: Title of the saved article
+- `article_image_url`: Image URL of the saved article (optional)
+- `article_description`: Short description/trail text of the article (optional, fetched from Guardian API)
+- `article_content`: Full article content/body text (optional, fetched from Guardian API)
+- `article_source_name`: Source name (e.g., The Guardian, section name) (optional, fetched from Guardian API)
+- `article_published_at`: Original publication date of the article (optional, fetched from Guardian API)
+- `saved_at`: Timestamp when article was saved
+
+**Note:** When saving an article, the backend automatically fetches full article details (description, content, source, published date) from The Guardian API and stores them in the database. This allows offline access to saved articles and reduces API calls when viewing saved articles.
+
 ### Supabase Client Usage
 
 ```javascript
@@ -441,9 +479,9 @@ Authorization: Bearer jwt_token_here
 **Request:**
 ```json
 {
-  "articleUrl": "https://www.theguardian.com/...",
-  "articleTitle": "Article Title",
-  "articleImageUrl": "https://media.guim.co.uk/..."
+  "article_url": "https://www.theguardian.com/...",
+  "article_title": "Article Title",
+  "article_image_url": "https://media.guim.co.uk/..."
 }
 ```
 
@@ -453,13 +491,19 @@ Authorization: Bearer jwt_token_here
   "success": true,
   "data": {
     "id": "uuid",
-    "articleUrl": "https://www.theguardian.com/...",
-    "articleTitle": "Article Title",
-    "articleImageUrl": "https://media.guim.co.uk/...",
-    "savedAt": "2024-01-05T12:00:00Z"
+    "article_url": "https://www.theguardian.com/...",
+    "article_title": "Article Title",
+    "article_image_url": "https://media.guim.co.uk/...",
+    "article_description": "Short description/trail text of the article",
+    "article_content": "Full article content/body text",
+    "article_source_name": "The Guardian",
+    "article_published_at": "2024-01-05T12:00:00Z",
+    "saved_at": "2024-01-06T10:00:00Z"
   }
 }
 ```
+
+**Note:** When saving an article, the backend automatically fetches full article details (description, content, source, published date) from The Guardian API and stores them in the database. This allows offline access to saved articles.
 
 #### GET /api/user/saved-articles
 
@@ -476,22 +520,23 @@ Authorization: Bearer jwt_token_here
 ```json
 {
   "success": true,
-  "data": {
-    "articles": [
-      {
-        "id": "uuid",
-        "articleUrl": "https://www.theguardian.com/...",
-        "articleTitle": "Article Title",
-        "articleImageUrl": "https://media.guim.co.uk/...",
-        "savedAt": "2024-01-05T12:00:00Z"
-      }
-    ],
-    "totalResults": 10,
-    "page": 1,
-    "pageSize": 20
-  }
+  "data": [
+    {
+      "id": "uuid",
+      "article_url": "https://www.theguardian.com/...",
+      "article_title": "Article Title",
+      "article_image_url": "https://media.guim.co.uk/...",
+      "article_description": "Short description/trail text of the article",
+      "article_content": "Full article content/body text",
+      "article_source_name": "The Guardian",
+      "article_published_at": "2024-01-05T12:00:00Z",
+      "saved_at": "2024-01-06T10:00:00Z"
+    }
+  ]
 }
 ```
+
+**Note:** Returns an array of saved articles ordered by `saved_at` DESC (newest first). All article details including full content are included.
 
 #### DELETE /api/user/saved-articles/:id
 

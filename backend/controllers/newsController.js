@@ -10,6 +10,7 @@
 
 const { validationResult } = require('express-validator');
 const newsService = require('../services/newsService');
+const savedArticlesService = require('../services/savedArticlesService');
 
 /**
  * Get news by category
@@ -134,6 +135,7 @@ const getRateLimitStats = async (req, res, next) => {
  * GET /api/news/article/:id
  *
  * Fetches full article content including bodyText
+ * Checks saved articles first, then falls back to Guardian API
  *
  * @param {Object} req - Express request
  * @param {Object} res - Express response
@@ -144,6 +146,7 @@ const getArticleById = async (req, res, next) => {
     // Extract article ID or URL from params
     // Support both: /api/news/article/technology/2024/jan/05/article-id
     // and: /api/news/article/https://www.theguardian.com/...
+    // and: /api/news/article/{saved-article-uuid}
     const articleIdOrUrl = req.params.id || req.params['*'];
 
     if (!articleIdOrUrl) {
@@ -153,7 +156,77 @@ const getArticleById = async (req, res, next) => {
       return next(error);
     }
 
-    // Call service layer
+    // Check if user is authenticated
+    const userId = req.user?.id;
+
+    // First, check if it's a saved article UUID (UUID format: 8-4-4-4-12 hex characters)
+    // Check UUID format first, then verify if user is authenticated
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(articleIdOrUrl);
+    
+    if (isUUID) {
+      // UUID format detected - must be authenticated to access saved articles
+      if (!userId) {
+        const error = new Error('Authentication required to access saved articles');
+        error.code = 'AUTH_REQUIRED';
+        error.statusCode = 401;
+        return next(error);
+      }
+
+      const savedArticle = await savedArticlesService.getSavedArticleById(userId, articleIdOrUrl);
+      if (savedArticle) {
+        // Convert saved article to article format
+        const article = {
+          id: savedArticle.id,
+          title: savedArticle.article_title,
+          description: savedArticle.article_description,
+          content: savedArticle.article_content,
+          url: savedArticle.article_url,
+          imageUrl: savedArticle.article_image_url,
+          publishedAt: savedArticle.article_published_at || savedArticle.saved_at,
+          source: {
+            name: savedArticle.article_source_name || 'Saved Article',
+          },
+        };
+
+        return res.json({
+          success: true,
+          data: article,
+        });
+      } else {
+        // UUID format but not found in saved articles - return 404
+        const error = new Error('Saved article not found');
+        error.code = 'SAVED_ARTICLE_NOT_FOUND';
+        error.statusCode = 404;
+        return next(error);
+      }
+    }
+
+    // If authenticated, also check by URL
+    if (userId && articleIdOrUrl.startsWith('http')) {
+      const savedArticle = await savedArticlesService.getSavedArticleByUrl(userId, articleIdOrUrl);
+      if (savedArticle) {
+        // Convert saved article to article format
+        const article = {
+          id: savedArticle.id,
+          title: savedArticle.article_title,
+          description: savedArticle.article_description,
+          content: savedArticle.article_content,
+          url: savedArticle.article_url,
+          imageUrl: savedArticle.article_image_url,
+          publishedAt: savedArticle.article_published_at || savedArticle.saved_at,
+          source: {
+            name: savedArticle.article_source_name || 'Saved Article',
+          },
+        };
+
+        return res.json({
+          success: true,
+          data: article,
+        });
+      }
+    }
+
+    // Fall back to Guardian API
     const article = await newsService.fetchArticleById(articleIdOrUrl);
 
     // Send success response

@@ -7,7 +7,7 @@
 const express = require('express');
 const { query, param } = require('express-validator');
 const newsController = require('../controllers/newsController');
-const { authenticateToken, requireAdmin } = require('../middleware/auth');
+const { authenticateToken, optionalAuth, requireAdmin } = require('../middleware/auth');
 const { ALLOWED_CATEGORIES } = require('../constants/categories');
 const { newsLimiter } = require('../middleware/security');
 
@@ -47,12 +47,14 @@ const paginationValidation = [
 /**
  * @route   GET /api/news/article/:id
  * @desc    Get single article by ID or URL (with full content)
- * @access  Public
- * @params  id - Article ID (e.g., "technology/2024/jan/05/article-id") or full URL
+ * @access  Public (but UUIDs require authentication for saved articles)
+ * @params  id - Article ID (e.g., "technology/2024/jan/05/article-id"), full URL, or saved article UUID
+ * @note    UUID format requests require authentication (saved articles)
  */
 router.get(
   '/article/:id(*)',
   newsLimiter,
+  optionalAuth, // Optional auth - controller checks if UUID requires auth
   newsController.getArticleById
 );
 

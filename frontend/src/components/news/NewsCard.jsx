@@ -151,7 +151,15 @@ const NewsCard = ({ article, savedArticlesMap = null, onSaveToggle = null }) => 
   };
 
   // Generate article detail URL from article ID or URL
+  // For saved articles, use saved article ID to link to article detail page
+  // For regular articles, use article ID or URL
   const getArticleDetailUrl = () => {
+    // Check if this is a saved article (has saved article ID)
+    if (savedArticleId) {
+      return `/article/${encodeURIComponent(savedArticleId)}`;
+    }
+    
+    // For regular articles, use our article detail page
     if (article.id) {
       return `/article/${encodeURIComponent(article.id)}`;
     }
@@ -161,9 +169,11 @@ const NewsCard = ({ article, savedArticlesMap = null, onSaveToggle = null }) => 
     return '#';
   };
 
+  const articleUrl = getArticleDetailUrl();
+
   return (
     <Link
-      to={getArticleDetailUrl()}
+      to={articleUrl}
       className="group block rounded-xl overflow-hidden focus:outline-none relative"
     >
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">

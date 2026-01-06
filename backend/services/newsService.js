@@ -3,8 +3,8 @@
  *
  * SRP: Pure business logic for The Guardian API integration
  * - Handles The Guardian API calls
- * - Implements caching strategy (15 minutes)
- * - Manages rate limiting (500/day, 1/sec)
+ * - Implements caching strategy (15 minutes backend, 5 minutes frontend)
+ * - Manages rate limiting (500/day, 1/sec - Guardian API limits)
  * - Normalizes API responses
  * - NO HTTP concerns (controllers handle that)
  */
@@ -59,8 +59,9 @@ const GUARDIAN_BASE_URL = 'https://content.guardianapis.com';
 const GUARDIAN_ENDPOINT = '/search';
 const REQUEST_TIMEOUT_MS = 10000; // 10 seconds
 const CACHE_DURATION_MS = 15 * 60 * 1000; // 15 minutes
-const MAX_REQUESTS_PER_DAY = 500; // The Guardian API free tier: 500/day
-const MAX_REQUESTS_PER_SECOND = 1; // The Guardian API free tier: 1/sec
+// Rate limits - more lenient in development
+const MAX_REQUESTS_PER_DAY = process.env.NODE_ENV === 'production' ? 500 : 10000; // The Guardian API free tier: 500/day, but allow more in dev
+const MAX_REQUESTS_PER_SECOND = process.env.NODE_ENV === 'production' ? 1 : 5; // The Guardian API free tier: 1/sec, but allow more in dev
 const DEFAULT_PAGE_SIZE = 20;
 const MAX_PAGE_SIZE = 50; // The Guardian API max page-size is 50
 
@@ -169,9 +170,14 @@ const stopCacheCleanup = () => {
 /**
  * Check rate limit and reserve a slot atomically
  * This prevents race conditions where multiple requests pass the check simultaneously
+ * In development mode, rate limiting is more lenient
  * @returns {{allowed: boolean, dailyCount: number, message: string}} Rate limit status
  */
 const checkRateLimitAndReserve = () => {
+  // In development, be more lenient with rate limiting
+  // Still track requests but allow more through
+  const isDevelopment = process.env.NODE_ENV !== 'production';
+  
   const now = Date.now();
   const oneDayAgo = now - 24 * 60 * 60 * 1000;
   const oneSecondAgo = now - 1000;
@@ -181,7 +187,18 @@ const checkRateLimitAndReserve = () => {
   requestLog.length = 0;
   requestLog.push(...recentRequests);
 
-  // Check daily limit
+  // In development, only warn but don't block (unless extremely high)
+  if (isDevelopment && recentRequests.length < MAX_REQUESTS_PER_DAY * 0.9) {
+    // Reserve slot atomically (before API call)
+    requestLog.push(now);
+    return {
+      allowed: true,
+      dailyCount: recentRequests.length + 1,
+      message: 'Rate limit OK',
+    };
+  }
+
+  // Check daily limit (stricter check)
   if (recentRequests.length >= MAX_REQUESTS_PER_DAY) {
     return {
       allowed: false,
@@ -190,9 +207,18 @@ const checkRateLimitAndReserve = () => {
     };
   }
 
-  // Check per-second limit
+  // Check per-second limit (more lenient in development)
   const requestsLastSecond = recentRequests.filter((timestamp) => timestamp > oneSecondAgo);
   if (requestsLastSecond.length >= MAX_REQUESTS_PER_SECOND) {
+    // In development, allow slight overage
+    if (isDevelopment && requestsLastSecond.length < MAX_REQUESTS_PER_SECOND * 2) {
+      requestLog.push(now);
+      return {
+        allowed: true,
+        dailyCount: recentRequests.length + 1,
+        message: 'Rate limit OK (development mode)',
+      };
+    }
     return {
       allowed: false,
       dailyCount: recentRequests.length,
@@ -662,8 +688,9 @@ const fetchArticleById = async (articleIdOrUrl) => {
   // Check rate limit and reserve slot atomically
   const rateLimit = checkRateLimitAndReserve();
   if (!rateLimit.allowed) {
+    const remaining = MAX_REQUESTS_PER_DAY - rateLimit.dailyCount;
     const error = new Error(
-      `Rate limit exceeded. ${rateLimit.remainingDaily} requests remaining today. Resets in ${rateLimit.resetTime}`
+      `Rate limit exceeded. ${remaining >= 0 ? remaining : 0} requests remaining today. Please try again later.`
     );
     error.code = 'NEWS_RATE_LIMIT_EXCEEDED';
     error.statusCode = 429;
