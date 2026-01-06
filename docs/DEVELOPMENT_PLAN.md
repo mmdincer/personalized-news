@@ -266,15 +266,15 @@
 - [x] Backend profile endpoint: `GET /api/user/profile` (user bilgileri: name, email, created_at), authentication middleware
 - [x] Frontend ProfilePage component: `/profile` route, user bilgileri gösterimi, password update form, preferences section (PreferencesPage'den taşı)
 - [x] Frontend PasswordUpdateForm component: current password, new password, confirm password, validation, error handling
-- [ ] PreferencesPage'i ProfilePage'e taşı: Preferences section'ı ProfilePage içine entegre et
-- [ ] Navigation güncellemesi: Preferences link'ini Profile link'ine çevir, Profile dropdown menu (Profile, Preferences, Logout)
+- [x] PreferencesPage'i ProfilePage'e taşı: Preferences section'ı ProfilePage içine entegre et
+- [x] Navigation güncellemesi: Preferences link'ini Profile link'ine çevir, Profile dropdown menu (Profile, Preferences, Logout)
 
 ### Başarı Kriterleri
-- [ ] Kullanıcı şifresini güncelleyebiliyor
-- [ ] Şifre güncelleme validation çalışıyor
-- [ ] Profil bilgileri gösteriliyor
-- [ ] Preferences ProfilePage içinde erişilebilir
-- [ ] Navigation güncellendi
+- [x] Kullanıcı şifresini güncelleyebiliyor
+- [x] Şifre güncelleme validation çalışıyor
+- [x] Profil bilgileri gösteriliyor
+- [x] Preferences ProfilePage içinde erişilebilir
+- [x] Navigation güncellendi
 
 ---
 

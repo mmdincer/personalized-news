@@ -59,7 +59,7 @@ function App() {
             element={
               <ProtectedRoute>
                 <Layout>
-                  <PreferencesPage />
+                  <ProfilePage />
                 </Layout>
               </ProtectedRoute>
             }
