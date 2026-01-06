@@ -101,12 +101,32 @@ export const clearNewsCache = () => {
  * @param {Object} params - Query parameters
  * @param {number} [params.page=1] - Page number
  * @param {number} [params.limit=20] - Results per page (max 100)
+ * @param {string} [params.from] - Start date filter (YYYY-MM-DD format)
+ * @param {string} [params.to] - End date filter (YYYY-MM-DD format)
+ * @param {string} [params.sort] - Sort option (newest, oldest, relevance)
  * @param {boolean} [params.forceRefresh=false] - Force refresh cache
  * @returns {Promise<Object>} News response with articles
  */
-export const getNews = async ({ page = 1, limit = 20, forceRefresh = false } = {}) => {
+export const getNews = async ({ 
+  page = 1, 
+  limit = 20, 
+  from = null,
+  to = null,
+  sort = 'newest',
+  forceRefresh = false 
+} = {}) => {
   const endpoint = '/news';
   const params = { page, limit };
+  
+  // Add date filters if provided
+  if (from) params.from = from;
+  if (to) params.to = to;
+  
+  // Add sort if provided and not default
+  if (sort && sort !== 'newest') {
+    params.sort = sort;
+  }
+  
   const cacheKey = getCacheKey(endpoint, params);
 
   // Check cache first
@@ -138,16 +158,37 @@ export const getNews = async ({ page = 1, limit = 20, forceRefresh = false } = {
  * @param {string} params.category - News category (business, entertainment, general, health, science, sports, technology)
  * @param {number} [params.page=1] - Page number
  * @param {number} [params.limit=20] - Results per page (max 100)
+ * @param {string} [params.from] - Start date filter (YYYY-MM-DD format)
+ * @param {string} [params.to] - End date filter (YYYY-MM-DD format)
+ * @param {string} [params.sort] - Sort option (newest, oldest, relevance)
  * @param {boolean} [params.forceRefresh=false] - Force refresh cache
  * @returns {Promise<Object>} News response with articles
  */
-export const getNewsByCategory = async ({ category, page = 1, limit = 20, forceRefresh = false }) => {
+export const getNewsByCategory = async ({ 
+  category, 
+  page = 1, 
+  limit = 20,
+  from = null,
+  to = null,
+  sort = 'newest',
+  forceRefresh = false 
+}) => {
   if (!category) {
     throw new Error('Category is required');
   }
 
   const endpoint = `/news/${category}`;
   const params = { page, limit };
+  
+  // Add date filters if provided
+  if (from) params.from = from;
+  if (to) params.to = to;
+  
+  // Add sort if provided and not default
+  if (sort && sort !== 'newest') {
+    params.sort = sort;
+  }
+  
   const cacheKey = getCacheKey(endpoint, params);
 
   // Check cache first

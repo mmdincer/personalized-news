@@ -17,6 +17,8 @@ import { getSavedArticles } from '../../services/savedArticlesService';
 import { extractErrorMessage } from '../../utils/errorHandler';
 import { getAllCategoriesWithNames, getCategoryDisplayName } from '../../constants/categories';
 import { useAuth } from '../../contexts/AuthContext';
+import DateFilter from '../filters/DateFilter';
+import SortDropdown from '../filters/SortDropdown';
 import NewsCard from './NewsCard';
 import NewsCardSkeleton from './NewsCardSkeleton';
 import toast from 'react-hot-toast';
@@ -35,6 +37,11 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [userPreferences, setUserPreferences] = useState([]);
+  const [dateFilters, setDateFilters] = useState({
+    fromDate: null,
+    toDate: null,
+  });
+  const [sort, setSort] = useState('newest');
 
   const limit = 20;
 
@@ -104,16 +111,31 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
       setLoading(true);
       setError(null);
 
+      // Prepare filter parameters
+      const filterParams = {
+        page: pageNum,
+        limit,
+        sort,
+      };
+
+      // Add date filters if provided
+      if (dateFilters.fromDate) {
+        filterParams.from = dateFilters.fromDate;
+      }
+      if (dateFilters.toDate) {
+        filterParams.to = dateFilters.toDate;
+      }
+
       let response;
       // If category filter is disabled, always fetch personalized news
       if (!showCategoryFilter) {
-        response = await getNews({ page: pageNum, limit });
+        response = await getNews(filterParams);
       } else {
         // Category filter is enabled - always fetch by category (category is required)
         if (!category) {
           throw new Error('Category is required when filter is enabled');
         }
-        response = await getNewsByCategory({ category, page: pageNum, limit });
+        response = await getNewsByCategory({ category, ...filterParams });
       }
 
       if (response.success && response.data) {
@@ -135,9 +157,9 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
     } finally {
       setLoading(false);
     }
-  }, [limit, showCategoryFilter]);
+  }, [limit, showCategoryFilter, dateFilters, sort]);
 
-  // Initial load and when category changes
+  // Initial load and when category, date filters, or sort changes
   useEffect(() => {
     setPage(1);
     setArticles([]);
@@ -145,7 +167,7 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
     const categoryToUse = showCategoryFilter ? selectedCategory : null;
     fetchNews(categoryToUse, 1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCategory, showCategoryFilter]);
+  }, [selectedCategory, showCategoryFilter, dateFilters, sort]);
 
   // Handle category change
   const handleCategoryChange = (category) => {
@@ -160,31 +182,73 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
     fetchNews(categoryToUse, nextPage);
   };
 
+  // Handle date filter change
+  const handleDateFilterChange = ({ fromDate, toDate }) => {
+    setDateFilters({
+      fromDate,
+      toDate,
+    });
+  };
+
+  // Handle sort change
+  const handleSortChange = (newSort) => {
+    setSort(newSort);
+  };
+
   return (
     <div className="space-y-6">
-      {/* Category Filter - Only show if enabled */}
-      {showCategoryFilter && (
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Filter by Category</h2>
+      {/* Filters Section */}
+      <div className="space-y-4">
+        {/* Category Filter - Only show if enabled */}
+        {showCategoryFilter && (
+          <div className="bg-white rounded-lg shadow p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Filter by Category</h2>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {categories.map((category) => (
+                <button
+                  key={category.code}
+                  onClick={() => handleCategoryChange(category.code)}
+                  className={`px-4 py-3 sm:py-2 rounded-full text-sm font-medium transition-colors min-h-[44px] sm:min-h-0 touch-manipulation ${
+                    selectedCategory === category.code
+                      ? 'bg-blue-600 text-white active:bg-blue-700'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
+                  }`}
+                >
+                  {category.name}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {categories.map((category) => (
-              <button
-                key={category.code}
-                onClick={() => handleCategoryChange(category.code)}
-                className={`px-4 py-3 sm:py-2 rounded-full text-sm font-medium transition-colors min-h-[44px] sm:min-h-0 touch-manipulation ${
-                  selectedCategory === category.code
-                    ? 'bg-blue-600 text-white active:bg-blue-700'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
-                }`}
-              >
-                {category.name}
-              </button>
-            ))}
+        )}
+
+        {/* Date Filter and Sort */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Date Filter */}
+          <DateFilter
+            fromDate={dateFilters.fromDate}
+            toDate={dateFilters.toDate}
+            onChange={handleDateFilterChange}
+            disabled={loading}
+          />
+
+          {/* Sort Dropdown */}
+          <div className="flex items-end">
+            <div className="w-full">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Sort By
+              </label>
+              <SortDropdown
+                value={sort}
+                onChange={handleSortChange}
+                showRelevance={false}
+                disabled={loading}
+              />
+            </div>
           </div>
         </div>
-      )}
+      </div>
 
       {/* Preferences Info - Show when filter is disabled */}
       {!showCategoryFilter && userPreferences.length > 0 && (
