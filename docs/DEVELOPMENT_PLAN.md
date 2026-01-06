@@ -248,14 +248,14 @@
 - [x] Infinite scroll: Intersection Observer API ile otomatik sayfa yükleme, sayfa sonuna gelindiğinde bir sonraki sayfa otomatik yüklenir, loading indicator gösterilir, "Load More" butonu opsiyonel olarak kalabilir veya kaldırılabilir
 
 ### Başarı Kriterleri
-- [ ] Arama çalışıyor (The Guardian API search)
-- [ ] Tarih filtresi çalışıyor
-- [ ] Sıralama çalışıyor (newest/oldest/relevance)
-- [ ] SearchBar debounce ile optimize edilmiş
-- [ ] Filter'lar URL query parametrelerinde saklanıyor
-- [ ] Loading ve error states handle ediliyor
-- [ ] Loading state infinite scroll sırasında gösteriliyor
-- [ ] Tüm haberler yüklendiğinde infinite scroll duruyor
+- [x] Arama çalışıyor (The Guardian API search)
+- [x] Tarih filtresi çalışıyor
+- [x] Sıralama çalışıyor (newest/oldest/relevance)
+- [x] SearchBar debounce ile optimize edilmiş
+- [x] Filter'lar URL query parametrelerinde saklanıyor
+- [x] Loading ve error states handle ediliyor
+- [x] Loading state infinite scroll sırasında gösteriliyor
+- [x] Tüm haberler yüklendiğinde infinite scroll duruyor
 
 ---
 
