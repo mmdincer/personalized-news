@@ -167,18 +167,17 @@ const ArticleDetailPage = () => {
         </h1>
 
         {/* Image */}
-        {article.imageUrl && (
-          <div className="mb-8 rounded-xl overflow-hidden">
-            <img
-              src={article.imageUrl}
-              alt={article.title || 'Article image'}
-              className="w-full h-auto object-cover"
-              onError={(e) => {
-                e.target.style.display = 'none';
-              }}
-            />
-          </div>
-        )}
+        <div className="mb-8 rounded-xl overflow-hidden">
+          <img
+            src={article.imageUrl || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1200" height="600"%3E%3Crect fill="%23e5e7eb" width="1200" height="600"/%3E%3Ctext fill="%239ca3af" font-family="system-ui" font-size="32" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3ENews Article%3C/text%3E%3C/svg%3E'}
+            alt={article.title || 'Article image'}
+            className="w-full h-auto object-cover"
+            onError={(e) => {
+              // Fallback to SVG placeholder if image fails to load
+              e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1200" height="600"%3E%3Crect fill="%23e5e7eb" width="1200" height="600"/%3E%3Ctext fill="%239ca3af" font-family="system-ui" font-size="32" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3ENews Article%3C/text%3E%3C/svg%3E';
+            }}
+          />
+        </div>
       </div>
 
       {/* Article Content */}

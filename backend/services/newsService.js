@@ -316,13 +316,51 @@ guardianApiClient.interceptors.response.use(
 // ===========================
 
 /**
+ * Get placeholder image URL based on category
+ * Uses Unsplash Source API for category-specific placeholder images
+ * @param {string} category - News category/section
+ * @returns {string} Placeholder image URL
+ */
+const getPlaceholderImageUrl = (category) => {
+  // Map categories to relevant Unsplash search terms
+  const categoryKeywords = {
+    business: 'business',
+    technology: 'technology',
+    science: 'science',
+    sport: 'sports',
+    culture: 'culture',
+    news: 'news',
+    world: 'world',
+    politics: 'politics',
+    environment: 'nature',
+    society: 'people',
+    lifeandstyle: 'lifestyle',
+    food: 'food',
+    travel: 'travel',
+    fashion: 'fashion',
+    books: 'books',
+    music: 'music',
+    film: 'cinema',
+    games: 'gaming',
+    education: 'education',
+    media: 'media',
+  };
+
+  const keyword = categoryKeywords[category?.toLowerCase()] || 'news';
+  // Unsplash Source API - random image by keyword
+  // Size: 800x600 (good for news cards)
+  return `https://source.unsplash.com/800x600/?${keyword}`;
+};
+
+/**
  * Normalize The Guardian API response to internal format
  * @param {Object} apiResponse - Raw The Guardian API response
  * @param {number} page - Current page number
  * @param {number} pageSize - Results per page
+ * @param {string} category - Category/section name (for placeholder images)
  * @returns {Object} Normalized response
  */
-const normalizeNewsResponse = (apiResponse, page, pageSize) => {
+const normalizeNewsResponse = (apiResponse, page, pageSize, category = null) => {
   // Guardian API wraps response in 'response' object
   const guardianResponse = apiResponse?.response;
   
@@ -338,6 +376,10 @@ const normalizeNewsResponse = (apiResponse, page, pageSize) => {
   // Normalize articles from Guardian format
   const articles = guardianResponse.results.map((result) => {
     const fields = result.fields || {};
+    const sectionName = result.sectionName?.toLowerCase() || category?.toLowerCase() || 'news';
+    
+    // Use thumbnail if available, otherwise use category-based placeholder
+    const imageUrl = fields.thumbnail || getPlaceholderImageUrl(sectionName);
     
     return {
       id: result.id || result.webUrl, // Use article ID or URL as unique identifier
@@ -345,7 +387,7 @@ const normalizeNewsResponse = (apiResponse, page, pageSize) => {
       description: fields.trailText || fields.bodyText?.substring(0, 200) || '',
       content: fields.bodyText || null, // Full article content
       url: result.webUrl || '',
-      imageUrl: fields.thumbnail || null,
+      imageUrl, // Always has an image (thumbnail or placeholder)
       publishedAt: result.webPublicationDate || new Date().toISOString(),
       source: {
         name: result.sectionName || 'The Guardian',
@@ -499,7 +541,7 @@ const fetchNewsByCategory = async (
   // Note: Request already logged in checkRateLimitAndReserve()
 
   // Normalize response
-  const normalizedData = normalizeNewsResponse(response.data, page, pageSize);
+  const normalizedData = normalizeNewsResponse(response.data, page, pageSize, category);
 
   // Cache result
   setCachedNews(cacheKey, normalizedData);
@@ -647,7 +689,9 @@ const fetchArticleById = async (articleIdOrUrl) => {
     });
 
     // Normalize response
-    const normalizedData = normalizeNewsResponse(response.data, 1, 1);
+    // Extract category from article ID if available (format: section/date/article-id)
+    const articleCategory = articleId.split('/')[0] || null;
+    const normalizedData = normalizeNewsResponse(response.data, 1, 1, articleCategory);
 
     // Check if article was found
     if (!normalizedData.articles || normalizedData.articles.length === 0) {

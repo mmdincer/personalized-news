@@ -23,13 +23,30 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const categories = getAllCategoriesWithNames();
+  // Default to first category if filter is enabled, null otherwise (for preferences)
+  const [selectedCategory, setSelectedCategory] = useState(
+    showCategoryFilter && categories.length > 0 ? categories[0].code : null
+  );
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [userPreferences, setUserPreferences] = useState([]);
 
-  const categories = getAllCategoriesWithNames();
   const limit = 20;
+
+  // Update selectedCategory when showCategoryFilter changes
+  useEffect(() => {
+    if (showCategoryFilter && categories.length > 0) {
+      // If filter is enabled and no category selected, select first category
+      if (!selectedCategory) {
+        setSelectedCategory(categories[0].code);
+      }
+    } else {
+      // If filter is disabled, clear selection (will use preferences)
+      setSelectedCategory(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showCategoryFilter]);
 
   // Load user preferences on mount
   useEffect(() => {
@@ -58,10 +75,12 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
       // If category filter is disabled, always fetch personalized news
       if (!showCategoryFilter) {
         response = await getNews({ page: pageNum, limit });
-      } else if (category) {
-        response = await getNewsByCategory({ category, page: pageNum, limit });
       } else {
-        response = await getNews({ page: pageNum, limit });
+        // Category filter is enabled - always fetch by category (category is required)
+        if (!category) {
+          throw new Error('Category is required when filter is enabled');
+        }
+        response = await getNewsByCategory({ category, page: pageNum, limit });
       }
 
       if (response.success && response.data) {
@@ -97,8 +116,7 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
 
   // Handle category change
   const handleCategoryChange = (category) => {
-    const newCategory = category === selectedCategory ? null : category;
-    setSelectedCategory(newCategory);
+    setSelectedCategory(category);
   };
 
   // Handle load more
@@ -116,24 +134,8 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
         <div className="bg-white rounded-lg shadow p-4">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">Filter by Category</h2>
-            {selectedCategory === null && userPreferences.length > 0 && (
-              <div className="text-sm text-gray-600">
-                <span className="font-medium">Using your preferences:</span>{' '}
-                {userPreferences.map((cat) => getCategoryDisplayName(cat)).join(', ')}
-              </div>
-            )}
           </div>
           <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => handleCategoryChange(null)}
-              className={`px-4 py-3 sm:py-2 rounded-full text-sm font-medium transition-colors min-h-[44px] sm:min-h-0 touch-manipulation ${
-                selectedCategory === null
-                  ? 'bg-blue-600 text-white active:bg-blue-700'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
-              }`}
-            >
-              All (Your Preferences)
-            </button>
             {categories.map((category) => (
               <button
                 key={category.code}

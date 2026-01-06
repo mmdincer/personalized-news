@@ -44,20 +44,17 @@ const NewsCard = ({ article }) => {
     >
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
         {/* Article Image */}
-        {(article.imageUrl || article.urlToImage) ? (
-          <div className="shrink-0 relative rounded-xl overflow-hidden w-full sm:w-56 h-44 bg-gray-200">
-            <img
-              src={article.imageUrl || article.urlToImage}
-              alt={article.title || 'News article'}
-              className="group-hover:scale-105 group-focus:scale-105 transition-transform duration-500 ease-in-out size-full absolute top-0 start-0 object-cover rounded-xl"
-              onError={(e) => {
-                e.target.style.display = 'none';
-              }}
-            />
-          </div>
-        ) : (
-          <div className="shrink-0 relative rounded-xl overflow-hidden w-full sm:w-56 h-44 bg-gray-200"></div>
-        )}
+        <div className="shrink-0 relative rounded-xl overflow-hidden w-full sm:w-56 h-44 bg-gray-200">
+          <img
+            src={article.imageUrl || article.urlToImage || '/placeholder-news.jpg'}
+            alt={article.title || 'News article'}
+            className="group-hover:scale-105 group-focus:scale-105 transition-transform duration-500 ease-in-out size-full absolute top-0 start-0 object-cover rounded-xl"
+            onError={(e) => {
+              // Fallback to a simple placeholder if image fails to load
+              e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="800" height="600"%3E%3Crect fill="%23e5e7eb" width="800" height="600"/%3E%3Ctext fill="%239ca3af" font-family="system-ui" font-size="24" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3ENews%3C/text%3E%3C/svg%3E';
+            }}
+          />
+        </div>
 
         {/* Article Content */}
         <div className="grow">
