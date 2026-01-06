@@ -13,16 +13,20 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getNews, getNewsByCategory } from '../../services/newsService';
 import { getPreferences } from '../../services/preferencesService';
+import { getSavedArticles } from '../../services/savedArticlesService';
 import { extractErrorMessage } from '../../utils/errorHandler';
 import { getAllCategoriesWithNames, getCategoryDisplayName } from '../../constants/categories';
+import { useAuth } from '../../contexts/AuthContext';
 import NewsCard from './NewsCard';
 import NewsCardSkeleton from './NewsCardSkeleton';
 import toast from 'react-hot-toast';
 
 const NewsFeed = ({ showCategoryFilter = true }) => {
+  const { isAuthenticated } = useAuth();
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [savedArticlesMap, setSavedArticlesMap] = useState(new Map());
   const categories = getAllCategoriesWithNames();
   // Default to first category if filter is enabled, null otherwise (for preferences)
   const [selectedCategory, setSelectedCategory] = useState(
@@ -63,6 +67,35 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
     };
     loadPreferences();
   }, []);
+
+  // Load saved articles once on mount (if authenticated)
+  // This creates a Map for fast lookup in NewsCard components
+  useEffect(() => {
+    const loadSavedArticles = async () => {
+      if (!isAuthenticated) {
+        setSavedArticlesMap(new Map());
+        return;
+      }
+
+      try {
+        const response = await getSavedArticles();
+        if (response.success && response.data) {
+          // Create a Map with article_url as key for O(1) lookup
+          const map = new Map();
+          response.data.forEach((savedArticle) => {
+            map.set(savedArticle.article_url, savedArticle);
+          });
+          setSavedArticlesMap(map);
+        }
+      } catch (err) {
+        // Silently fail - saved articles check is optional
+        console.error('Failed to load saved articles:', err);
+        setSavedArticlesMap(new Map());
+      }
+    };
+
+    loadSavedArticles();
+  }, [isAuthenticated]);
 
   // Fetch news based on selected category
   // If showCategoryFilter is false, always use preferences (category = null)
@@ -232,7 +265,11 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
         <>
           <div className="grid lg:grid-cols-2 lg:gap-y-16 gap-10">
             {articles.map((article, index) => (
-              <NewsCard key={article.url || index} article={article} />
+              <NewsCard
+                key={article.url || index}
+                article={article}
+                savedArticlesMap={savedArticlesMap}
+              />
             ))}
             {/* Loading more skeletons */}
             {loading && articles.length > 0 && (

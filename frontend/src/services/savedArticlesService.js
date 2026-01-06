@@ -6,9 +6,35 @@
  * - Get all saved articles
  * - Delete a saved article
  * - Check if article is saved
+ * 
+ * Includes caching to avoid multiple API calls
  */
 
 import apiClient from '../config/api.js';
+
+// In-memory cache for saved articles
+let savedArticlesCache = null;
+let cacheTimestamp = null;
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+/**
+ * Clear the saved articles cache
+ * Call this after save/delete operations
+ */
+export const clearSavedArticlesCache = () => {
+  savedArticlesCache = null;
+  cacheTimestamp = null;
+};
+
+/**
+ * Check if cache is valid
+ */
+const isCacheValid = () => {
+  if (!savedArticlesCache || !cacheTimestamp) {
+    return false;
+  }
+  return Date.now() - cacheTimestamp < CACHE_TTL_MS;
+};
 
 /**
  * Save an article
@@ -30,17 +56,43 @@ export const saveArticle = async ({ article_url, article_title, article_image_ur
     article_image_url,
   });
 
+  // Clear cache after saving
+  clearSavedArticlesCache();
+
   return response;
 };
 
 /**
  * Get all saved articles for the authenticated user
  * Requires authentication
+ * Uses cache to avoid multiple API calls
+ * @param {boolean} forceRefresh - Force refresh cache (default: false)
  * @returns {Promise<Array<Object>>} Array of saved articles
  */
-export const getSavedArticles = async () => {
-  const response = await apiClient.get('/user/saved-articles');
-  return response;
+export const getSavedArticles = async (forceRefresh = false) => {
+  // Return cached data if valid and not forcing refresh
+  if (!forceRefresh && isCacheValid()) {
+    return {
+      success: true,
+      data: savedArticlesCache,
+    };
+  }
+
+  try {
+    const response = await apiClient.get('/user/saved-articles');
+    
+    // Update cache
+    if (response.success && response.data) {
+      savedArticlesCache = response.data;
+      cacheTimestamp = Date.now();
+    }
+    
+    return response;
+  } catch (error) {
+    // If error, clear cache
+    clearSavedArticlesCache();
+    throw error;
+  }
 };
 
 /**
@@ -55,21 +107,30 @@ export const deleteSavedArticle = async (articleId) => {
   }
 
   await apiClient.delete(`/user/saved-articles/${articleId}`);
+
+  // Clear cache after deleting
+  clearSavedArticlesCache();
 };
 
 /**
  * Check if an article is saved by the authenticated user
- * Requires authentication
+ * Uses cache to avoid multiple API calls
  * @param {string} articleUrl - Article URL to check
+ * @param {Map<string, Object>} savedArticlesMap - Optional pre-loaded map of saved articles (for performance)
  * @returns {Promise<Object|null>} Saved article data if found, null otherwise
  */
-export const isArticleSaved = async (articleUrl) => {
+export const isArticleSaved = async (articleUrl, savedArticlesMap = null) => {
   if (!articleUrl) {
     return null;
   }
 
   try {
-    // Get all saved articles and check if URL matches
+    // If map is provided, use it directly (fastest)
+    if (savedArticlesMap && savedArticlesMap instanceof Map) {
+      return savedArticlesMap.get(articleUrl) || null;
+    }
+
+    // Otherwise, use cache or fetch
     const response = await getSavedArticles();
     
     if (response.success && response.data) {
@@ -90,15 +151,16 @@ export const isArticleSaved = async (articleUrl) => {
  * Delete a saved article by URL (convenience function)
  * Requires authentication
  * @param {string} articleUrl - Article URL to delete
+ * @param {Map<string, Object>} savedArticlesMap - Optional pre-loaded map of saved articles (for performance)
  * @returns {Promise<void>}
  */
-export const deleteSavedArticleByUrl = async (articleUrl) => {
+export const deleteSavedArticleByUrl = async (articleUrl, savedArticlesMap = null) => {
   if (!articleUrl) {
     throw new Error('Article URL is required');
   }
 
   // Find the saved article by URL
-  const savedArticle = await isArticleSaved(articleUrl);
+  const savedArticle = await isArticleSaved(articleUrl, savedArticlesMap);
   
   if (!savedArticle || !savedArticle.id) {
     throw new Error('Saved article not found');

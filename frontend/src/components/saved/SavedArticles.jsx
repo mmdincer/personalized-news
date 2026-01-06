@@ -20,7 +20,7 @@ const SavedArticles = () => {
   const [savedArticles, setSavedArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [deletingIds, setDeletingIds] = useState(new Set());
+  const [savedArticlesMap, setSavedArticlesMap] = useState(new Map());
 
   /**
    * Load saved articles from API
@@ -33,6 +33,13 @@ const SavedArticles = () => {
       const response = await getSavedArticles();
 
       if (response.success && response.data) {
+        // Create a Map with article_url as key for fast lookup
+        const map = new Map();
+        response.data.forEach((savedArticle) => {
+          map.set(savedArticle.article_url, savedArticle);
+        });
+        setSavedArticlesMap(map);
+
         // Transform saved articles to NewsCard-compatible format
         const transformedArticles = response.data.map((savedArticle) => ({
           id: savedArticle.id,
@@ -61,33 +68,40 @@ const SavedArticles = () => {
   };
 
   /**
-   * Delete a saved article
-   * @param {string} articleId - Article ID to delete
+   * Refresh saved articles after save/delete operation
+   * Called when NewsCard's save button is toggled
    */
-  const handleDelete = async (articleId) => {
-    // Prevent double-click
-    if (deletingIds.has(articleId)) {
-      return;
-    }
-
+  const refreshSavedArticles = async () => {
     try {
-      setDeletingIds((prev) => new Set(prev).add(articleId));
+      const response = await getSavedArticles(true); // Force refresh
 
-      await deleteSavedArticle(articleId);
+      if (response.success && response.data) {
+        // Update Map
+        const map = new Map();
+        response.data.forEach((savedArticle) => {
+          map.set(savedArticle.article_url, savedArticle);
+        });
+        setSavedArticlesMap(map);
 
-      // Remove article from local state
-      setSavedArticles((prev) => prev.filter((article) => article.id !== articleId));
+        // Update articles list
+        const transformedArticles = response.data.map((savedArticle) => ({
+          id: savedArticle.id,
+          url: savedArticle.article_url,
+          title: savedArticle.article_title,
+          imageUrl: savedArticle.article_image_url,
+          urlToImage: savedArticle.article_image_url,
+          publishedAt: savedArticle.saved_at,
+          source: {
+            name: 'Saved Article',
+          },
+          description: null,
+        }));
 
-      toast.success('Article removed from saved');
+        setSavedArticles(transformedArticles);
+      }
     } catch (err) {
-      const errorMessage = extractErrorMessage(err);
-      toast.error(errorMessage);
-    } finally {
-      setDeletingIds((prev) => {
-        const newSet = new Set(prev);
-        newSet.delete(articleId);
-        return newSet;
-      });
+      // Silently fail - NewsCard will handle its own errors
+      console.error('Failed to refresh saved articles:', err);
     }
   };
 
@@ -174,61 +188,12 @@ const SavedArticles = () => {
       {!loading && !error && savedArticles.length > 0 && (
         <div className="grid lg:grid-cols-2 lg:gap-y-16 gap-10">
           {savedArticles.map((article) => (
-            <div key={article.id} className="relative group">
-              {/* Delete Button */}
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleDelete(article.id);
-                }}
-                disabled={deletingIds.has(article.id)}
-                className="absolute top-4 right-4 z-10 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:bg-red-50 hover:text-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                aria-label="Remove from saved"
-                title="Remove from saved"
-              >
-                {deletingIds.has(article.id) ? (
-                  <svg
-                    className="w-5 h-5 animate-spin"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    className="w-5 h-5"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    />
-                  </svg>
-                )}
-              </button>
-
-              {/* NewsCard */}
-              <NewsCard article={article} />
-            </div>
+            <NewsCard
+              key={article.id}
+              article={article}
+              savedArticlesMap={savedArticlesMap}
+              onSaveToggle={refreshSavedArticles}
+            />
           ))}
         </div>
       )}
