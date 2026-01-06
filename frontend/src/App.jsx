@@ -26,97 +26,97 @@ import './App.css';
 function App() {
   return (
     <BrowserRouter>
-      <ErrorBoundary>
-        <AuthProvider>
+      <AuthProvider>
+        <ErrorBoundary>
           <Routes>
-          {/* Public Routes */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+            {/* Public Routes */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
 
-          {/* Protected Routes */}
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <HomePage />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/news"
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <NewsPage />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/preferences"
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <ProfilePage />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <ProfilePage />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/saved"
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <SavedArticlesPage />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/search"
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <SearchPage />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/article/*"
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <ArticleDetailPage />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
+            {/* Protected Routes */}
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <HomePage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/news"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <NewsPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/preferences"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <ProfilePage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <ProfilePage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/saved"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <SavedArticlesPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/search"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <SearchPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/article/*"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <ArticleDetailPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
 
-          {/* 404 Page - Show navbar (Layout handles auth check) */}
-          <Route
-            path="*"
-            element={
-              <Layout>
-                <NotFoundPage />
-              </Layout>
-            }
-          />
-        </Routes>
+            {/* 404 Page - Show navbar (Layout handles auth check) */}
+            <Route
+              path="*"
+              element={
+                <Layout>
+                  <NotFoundPage />
+                </Layout>
+              }
+            />
+          </Routes>
+        </ErrorBoundary>
       </AuthProvider>
-      </ErrorBoundary>
     </BrowserRouter>
   );
 }

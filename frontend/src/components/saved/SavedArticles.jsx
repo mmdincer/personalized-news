@@ -115,8 +115,8 @@ const SavedArticles = () => {
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">Saved Articles</h1>
-        <p className="text-gray-600">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Saved Articles</h1>
+        <p className="text-lg text-gray-600">
           {savedArticles.length > 0
             ? `${savedArticles.length} saved article${savedArticles.length !== 1 ? 's' : ''}`
             : 'Articles you save will appear here'}

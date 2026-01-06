@@ -8,8 +8,10 @@
  */
 
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { getProfile } from '../services/profileService';
 import { getPreferences, updatePreferences } from '../services/preferencesService';
+import { getSavedArticles } from '../services/savedArticlesService';
 import { extractErrorMessage } from '../utils/errorHandler';
 import PasswordUpdateForm from '../components/profile/PasswordUpdateForm';
 import CategorySelector from '../components/preferences/CategorySelector';
@@ -20,6 +22,7 @@ const ProfilePage = () => {
   const [profile, setProfile] = useState(null);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [originalCategories, setOriginalCategories] = useState([]);
+  const [savedArticlesCount, setSavedArticlesCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -32,10 +35,11 @@ const ProfilePage = () => {
         setLoading(true);
         setError(null);
 
-        // Load profile and preferences in parallel
-        const [profileResponse, preferencesResponse] = await Promise.all([
+        // Load profile, preferences, and saved articles count in parallel
+        const [profileResponse, preferencesResponse, savedArticlesResponse] = await Promise.all([
           getProfile(),
           getPreferences(),
+          getSavedArticles().catch(() => ({ success: false, data: [] })), // Don't fail if saved articles can't be loaded
         ]);
 
         if (profileResponse.success && profileResponse.data) {
@@ -50,6 +54,11 @@ const ProfilePage = () => {
           setOriginalCategories(categories);
         } else {
           throw new Error(preferencesResponse.error?.message || 'Failed to load preferences');
+        }
+
+        // Set saved articles count
+        if (savedArticlesResponse.success && savedArticlesResponse.data) {
+          setSavedArticlesCount(savedArticlesResponse.data.length || 0);
         }
       } catch (err) {
         const errorMessage = extractErrorMessage(err);
@@ -119,7 +128,7 @@ const ProfilePage = () => {
     JSON.stringify([...originalCategories].sort());
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Profile</h1>
@@ -148,28 +157,39 @@ const ProfilePage = () => {
 
       {/* Profile Content */}
       {!loading && profile && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
           {/* Left Side - Profile Information */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="bg-white rounded-lg shadow-sm p-6 h-full flex flex-col">
             <h2 className="text-xl font-semibold text-gray-900 mb-6">Profile Information</h2>
-            <div className="space-y-4">
+            <div className="space-y-4 flex-grow">
               <div>
-                <label className="block text-sm font-medium text-gray-500 mb-1">
+                <label className="block text-sm font-bold text-gray-900 mb-1 text-left">
                   Name
                 </label>
-                <p className="text-gray-900">{profile.name}</p>
+                <p className="text-gray-900 text-left">{profile.name}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-500 mb-1">
+                <label className="block text-sm font-bold text-gray-900 mb-1 text-left">
                   Email
                 </label>
-                <p className="text-gray-900">{profile.email}</p>
+                <p className="text-gray-900 text-left">{profile.email}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-500 mb-1">
+                <label className="block text-sm font-bold text-gray-900 mb-1 text-left">
                   Member Since
                 </label>
-                <p className="text-gray-900">{formatDate(profile.createdAt)}</p>
+                <p className="text-gray-900 text-left">{formatDate(profile.createdAt)}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-900 mb-1 text-left">
+                  Saved News
+                </label>
+                <Link
+                  to="/saved"
+                  className="text-blue-600 hover:text-blue-700 hover:underline text-left block"
+                >
+                  {savedArticlesCount} {savedArticlesCount === 1 ? 'article' : 'articles'} saved
+                </Link>
               </div>
             </div>
 
@@ -186,10 +206,10 @@ const ProfilePage = () => {
           <div className="lg:col-span-2">
 
             {/* Preferences Section */}
-            <div id="preferences-section" className="bg-white rounded-lg shadow-sm p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">News Preferences</h2>
+            <div id="preferences-section" className="bg-white rounded-lg shadow-sm p-6 h-full flex flex-col">
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">News Preferences</h2>
 
-              <div className="mb-6">
+              <div className="mb-6 flex-grow">
                 <CategorySelector
                   selectedCategories={selectedCategories}
                   onChange={handleCategoryChange}
@@ -198,7 +218,7 @@ const ProfilePage = () => {
               </div>
 
               {/* Save Button */}
-              <div className="flex items-center justify-between pt-6 border-t border-gray-200">
+              <div className="flex items-center justify-between pt-6 border-t border-gray-200 mt-auto">
                 <div className="text-sm">
                   {hasChanges && (
                     <span className="text-orange-600 font-medium">
