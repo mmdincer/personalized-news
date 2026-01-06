@@ -226,11 +226,11 @@
 - [x] NewsCard'a "Save" butonu ekle: kaydedilmiş mi kontrolü, toggle functionality
 
 ### Başarı Kriterleri
-- [ ] Kullanıcılar haberleri kaydedebiliyor
-- [ ] Kaydedilen haberler listeleniyor
-- [ ] Kaydedilen haberler silinebiliyor
-- [ ] Kaydedilmiş durumu görsel olarak gösteriliyor
-- [ ] Duplicate kayıtlar engelleniyor
+- [x] Kullanıcılar haberleri kaydedebiliyor
+- [x] Kaydedilen haberler listeleniyor
+- [x] Kaydedilen haberler silinebiliyor
+- [x] Kaydedilmiş durumu görsel olarak gösteriliyor
+- [x] Duplicate kayıtlar engelleniyor
 
 ---
 

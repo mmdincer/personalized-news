@@ -198,8 +198,8 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
 
       {/* Loading State */}
       {loading && articles.length === 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(6)].map((_, index) => (
+        <div className="grid lg:grid-cols-2 lg:gap-y-16 gap-10">
+          {[...Array(4)].map((_, index) => (
             <NewsCardSkeleton key={index} />
           ))}
         </div>
