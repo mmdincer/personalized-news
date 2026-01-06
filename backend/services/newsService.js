@@ -12,7 +12,6 @@
 const axios = require('axios');
 const winston = require('winston');
 const { ALLOWED_CATEGORIES } = require('../constants/categories');
-const { isValidCountry, DEFAULT_COUNTRY } = require('../constants/countries');
 
 // ===========================
 // Winston Logger Configuration
@@ -75,13 +74,12 @@ const requestLog = [];
 /**
  * Generate cache key for news requests
  * @param {string} category - News category
- * @param {string} country - Country code
  * @param {number} page - Page number
  * @param {number} pageSize - Results per page
  * @returns {string} Cache key
  */
-const getCacheKey = (category, country, page, pageSize) => {
-  return `news:${category || 'all'}:${country}:${page}:${pageSize}`;
+const getCacheKey = (category, page, pageSize) => {
+  return `news:${category || 'all'}:${page}:${pageSize}`;
 };
 
 /**
@@ -381,25 +379,6 @@ const validateCategory = (category) => {
   }
 };
 
-/**
- * Validate country parameter
- * @param {string} country - Country code to validate
- * @throws {Error} If country is invalid
- */
-const validateCountry = (country) => {
-  if (!country) {
-    return; // Optional parameter
-  }
-
-  if (!isValidCountry(country)) {
-    const error = new Error(
-      `Invalid country code. Must be one of: tr, us, de, fr, es`
-    );
-    error.code = 'VAL_INVALID_COUNTRY';
-    error.statusCode = 400;
-    throw error;
-  }
-};
 
 /**
  * Validate pagination parameters
@@ -430,7 +409,6 @@ const validatePagination = (page, pageSize) => {
 /**
  * Fetch news by category
  * @param {string} category - News category
- * @param {string} country - Country code (default: user preference or 'tr')
  * @param {number} page - Page number (default: 1)
  * @param {number} pageSize - Results per page (default: 20)
  * @returns {Promise<Object>} Normalized news data
@@ -438,17 +416,15 @@ const validatePagination = (page, pageSize) => {
  */
 const fetchNewsByCategory = async (
   category,
-  country = DEFAULT_COUNTRY,
   page = 1,
   pageSize = DEFAULT_PAGE_SIZE
 ) => {
   // Validate inputs
   validateCategory(category);
-  validateCountry(country);
   validatePagination(page, pageSize);
 
   // Check cache first
-  const cacheKey = getCacheKey(category, country, page, pageSize);
+  const cacheKey = getCacheKey(category, page, pageSize);
   const cached = getCachedNews(cacheKey);
   if (cached) {
     return cached;
@@ -486,17 +462,15 @@ const fetchNewsByCategory = async (
   // Log API request
   logger.info('Fetching news from NewsAPI.org', {
     category,
-    country,
     page,
     pageSize,
     cacheKey,
   });
 
-  // Make API request
+  // Make API request (no country parameter - uses NewsAPI.org default)
   const response = await newsApiClient.get(NEWSAPI_ENDPOINT, {
     params: {
       category: category.toLowerCase(),
-      country: country.toLowerCase(),
       page,
       pageSize,
     },
@@ -527,7 +501,6 @@ const fetchNewsByCategory = async (
  * consider fetching from a single category using fetchNewsByCategory().
  *
  * @param {Array<string>} categories - User's preferred categories
- * @param {string} country - Country code
  * @param {number} page - Page number (applied after aggregation)
  * @param {number} pageSize - Results per page
  * @returns {Promise<Object>} Aggregated news from all categories
@@ -535,7 +508,6 @@ const fetchNewsByCategory = async (
  */
 const fetchNewsByPreferences = async (
   categories,
-  country = DEFAULT_COUNTRY,
   page = 1,
   pageSize = DEFAULT_PAGE_SIZE
 ) => {
@@ -548,13 +520,12 @@ const fetchNewsByPreferences = async (
 
   // Validate all categories
   categories.forEach((category) => validateCategory(category));
-  validateCountry(country);
   validatePagination(page, pageSize);
 
   // Fetch news from all categories (always page 1 from each category)
   const resultsPerCategory = Math.ceil(pageSize / categories.length);
   const promises = categories.map((category) =>
-    fetchNewsByCategory(category, country, 1, resultsPerCategory)
+    fetchNewsByCategory(category, 1, resultsPerCategory)
   );
 
   const results = await Promise.all(promises);

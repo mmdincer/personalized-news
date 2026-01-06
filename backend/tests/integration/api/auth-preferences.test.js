@@ -65,7 +65,6 @@ describe('User Registration with Default Preferences', () => {
     expect(prefsResponse.body.success).toBe(true);
     expect(prefsResponse.body.data).toEqual({
       categories: ['general', 'technology'],
-      country: 'tr',
     });
   });
 
@@ -87,14 +86,13 @@ describe('User Registration with Default Preferences', () => {
     // Query database directly to verify preferences exist
     const { data: prefs, error } = await supabase
       .from('user_preferences')
-      .select('categories, country')
+      .select('categories')
       .eq('user_id', user.id)
       .single();
 
     expect(error).toBeNull();
     expect(prefs).toBeDefined();
     expect(prefs.categories).toEqual(['general', 'technology']);
-    expect(prefs.country).toBe('tr');
   });
 
   test('default preferences should match specification', async () => {
@@ -116,16 +114,13 @@ describe('User Registration with Default Preferences', () => {
       .get('/api/user/preferences')
       .set('Authorization', `Bearer ${token}`);
 
-    const { categories, country } = prefsResponse.body.data;
+    const { categories } = prefsResponse.body.data;
 
     // Verify default categories
     expect(categories).toHaveLength(2);
     expect(categories).toContain('general');
     expect(categories).toContain('technology');
     expect(categories).toEqual(expect.arrayContaining(['general', 'technology']));
-
-    // Verify default country
-    expect(country).toBe('tr');
   });
 });
 
@@ -256,7 +251,6 @@ describe('Default Preferences Consistency', () => {
         'general',
         'technology',
       ]);
-      expect(prefsResponse.body.data.country).toBe('tr');
     }
   });
 
@@ -279,16 +273,13 @@ describe('Default Preferences Consistency', () => {
       .get('/api/user/preferences')
       .set('Authorization', `Bearer ${token}`);
 
-    const { categories, country } = prefsResponse.body.data;
+    const { categories } = prefsResponse.body.data;
 
     // Not null/undefined
     expect(categories).not.toBeNull();
     expect(categories).not.toBeUndefined();
-    expect(country).not.toBeNull();
-    expect(country).not.toBeUndefined();
 
     // Not empty
     expect(categories.length).toBeGreaterThan(0);
-    expect(country.length).toBeGreaterThan(0);
   });
 });

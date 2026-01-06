@@ -61,7 +61,7 @@ const clearAllPreferencesCache = () => {
  *
  * Usage:
  *   app.get('/protected-route', authenticateToken, (req, res) => {
- *     // req.user is available here (includes id, email, categories, country)
+ *     // req.user is available here (includes id, email, categories)
  *     res.json({ user: req.user });
  *   });
  *
@@ -117,7 +117,7 @@ const authenticateToken = async (req, res, next) => {
     try {
       const decoded = verifyToken(token);
 
-      // Fetch user preferences (categories and country) - uses cache
+      // Fetch user preferences (categories) - uses cache
       const preferences = await getCachedPreferences(decoded.userId);
 
       // Attach user info to request object (includes preferences)
@@ -125,7 +125,6 @@ const authenticateToken = async (req, res, next) => {
         id: decoded.userId,
         email: decoded.email,
         categories: preferences.categories,
-        country: preferences.country,
       };
 
       // Continue to next middleware/route handler
@@ -221,7 +220,6 @@ const optionalAuth = async (req, res, next) => {
         id: decoded.userId,
         email: decoded.email,
         categories: preferences.categories,
-        country: preferences.country,
       };
     } catch (error) {
       // Token invalid or expired, continue without authentication

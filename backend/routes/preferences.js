@@ -11,7 +11,7 @@ const { authenticateToken } = require('../middleware/auth');
 
 /**
  * @route   GET /api/user/preferences
- * @desc    Get user preferences (categories + country)
+ * @desc    Get user preferences (categories)
  * @access  Private (requires JWT token)
  * @returns {Object} User preferences
  * @example
@@ -20,8 +20,7 @@ const { authenticateToken } = require('../middleware/auth');
  *   Response: {
  *     success: true,
  *     data: {
- *       categories: ["general", "technology"],
- *       country: "tr"
+ *       categories: ["general", "technology"]
  *     }
  *   }
  */
@@ -29,23 +28,20 @@ router.get('/', authenticateToken, preferencesController.getPreferences);
 
 /**
  * @route   PUT /api/user/preferences
- * @desc    Update user preferences (categories and/or country)
+ * @desc    Update user preferences (categories)
  * @access  Private (requires JWT token)
- * @body    {Array<string>} [categories] - News categories (optional)
- * @body    {string} [country] - Country code: tr, us, de, fr, es (optional)
+ * @body    {Array<string>} categories - News categories (required)
  * @returns {Object} Updated preferences
  * @example
  *   PUT /api/user/preferences
  *   Headers: { Authorization: "Bearer <token>" }
  *   Body: {
- *     categories: ["business", "technology", "science"],
- *     country: "us"
+ *     categories: ["business", "technology", "science"]
  *   }
  *   Response: {
  *     success: true,
  *     data: {
- *       categories: ["business", "technology", "science"],
- *       country: "us"
+ *       categories: ["business", "technology", "science"]
  *     }
  *   }
  */

@@ -12,7 +12,8 @@ backend/
     └── migrations/
         ├── 001_create_users_table.sql
         ├── 002_create_user_preferences_table.sql
-        └── 003_enable_rls_policies.sql (optional)
+        ├── 003_enable_rls_policies.sql (optional)
+        └── 004_remove_country_column.sql
 ```
 
 ### Naming Convention
@@ -57,7 +58,6 @@ CREATE TABLE IF NOT EXISTS user_preferences (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL UNIQUE,
   categories JSONB DEFAULT '[]'::jsonb,
-  country VARCHAR(2) DEFAULT 'tr' NOT NULL CHECK (country IN ('tr', 'us', 'de', 'fr', 'es')),
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW(),
   CONSTRAINT fk_user_preferences_user_id 
@@ -70,18 +70,13 @@ CREATE TABLE IF NOT EXISTS user_preferences (
 CREATE INDEX IF NOT EXISTS idx_user_preferences_user_id 
   ON user_preferences(user_id);
 
--- Create index on country for faster queries
-CREATE INDEX IF NOT EXISTS idx_user_preferences_country 
-  ON user_preferences(country);
-
 -- Optional: Create GIN index on categories for JSONB search
 CREATE INDEX IF NOT EXISTS idx_user_preferences_categories 
   ON user_preferences USING GIN(categories);
 
 -- Add comments
-COMMENT ON TABLE user_preferences IS 'User news category preferences and language/country settings';
+COMMENT ON TABLE user_preferences IS 'User news category preferences';
 COMMENT ON COLUMN user_preferences.categories IS 'Array of preferred news categories (JSONB)';
-COMMENT ON COLUMN user_preferences.country IS 'User selected country (tr, us, de, fr, es) - determines news source and UI language';
 COMMENT ON COLUMN user_preferences.user_id IS 'Foreign key to users table';
 ```
 

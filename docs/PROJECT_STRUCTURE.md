@@ -13,10 +13,7 @@ personalized-news/
 │   │   ├── database.js          # Supabase client singleton
 │   │   └── logger.js            # Winston logger configuration
 │   ├── constants/               # Constants and enums (SOLID: Single Responsibility)
-│   │   ├── categories.js        # ALLOWED_CATEGORIES array and validation
-│   │   └── countries.js         # SUPPORTED_COUNTRIES array, country/language mapping
-│   ├── locales/                 # i18n configuration for backend (optional)
-│   │   └── i18n.config.js       # i18n setup (if needed for error messages)
+│   │   └── categories.js        # ALLOWED_CATEGORIES array and validation
 │   ├── controllers/
 │   │   ├── authController.js    # POST /auth/register, /auth/login
 │   │   ├── newsController.js    # GET /news, /news/:category
@@ -76,7 +73,6 @@ personalized-news/
 │   │   │   │   ├── NewsFeed.jsx
 │   │   │   │   └── CategorySelector.jsx
 │   │   │   ├── preferences/     # User preferences components
-│   │   │   │   └── CountrySelector.jsx  # Country/Language selector (5 countries)
 │   │   │   ├── common/          # Reusable UI components
 │   │   │   │   ├── Button.jsx
 │   │   │   │   ├── Input.jsx
@@ -86,23 +82,11 @@ personalized-news/
 │   │   │       ├── Header.jsx
 │   │   │       ├── Navigation.jsx
 │   │   │       └── Footer.jsx
-│   │   ├── i18n/                # Internationalization configuration
-│   │   │   ├── config.js        # i18next configuration (5 languages)
-│   │   │   └── index.js         # i18n initialization
-│   │   ├── locales/             # Translation files
-│   │   │   ├── tr/              # Turkish translations
-│   │   │   │   └── translation.json
-│   │   │   ├── en/              # English translations
-│   │   │   │   └── translation.json
-│   │   │   ├── de/              # German translations
-│   │   │   │   └── translation.json
-│   │   │   ├── fr/              # French translations
-│   │   │   │   └── translation.json
 │   │   │   └── es/              # Spanish translations
 │   │   │       └── translation.json
 │   │   ├── contexts/
 │   │   │   ├── AuthContext.jsx  # Authentication state management (user, token, login, logout)
-│   │   │   └── PreferencesContext.jsx  # User preferences state (categories, country, updatePreferences)
+│   │   │   └── PreferencesContext.jsx  # User preferences state (categories, updatePreferences)
 │   │   ├── hooks/               # Custom React hooks
 │   │   │   ├── useAuth.js       # Authentication hook
 │   │   │   ├── useNews.js       # News fetching hook
@@ -261,7 +245,6 @@ Response ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ←
 **Constants** (`constants/`):
 - Application constants and enums
 - Category definitions (ALLOWED_CATEGORIES)
-- Country/language mappings (SUPPORTED_COUNTRIES)
 - Validation helper functions
 - NO business logic (SOLID: SRP)
 - Separation from config (SOLID: SRP - constants vs configuration)
@@ -878,9 +861,6 @@ Bu yapı DEVELOPMENT_PLAN.md ile uyumlu mu?
 - [x] Database migrations: `backend/database/migrations/` ✅
 - [x] Constants: `backend/constants/` (categories.js, countries.js) ✅
 - [x] Frontend config: `frontend/src/config/api.js` ✅
-- [x] i18n yapısı: `frontend/src/i18n/` ve `frontend/src/locales/` ✅
-- [x] 5 dil desteği: tr, en, de, fr, es ✅
-- [x] Country selector component: `components/preferences/CountrySelector.jsx` ✅
 - [x] PreferencesContext: `contexts/PreferencesContext.jsx` ✅
 - [x] Error handling: `utils/errors.js` (backend), `utils/errorHandler.js` (frontend) ✅
 - [x] Service layer separation: Services business logic, controllers HTTP handling ✅

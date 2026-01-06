@@ -10,7 +10,6 @@
 
 const { validationResult } = require('express-validator');
 const newsService = require('../services/newsService');
-const { getDefaultCountry } = require('../constants/countries');
 
 /**
  * Get news by category
@@ -37,11 +36,8 @@ const getNewsByCategory = async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;
 
-    // Get user's country preference (from authenticated user) or default
-    const country = req.user?.country || getDefaultCountry();
-
     // Call service layer
-    const news = await newsService.fetchNewsByCategory(category, country, page, limit);
+    const news = await newsService.fetchNewsByCategory(category, page, limit);
 
     // Send success response
     res.json({
@@ -82,7 +78,7 @@ const getPersonalizedNews = async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 20;
 
     // Get user preferences from request (attached by auth middleware)
-    const { categories, country } = req.user;
+    const { categories } = req.user;
 
     // Validate user has preferences
     if (!categories || categories.length === 0) {
@@ -95,7 +91,6 @@ const getPersonalizedNews = async (req, res, next) => {
     // Call service layer
     const news = await newsService.fetchNewsByPreferences(
       categories,
-      country || getDefaultCountry(),
       page,
       limit
     );
