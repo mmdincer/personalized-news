@@ -22,21 +22,55 @@ const supabase = createClient(
   }
 );
 
-// Test connection on module load (optional - can be removed if preferred)
+/**
+ * Retry connection with exponential backoff
+ * @param {Function} fn - Function to retry
+ * @param {number} maxRetries - Maximum retries (default: 3)
+ * @param {number} initialDelay - Initial delay in ms (default: 1000)
+ * @returns {Promise} Result of function
+ */
+const retryConnection = async (fn, maxRetries = 3, initialDelay = 1000) => {
+  let lastError;
+  let delay = initialDelay;
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error;
+
+      // Don't retry if we've exhausted retries
+      if (attempt === maxRetries) {
+        throw error;
+      }
+
+      // Wait before retrying with exponential backoff
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      delay = Math.min(delay * 2, 10000); // Max 10 seconds
+    }
+  }
+
+  throw lastError;
+};
+
+/**
+ * Test connection with retry logic
+ * @returns {Promise<void>}
+ */
 const testConnection = async () => {
   try {
-    // Simple query to test connection
-    const { error } = await supabase.from('users').select('id').limit(1);
-    
-    // If table doesn't exist yet, that's OK (migrations not run)
-    // Only log actual connection errors
-    if (error && error.code !== 'PGRST116') {
-      // eslint-disable-next-line no-console
-      console.warn('Supabase connection warning:', error.message);
-    }
+    await retryConnection(async () => {
+      const { error } = await supabase.from('users').select('id').limit(1);
+      
+      // If table doesn't exist yet, that's OK (migrations not run)
+      // Only throw on actual connection errors
+      if (error && error.code !== 'PGRST116') {
+        throw new Error(`Supabase connection error: ${error.message}`);
+      }
+    });
   } catch (err) {
     // eslint-disable-next-line no-console
-    console.warn('Supabase connection test failed:', err.message);
+    console.warn('Supabase connection test failed after retries:', err.message);
   }
 };
 

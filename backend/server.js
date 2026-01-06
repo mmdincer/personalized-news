@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 
 // Initialize Supabase client (will throw error if env vars missing)
 try {
@@ -61,10 +62,44 @@ if (process.env.NODE_ENV === 'production' && process.env.CORS_ORIGINS) {
   };
 }
 
-// Middleware
+// ===========================
+// Security Middleware
+// ===========================
+
+// Helmet for security headers (XSS protection, CSP, etc.)
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"], // Allow inline styles for React
+        scriptSrc: ["'self'"],
+        imgSrc: ["'self'", 'data:', 'https:'], // Allow images from any HTTPS source
+        connectSrc: ["'self'"],
+        fontSrc: ["'self'", 'data:'],
+        objectSrc: ["'none'"],
+        mediaSrc: ["'self'"],
+        frameSrc: ["'none'"],
+      },
+    },
+    crossOriginEmbedderPolicy: false, // Disable for API server
+    crossOriginResourcePolicy: { policy: 'cross-origin' }, // Allow cross-origin resources
+  })
+);
+
+// Request size limiting
+const { requestSizeLimiter, apiLimiter } = require('./middleware/security');
+app.use(requestSizeLimiter);
+
+// Body parser with size limits
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
+
+// CORS
 app.use(cors(corsOptions));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+// Global rate limiting (applied to all routes)
+app.use('/api', apiLimiter);
 
 // Routes
 const authRoutes = require('./routes/auth');
