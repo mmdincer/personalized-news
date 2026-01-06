@@ -37,3 +37,4 @@ export const updatePreferences = async ({ categories }) => {
   return response;
 };
 
+

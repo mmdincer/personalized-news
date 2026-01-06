@@ -126,3 +126,4 @@ COMMENT ON POLICY user_preferences_update_own ON user_preferences IS
 --   AND tablename IN ('users', 'user_preferences')
 -- ORDER BY tablename, policyname;
 
+

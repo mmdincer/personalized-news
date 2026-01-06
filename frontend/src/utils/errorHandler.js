@@ -25,6 +25,13 @@ const ERROR_MESSAGES = {
   PREF_UPDATE_FAILED: 'Failed to update preferences',
   PREF_NOT_FOUND: 'User preferences not found',
 
+  // Saved Articles
+  SAVED_ARTICLE_DUPLICATE: 'Article is already saved',
+  SAVED_ARTICLE_NOT_FOUND: 'Saved article not found',
+  SAVED_ARTICLE_SAVE_FAILED: 'Failed to save article',
+  SAVED_ARTICLE_FETCH_FAILED: 'Failed to load saved articles',
+  SAVED_ARTICLE_DELETE_FAILED: 'Failed to delete saved article',
+
   // News API
   NEWS_API_INVALID_KEY: 'News service configuration error',
   NEWS_API_RATE_LIMIT: 'Too many requests. Please try again later',
