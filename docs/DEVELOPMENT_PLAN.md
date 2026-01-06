@@ -281,22 +281,48 @@
 ## 15. chore/docker-support
 
 ### Görevler
-- [ ] Backend Dockerfile: Node.js base image, dependencies install, production build, health check
-- [ ] Frontend Dockerfile: Node.js base image, build step, nginx serve static files
-- [ ] docker-compose.yml: backend service, frontend service, environment variables, volumes, networks
-- [ ] .dockerignore dosyaları: node_modules, .git, .env, logs
-- [ ] Docker documentation: README.md'ye Docker setup instructions ekle
+- [x] Backend Dockerfile: Node.js base image, dependencies install, production build, health check
+- [x] Frontend Dockerfile: Node.js base image, build step, nginx serve static files
+- [x] docker-compose.yml: backend service, frontend service, environment variables, volumes, networks
+- [x] .dockerignore dosyaları: node_modules, .git, .env, logs
 
 ### Başarı Kriterleri
-- [ ] Backend Docker container'ı çalışıyor
-- [ ] Frontend Docker container'ı çalışıyor
-- [ ] docker-compose ile tüm servisler başlatılabiliyor
-- [ ] Environment variables Docker ile yönetiliyor
-- [ ] Docker documentation mevcut
+- [x] Backend Docker container'ı çalışıyor
+- [x] Frontend Docker container'ı çalışıyor
+- [x] docker-compose ile tüm servisler başlatılabiliyor
+- [x] Environment variables Docker ile yönetiliyor
 
 ---
 
-## 16. chore/deployment
+## 16. docs/readme-documentation
+
+### Görevler
+- [ ] README.md: proje açıklaması, kurulum talimatları, Supabase setup guide (hesap oluşturma, proje kurulumu, database schema), environment setup (Supabase credentials, The Guardian API key), running instructions (dev ve production) - bakınız: [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md), [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)
+- [ ] Documentation: technology stack documentation, API endpoint documentation, Supabase connection troubleshooting, migration troubleshooting, genel troubleshooting section - bakınız: [TECHNOLOGY_STACK.md](./TECHNOLOGY_STACK.md), [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md), [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md)
+
+### Başarı Kriterleri
+- [ ] README.md kapsamlı ve anlaşılır
+- [ ] Tüm kurulum adımları mevcut (Supabase dahil)
+- [ ] Supabase setup adımları açıkça belirtilmiş
+- [ ] API dokümantasyonu eksiksiz
+- [ ] Troubleshooting guide hazır
+
+---
+
+## 17. test/integration-tests (Opsiyonel)
+
+### Görevler
+- [ ] Test setup: Jest test framework kurulumu - bakınız: [TECHNOLOGY_STACK.md](./TECHNOLOGY_STACK.md)
+- [ ] Test implementation: backend API endpoint testleri (Jest + Supertest), auth flow testleri, news API integration testleri, user preferences testleri, error scenario testleri
+
+### Başarı Kriterleri
+- [ ] Tüm kritik endpoint'ler test edildi
+- [ ] Test coverage %70+ (hedef)
+- [ ] Test'ler CI/CD'ye entegre edilebilir
+
+---
+
+## 18. chore/deployment
 
 ### Görevler
 - [ ] Production environment setup: environment variables, Supabase production credentials, The Guardian API key
@@ -313,34 +339,6 @@
 - [ ] SSL certificate yapılandırıldı
 - [ ] Domain yapılandırıldı
 - [ ] Deployment documentation mevcut
-
----
-
-## 17. docs/readme-documentation
-
-### Görevler
-- [ ] README.md: proje açıklaması, kurulum talimatları, Supabase setup guide (hesap oluşturma, proje kurulumu, database schema), environment setup (Supabase credentials, The Guardian API key), running instructions (dev ve production) - bakınız: [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md), [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)
-- [ ] Documentation: technology stack documentation, API endpoint documentation, Supabase connection troubleshooting, migration troubleshooting, genel troubleshooting section - bakınız: [TECHNOLOGY_STACK.md](./TECHNOLOGY_STACK.md), [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md), [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md)
-
-### Başarı Kriterleri
-- [ ] README.md kapsamlı ve anlaşılır
-- [ ] Tüm kurulum adımları mevcut (Supabase dahil)
-- [ ] Supabase setup adımları açıkça belirtilmiş
-- [ ] API dokümantasyonu eksiksiz
-- [ ] Troubleshooting guide hazır
-
----
-
-## 18. test/integration-tests (Opsiyonel)
-
-### Görevler
-- [ ] Test setup: Jest test framework kurulumu - bakınız: [TECHNOLOGY_STACK.md](./TECHNOLOGY_STACK.md)
-- [ ] Test implementation: backend API endpoint testleri (Jest + Supertest), auth flow testleri, news API integration testleri, user preferences testleri, error scenario testleri
-
-### Başarı Kriterleri
-- [ ] Tüm kritik endpoint'ler test edildi
-- [ ] Test coverage %70+ (hedef)
-- [ ] Test'ler CI/CD'ye entegre edilebilir
 
 ---
 
@@ -375,9 +373,9 @@
 12. feat/search-and-filters → main
 13. feat/profile-management → main
 15. chore/docker-support → main
-16. chore/deployment → main
-17. docs/readme-documentation → main
-18. test/integration-tests → main (opsiyonel)
+16. docs/readme-documentation → main
+17. test/integration-tests → main (opsiyonel)
+18. chore/deployment → main
 19. fix/bug-fixes-and-polish → main
 
 ---
