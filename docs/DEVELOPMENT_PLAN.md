@@ -107,7 +107,7 @@
 ## 5. feat/backend-news-api
 
 ### Görevler
-- [ ] News service layer: `services/newsService.js` oluştur (SRP: pure business logic, no HTTP concerns), NewsAPI.org entegrasyonu (axios instance, API key interceptor, 10s timeout, network error handling) - bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)
+- [x] News service layer: `services/newsService.js` oluştur (SRP: pure business logic, no HTTP concerns), NewsAPI.org entegrasyonu (axios instance, API key interceptor, 10s timeout, network error handling) - bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)
 - [ ] News fetching logic: kategori bazlı haber çekme (category validation, country parameter from user preferences/default 'tr', pageSize: 20, max 100), user country preference'e göre haber çekme, response normalization
 - [ ] News endpoints: `GET /api/news` (genel haberler), `GET /api/news/:category` (kategori bazlı), query parameters (page, limit)
 - [ ] Rate limiting: daily request tracking (100/day), per-second limiting (1/second), cached results when limit reached, logging - bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md)

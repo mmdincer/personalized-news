@@ -14,6 +14,20 @@ try {
   console.error('Please check your .env file and ensure SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set');
 }
 
+// Initialize News Service cache cleanup (if news service is available)
+try {
+  const newsService = require('./services/newsService');
+  if (newsService.startCacheCleanup) {
+    newsService.startCacheCleanup();
+    // eslint-disable-next-line no-console
+    console.log('✓ News service cache cleanup started');
+  }
+} catch (error) {
+  // News service not available yet (not an error)
+  // eslint-disable-next-line no-console
+  console.log('ℹ News service cache cleanup skipped (service not available)');
+}
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 

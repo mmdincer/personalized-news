@@ -42,6 +42,9 @@ Tüm API error response'ları aşağıdaki formatta döndürülmelidir:
 - `NEWS_API_INVALID_KEY` - Invalid NewsAPI key
 - `NEWS_API_RATE_LIMIT` - Rate limit exceeded (100/day or 1/second)
 - `NEWS_API_SERVER_ERROR` - NewsAPI server error
+- `NEWS_API_TIMEOUT` - Request timeout after 10s
+- `NEWS_NETWORK_ERROR` - Network connection error
+- `NEWS_RATE_LIMIT_EXCEEDED` - Internal rate limit exceeded (100/day or 1/second)
 - `NEWS_INVALID_CATEGORY` - Invalid news category
 - `NEWS_FETCH_FAILED` - Failed to fetch news
 
@@ -93,6 +96,9 @@ const ERROR_MESSAGES_TR = {
   NEWS_API_INVALID_KEY: "Haber servisi yapılandırma hatası",
   NEWS_API_RATE_LIMIT: "Çok fazla istek yapıldı. Lütfen daha sonra tekrar deneyin",
   NEWS_API_SERVER_ERROR: "Haber servisi şu anda kullanılamıyor",
+  NEWS_API_TIMEOUT: "Haber servisi yanıt vermedi (10 saniye zaman aşımı)",
+  NEWS_NETWORK_ERROR: "Haber servisine bağlanılamıyor",
+  NEWS_RATE_LIMIT_EXCEEDED: "Çok fazla istek yapıldı. Lütfen daha sonra tekrar deneyin",
   NEWS_INVALID_CATEGORY: "Geçersiz haber kategorisi",
   NEWS_FETCH_FAILED: "Haberler yüklenemedi",
   
@@ -130,6 +136,9 @@ const ERROR_MESSAGES_EN = {
   NEWS_API_INVALID_KEY: "News service configuration error",
   NEWS_API_RATE_LIMIT: "Too many requests. Please try again later",
   NEWS_API_SERVER_ERROR: "News service is currently unavailable",
+  NEWS_API_TIMEOUT: "News service did not respond (10 second timeout)",
+  NEWS_NETWORK_ERROR: "Unable to connect to news service",
+  NEWS_RATE_LIMIT_EXCEEDED: "Too many requests. Please try again later",
   NEWS_INVALID_CATEGORY: "Invalid news category",
   NEWS_FETCH_FAILED: "Failed to load news",
   
