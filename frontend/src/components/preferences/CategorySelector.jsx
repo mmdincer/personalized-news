@@ -56,7 +56,7 @@ const CategorySelector = ({ selectedCategories = [], onChange, disabled = false 
                 {/* Checkbox Icon */}
                 <div
                   className={`
-                    w-5 h-5 rounded border-2 flex items-center justify-center transition-colors
+                    w-4 h-4 rounded border-2 flex items-center justify-center transition-colors
                     ${
                       isSelected
                         ? 'bg-blue-600 border-blue-600'
@@ -66,7 +66,7 @@ const CategorySelector = ({ selectedCategories = [], onChange, disabled = false 
                 >
                   {isSelected && (
                     <svg
-                      className="w-3 h-3 text-white"
+                      className="w-2.5 h-2.5 text-white"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -87,16 +87,10 @@ const CategorySelector = ({ selectedCategories = [], onChange, disabled = false 
         })}
       </div>
 
-      {/* Selection Info */}
+      {/* Selection Count */}
       {selectedCategories.length > 0 && (
-        <div className="text-sm text-gray-600">
-          <span className="font-medium">{selectedCategories.length}</span> categor
-          {selectedCategories.length === 1 ? 'y' : 'ies'} selected
-        </div>
-      )}
-      {selectedCategories.length === 0 && (
-        <div className="text-sm text-gray-500 italic">
-          No categories selected. Select at least one category to personalize your news feed.
+        <div className="text-sm text-gray-400 text-center">
+          {selectedCategories.length} {selectedCategories.length === 1 ? 'category' : 'categories'} selected
         </div>
       )}
     </div>

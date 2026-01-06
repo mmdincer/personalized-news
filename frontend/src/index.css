@@ -18,4 +18,20 @@ body {
 
 @layer components {
   /* Custom component styles can be added here */
+  
+  /* Date picker calendar width fix */
+  input[type="date"] {
+    min-width: 100%;
+    width: 100%;
+  }
+  
+  /* Ensure date picker calendar matches input width */
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+  }
+  
+  /* For Firefox and other browsers */
+  input[type="date"] {
+    position: relative;
+  }
 }

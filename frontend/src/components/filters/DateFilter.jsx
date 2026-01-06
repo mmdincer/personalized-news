@@ -178,7 +178,7 @@ const DateFilter = ({
               >
                 From:
               </label>
-              <div className="relative flex-1 min-w-0">
+              <div className="relative flex-1 min-w-0 w-full">
                 <input
                   id="from-date"
                   type="date"
@@ -195,6 +195,7 @@ const DateFilter = ({
                     ${error && error.includes('from') ? 'border-red-300 focus:ring-red-500' : ''}
                     ${localFromDate ? 'bg-blue-50 border-blue-200' : ''}
                   `}
+                  style={{ minWidth: '100%', width: '100%' }}
                   aria-label="From date"
                   aria-describedby={error && error.includes('from') ? 'date-error' : undefined}
                 />
@@ -209,7 +210,7 @@ const DateFilter = ({
               >
                 To:
               </label>
-              <div className="relative flex-1 min-w-0">
+              <div className="relative flex-1 min-w-0 w-full">
                 <input
                   id="to-date"
                   type="date"
@@ -227,6 +228,7 @@ const DateFilter = ({
                     ${error && error.includes('to') ? 'border-red-300 focus:ring-red-500' : ''}
                     ${localToDate ? 'bg-blue-50 border-blue-200' : ''}
                   `}
+                  style={{ minWidth: '100%', width: '100%' }}
                   aria-label="To date"
                   aria-describedby={error && error.includes('to') ? 'date-error' : undefined}
                 />

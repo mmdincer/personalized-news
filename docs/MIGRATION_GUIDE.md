@@ -15,9 +15,8 @@ backend/
         ├── 003_enable_rls_policies.sql (optional)
         ├── 004_remove_country_column.sql
         ├── 005_create_saved_articles_table.sql
-        ├── 006_create_reading_history_table.sql (henüz oluşturulmadı)
-        ├── 007_update_categories_to_guardian_sections.sql
-        └── 008_add_article_details_to_saved_articles.sql
+        ├── 006_update_categories_to_guardian_sections.sql
+        └── 007_add_article_details_to_saved_articles.sql
 ```
 
 ### Naming Convention
@@ -113,7 +112,17 @@ COMMENT ON COLUMN saved_articles.article_image_url IS 'Image URL of the saved ar
 COMMENT ON COLUMN saved_articles.saved_at IS 'Timestamp when article was saved';
 ```
 
-### 008_add_article_details_to_saved_articles.sql
+### 006_update_categories_to_guardian_sections.sql
+
+```sql
+-- Migration: 006_update_categories_to_guardian_sections.sql
+-- Description: Updates categories to Guardian API sections
+-- This migration updates the default categories and validation constraint
+-- to use Guardian API section IDs instead of NewsAPI categories
+-- (Full migration code in 006_update_categories_to_guardian_sections.sql)
+```
+
+### 007_add_article_details_to_saved_articles.sql
 
 ```sql
 -- Add new columns for article details
@@ -131,30 +140,6 @@ COMMENT ON COLUMN saved_articles.article_description IS 'Short description/trail
 COMMENT ON COLUMN saved_articles.article_content IS 'Full article content/body text';
 COMMENT ON COLUMN saved_articles.article_source_name IS 'Source name (e.g., The Guardian, section name)';
 COMMENT ON COLUMN saved_articles.article_published_at IS 'Original publication date of the article';
-```
-
-### 004_create_reading_history_table.sql
-
-```sql
--- Create reading_history table
-CREATE TABLE IF NOT EXISTS reading_history (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL,
-  article_url VARCHAR(500) NOT NULL,
-  article_title VARCHAR(500) NOT NULL,
-  article_image_url VARCHAR(500),
-  read_at TIMESTAMP DEFAULT NOW(),
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
--- Create indexes
-CREATE INDEX IF NOT EXISTS idx_reading_history_user_id ON reading_history(user_id);
-CREATE INDEX IF NOT EXISTS idx_reading_history_read_at ON reading_history(user_id, read_at DESC);
-
--- Add comments
-COMMENT ON TABLE reading_history IS 'User reading history (auto-tracked)';
-COMMENT ON COLUMN reading_history.article_url IS 'URL of the read article';
-COMMENT ON COLUMN reading_history.read_at IS 'Timestamp when article was read';
 ```
 
 ## Migration Çalıştırma
@@ -178,9 +163,8 @@ COMMENT ON COLUMN reading_history.read_at IS 'Timestamp when article was read';
 3. `003_enable_rls_policies.sql` (optional) - Row Level Security politikaları
 4. `004_remove_country_column.sql` - Country kolonunu kaldır (user_preferences tablosu için)
 5. `005_create_saved_articles_table.sql` - Saved articles tablosu (foreign key için users gerekli)
-6. `006_create_reading_history_table.sql` - Reading history tablosu (foreign key için users gerekli) (henüz oluşturulmadı)
-7. `007_update_categories_to_guardian_sections.sql` - Kategorileri Guardian API section'larına güncelle
-8. `008_add_article_details_to_saved_articles.sql` - Saved articles tablosuna article detayları ekle (description, content, source, published_at)
+6. `006_update_categories_to_guardian_sections.sql` - Kategorileri Guardian API section'larına güncelle
+7. `007_add_article_details_to_saved_articles.sql` - Saved articles tablosuna article detayları ekle (description, content, source, published_at)
 
 ## Migration Best Practices
 

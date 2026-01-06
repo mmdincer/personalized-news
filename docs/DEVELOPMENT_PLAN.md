@@ -259,41 +259,22 @@
 
 ---
 
-## 13. feat/reading-history
-
-### Görevler
-- [ ] Database migration: `reading_history` tablosu oluştur (user_id, article_url, article_title, article_image_url, read_at, INDEX on user_id + read_at DESC)
-- [ ] Backend API endpoints: `POST /api/user/reading-history` (okuma geçmişine ekle), `GET /api/user/reading-history` (listele, pagination), `DELETE /api/user/reading-history` (temizle), authentication middleware
-- [ ] Backend auto-track: NewsCard tıklandığında otomatik olarak reading history'ye ekle (frontend'den POST request)
-- [ ] Frontend ReadingHistory component: okuma geçmişini listele, tarih sıralaması (en yeni üstte), NewsCard ile gösterim
-- [ ] Frontend ReadingHistory page: `/history` route, reading history listesi, clear history butonu
-- [ ] NewsCard'a click tracking: article'a tıklandığında reading history'ye ekle
-
-### Başarı Kriterleri
-- [ ] Okuma geçmişi otomatik olarak kaydediliyor
-- [ ] Okuma geçmişi listeleniyor (tarih sıralaması ile)
-- [ ] Okuma geçmişi temizlenebiliyor
-- [ ] Duplicate kayıtlar engelleniyor (aynı article için en son okuma zamanı güncelleniyor)
-- [ ] Pagination çalışıyor
-
----
-
 ## 14. feat/profile-management
 
 ### Görevler
-- [ ] Backend password update endpoint: `PUT /api/user/password` (current password, new password validation, bcrypt hash update), authentication middleware
-- [ ] Backend profile endpoint: `GET /api/user/profile` (user bilgileri: name, email, created_at), authentication middleware
-- [ ] Frontend ProfilePage component: `/profile` route, user bilgileri gösterimi, password update form, preferences section (PreferencesPage'den taşı)
-- [ ] Frontend PasswordUpdateForm component: current password, new password, confirm password, validation, error handling
-- [ ] PreferencesPage'i ProfilePage'e taşı: Preferences section'ı ProfilePage içine entegre et
-- [ ] Navigation güncellemesi: Preferences link'ini Profile link'ine çevir, Profile dropdown menu (Profile, Preferences, Logout)
+- [x] Backend password update endpoint: `PUT /api/user/password` (current password, new password validation, bcrypt hash update), authentication middleware
+- [x] Backend profile endpoint: `GET /api/user/profile` (user bilgileri: name, email, created_at), authentication middleware
+- [x] Frontend ProfilePage component: `/profile` route, user bilgileri gösterimi, password update form, preferences section (PreferencesPage'den taşı)
+- [x] Frontend PasswordUpdateForm component: current password, new password, confirm password, validation, error handling
+- [x] PreferencesPage'i ProfilePage'e taşı: Preferences section'ı ProfilePage içine entegre et
+- [x] Navigation güncellemesi: Preferences link'ini Profile link'ine çevir, Profile dropdown menu (Profile, Preferences, Logout)
 
 ### Başarı Kriterleri
-- [ ] Kullanıcı şifresini güncelleyebiliyor
-- [ ] Şifre güncelleme validation çalışıyor
-- [ ] Profil bilgileri gösteriliyor
-- [ ] Preferences ProfilePage içinde erişilebilir
-- [ ] Navigation güncellendi
+- [x] Kullanıcı şifresini güncelleyebiliyor
+- [x] Şifre güncelleme validation çalışıyor
+- [x] Profil bilgileri gösteriliyor
+- [x] Preferences ProfilePage içinde erişilebilir
+- [x] Navigation güncellendi
 
 ---
 
@@ -392,8 +373,7 @@
 10. feat/responsive-and-config → main
 11. feat/saved-articles → main
 12. feat/search-and-filters → main
-13. feat/reading-history → main
-14. feat/profile-management → main
+13. feat/profile-management → main
 15. chore/docker-support → main
 16. chore/deployment → main
 17. docs/readme-documentation → main
