@@ -243,7 +243,7 @@
 - [x] Frontend SearchBar component: arama input'u, debounce (300ms), loading state, error handling
 - [x] Frontend SearchPage: `/search` route, search results display, pagination
 - [x] Frontend DateFilter component: date range picker, from/to date selection
-- [ ] Frontend SortDropdown component: newest/oldest/relevance seçenekleri
+- [x] Frontend SortDropdown component: newest/oldest/relevance seçenekleri
 - [ ] NewsFeed'e filter entegrasyonu: date filter ve sort dropdown ekle
 - [ ] Infinite scroll: Intersection Observer API ile otomatik sayfa yükleme, sayfa sonuna gelindiğinde bir sonraki sayfa otomatik yüklenir, loading indicator gösterilir, "Load More" butonu opsiyonel olarak kalabilir veya kaldırılabilir
 
