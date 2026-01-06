@@ -223,7 +223,7 @@
 - [x] Backend API endpoints: `POST /api/user/saved-articles` (kaydet), `GET /api/user/saved-articles` (listele), `DELETE /api/user/saved-articles/:id` (sil), authentication middleware
 - [x] Frontend SavedArticles component: kaydedilen haberleri listele, kaydet/sil butonları, NewsCard ile gösterim
 - [x] Frontend SavedArticles page: `/saved` route, saved articles listesi
-- [ ] NewsCard'a "Save" butonu ekle: kaydedilmiş mi kontrolü, toggle functionality
+- [x] NewsCard'a "Save" butonu ekle: kaydedilmiş mi kontrolü, toggle functionality
 
 ### Başarı Kriterleri
 - [ ] Kullanıcılar haberleri kaydedebiliyor

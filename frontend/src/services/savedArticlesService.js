@@ -57,3 +57,54 @@ export const deleteSavedArticle = async (articleId) => {
   await apiClient.delete(`/user/saved-articles/${articleId}`);
 };
 
+/**
+ * Check if an article is saved by the authenticated user
+ * Requires authentication
+ * @param {string} articleUrl - Article URL to check
+ * @returns {Promise<Object|null>} Saved article data if found, null otherwise
+ */
+export const isArticleSaved = async (articleUrl) => {
+  if (!articleUrl) {
+    return null;
+  }
+
+  try {
+    // Get all saved articles and check if URL matches
+    const response = await getSavedArticles();
+    
+    if (response.success && response.data) {
+      const savedArticle = response.data.find(
+        (item) => item.article_url === articleUrl
+      );
+      return savedArticle || null;
+    }
+    
+    return null;
+  } catch (error) {
+    // If error (e.g., not authenticated), return null
+    return null;
+  }
+};
+
+/**
+ * Delete a saved article by URL (convenience function)
+ * Requires authentication
+ * @param {string} articleUrl - Article URL to delete
+ * @returns {Promise<void>}
+ */
+export const deleteSavedArticleByUrl = async (articleUrl) => {
+  if (!articleUrl) {
+    throw new Error('Article URL is required');
+  }
+
+  // Find the saved article by URL
+  const savedArticle = await isArticleSaved(articleUrl);
+  
+  if (!savedArticle || !savedArticle.id) {
+    throw new Error('Saved article not found');
+  }
+
+  // Delete by ID
+  await deleteSavedArticle(savedArticle.id);
+};
+
