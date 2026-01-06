@@ -112,7 +112,7 @@
 - [x] News endpoints: `GET /api/news` (genel haberler), `GET /api/news/:category` (kategori bazlı), query parameters (page, limit)
 - [x] Rate limiting: daily request tracking (100/day), per-second limiting (1/second), cached results when limit reached, logging - bakınız: [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md) 
 - [x] Error handling ve response transformation: API error handling, response normalization - bakınız: [ERROR_CODES.md](./ERROR_CODES.md), [API_SPECIFICATIONS.md](./API_SPECIFICATIONS.md) 
-- [ ] Configuration: CORS yapılandırması, response caching (15 minutes) - bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md)
+- [x] Configuration: CORS yapılandırması, response caching (15 minutes) - bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md) ✅ Tamamlandı
 
 ### Başarı Kriterleri
 - [ ] NewsAPI.org'dan haberler çekiliyor

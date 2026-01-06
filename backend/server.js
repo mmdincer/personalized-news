@@ -31,8 +31,38 @@ try {
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// ===========================
+// CORS Configuration
+// ===========================
+
+// CORS configuration per SECURITY_GUIDELINES.md
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN || 'http://localhost:5173', // Vite dev server default
+  credentials: true, // Allow cookies/auth headers
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 200, // Some legacy browsers (IE11) choke on 204
+};
+
+// In production, allow multiple origins if needed
+if (process.env.NODE_ENV === 'production' && process.env.CORS_ORIGINS) {
+  const allowedOrigins = process.env.CORS_ORIGINS.split(',').map((origin) =>
+    origin.trim()
+  );
+  corsOptions.origin = (origin, callback) => {
+    // Allow requests with no origin (mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  };
+}
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
