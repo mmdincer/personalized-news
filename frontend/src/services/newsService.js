@@ -41,6 +41,52 @@ const isCacheValid = (cached) => {
 };
 
 /**
+ * Search news articles
+ * GET /api/news/search
+ * @param {Object} params - Query parameters
+ * @param {string} params.q - Search query (required)
+ * @param {number} [params.page=1] - Page number
+ * @param {number} [params.limit=20] - Results per page (max 50)
+ * @param {boolean} [params.forceRefresh=false] - Force refresh cache
+ * @returns {Promise<Object>} News response with articles
+ */
+export const searchNews = async ({ q, page = 1, limit = 20, forceRefresh = false } = {}) => {
+  if (!q || typeof q !== 'string' || q.trim().length === 0) {
+    throw new Error('Search query is required');
+  }
+
+  if (q.trim().length < 2) {
+    throw new Error('Search query must be at least 2 characters');
+  }
+
+  const endpoint = '/news/search';
+  const params = { q: q.trim(), page, limit };
+  const cacheKey = getCacheKey(endpoint, params);
+
+  // Check cache first
+  if (!forceRefresh) {
+    const cached = newsCache.get(cacheKey);
+    if (cached && isCacheValid(cached)) {
+      return cached.data;
+    }
+  }
+
+  try {
+    const response = await apiClient.get(endpoint, { params });
+
+    // Cache response
+    newsCache.set(cacheKey, {
+      data: response,
+      timestamp: Date.now(),
+    });
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+/**
  * Clear news cache
  * Useful for testing or manual cache invalidation
  */
