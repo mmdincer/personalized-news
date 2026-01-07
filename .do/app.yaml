@@ -1,0 +1,68 @@
+name: personalized-news
+region: nyc
+
+# Backend Service (Node.js API)
+services:
+  - name: backend
+    source_dir: /backend
+    github:
+      repo: mmdincer/personalized-news  
+      branch: main
+      deploy_on_push: true
+    dockerfile_path: Dockerfile
+    http_port: 3000
+    instance_count: 1
+    instance_size_slug: basic-xxs  # 512MB RAM, $5/ay
+    health_check:
+      http_path: /api/health
+      initial_delay_seconds: 10
+      period_seconds: 30
+      timeout_seconds: 3
+      success_threshold: 1
+      failure_threshold: 3
+    envs:
+      - key: NODE_ENV
+        value: production
+        scope: RUN_TIME
+      - key: PORT
+        value: "3000"
+        scope: RUN_TIME
+      - key: SUPABASE_URL
+        value: ${SUPABASE_URL}
+        scope: RUN_TIME
+        type: SECRET
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        value: ${SUPABASE_SERVICE_ROLE_KEY}
+        scope: RUN_TIME
+        type: SECRET
+      - key: JWT_SECRET
+        value: ${JWT_SECRET}
+        scope: RUN_TIME
+        type: SECRET
+      - key: GUARDIAN_API_KEY
+        value: ${GUARDIAN_API_KEY}
+        scope: RUN_TIME
+        type: SECRET
+      - key: CORS_ORIGINS
+        value: ${CORS_ORIGINS}
+        scope: RUN_TIME
+
+# Frontend Static Site (React SPA)
+static_sites:
+  - name: frontend
+    source_dir: /frontend
+    github:
+      repo: mmdincer/personalized-news  
+      branch: main
+      deploy_on_push: true
+    build_command: npm install && npm run build
+    output_dir: dist
+    routes:
+      - path: /
+    envs:
+      - key: VITE_API_URL
+        value: ${BACKEND_URL}/api
+        scope: BUILD_TIME
+        type: ALIAS
+        alias: backend
+
