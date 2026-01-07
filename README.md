@@ -1,56 +1,169 @@
 # Kişiselleştirilmiş Haber Akışı Uygulaması
 
-Bu, kullanıcılara kişiselleştirilmiş bir haber akışı sağlamak için tasarlanmış tam yığın (full-stack) bir uygulamadır.
+Modern web teknolojileri ve yazılım geliştirme prensipleri kullanılarak geliştirilmiş, kullanıcı odaklı profesyonel bir haber platformu. Bu uygulama, SOLID prensipleri, Clean Code standartları ve OWASP güvenlik en iyi uygulamalarına tam uyum ile geliştirilmiştir.
 
 ## 🌐 Canlı Uygulama
 
 **Production URL:** [https://news.mmdincer.com](https://news.mmdincer.com)
 
-## 🚀 Ücretsiz Deployment
+> **Not:** Uygulama Render'ın ücretsiz tier'ında deploy edilmiştir. 15 dakika kullanılmadığında uyku moduna geçer ve ilk istekte uyanması 30-60 saniye sürebilir (cold start). Bu normaldir ve ücretsiz tier'ın bir özelliğidir.
 
-Uygulamayı **tamamen ücretsiz** olarak deploy etmek için detaylı rehber: **[Ücretsiz Deployment Rehberi](./docs/FREE_DEPLOYMENT_GUIDE.md)**
+## 📖 Hakkında
 
-Bu rehberde şunları öğreneceksiniz:
-- Render, Railway, Vercel gibi ücretsiz platformlarda deploy etme
-- Backend ve frontend'i ayrı ayrı deploy etme
-- Environment variables yapılandırması
-- CORS ayarları
-- Sorun giderme ipuçları
+**Kişiselleştirilmiş Haber Akışı**, kullanıcıların kendi tercihlerine göre haber içeriklerini filtreleyip görüntüleyebildiği, enterprise-grade güvenlik standartlarına sahip full-stack bir web uygulamasıdır. Uygulama, The Guardian API'den gerçek zamanlı haber verilerini çekerek, kullanıcıların seçtikleri 20 farklı kategoriye göre kişiselleştirilmiş bir haber deneyimi sunar.
 
-## Özellikler
+### 🎯 Temel Özellikler
 
-- Kullanıcı kimlik doğrulama (kayıt, giriş, çıkış)
-- Seçilen kategorilere göre kişiselleştirilmiş haber akışı
-- Anahtar kelimeler, tarih aralığı ve sıralama düzenine göre haber makalelerini arama ve filtreleme
-- Daha sonra okumak için makaleleri kaydetme
-- Kullanıcı profil yönetimi (şifre güncelleme, tercihleri yönetme)
-- Çeşitli cihazlar için duyarlı tasarım
-- Kolay dağıtım için Docker desteği
+#### Haber Yönetimi
+- **20 Kategori Desteği**: Business, Technology, Science, Sport, Culture, News, World, Politics, Environment, Society, Life & Style, Food, Travel, Fashion, Books, Music, Film, Games, Education, Media
+- **Kişiselleştirilmiş Ana Sayfa**: Kullanıcı tercihlerine göre özelleştirilmiş haber akışı
+- **Kategori Bazlı Filtreleme**: /news sayfasında kategori seçerek haberleri filtreleme
+- **Gelişmiş Arama**: Anahtar kelime ile tam metin arama, tarih aralığı filtreleme
+- **Sıralama Seçenekleri**: En yeni, en eski, alakalı sıralama
+- **Kayıtlı Haberler**: İlginizi çeken haberleri kaydederek daha sonra okumak üzere saklama
+- **Sonsuz Kaydırma**: Sayfanın sonuna gelindiğinde otomatik haber yükleme
 
-## Teknoloji Yığını
 
-**Backend:**
-- Node.js (Express.js)
-- PostgreSQL (Supabase)
-- The Guardian API
-- Kimlik doğrulama için JWT
-- Şifre hash'leme için bcrypt
-- Loglama için Winston
-- Test için Jest
+#### Kullanıcı Yönetimi
+- **Güvenli Kimlik Doğrulama**: JWT tabanlı authentication sistemi (7 gün geçerlilik)
+- **Şifre Güvenliği**: bcrypt ile hash'lenmiş şifreler, güçlü şifre validasyonu
+- **Profil Yönetimi**: Şifre değiştirme, profil bilgileri görüntüleme
+- **Tercih Yönetimi**: Kategori seçimi ve kaydetme
 
-**Frontend:**
-- React.js (Vite)
-- React Router DOM
-- Tailwind CSS
-- API çağrıları için Axios
-- Bildirimler için React Hot Toast
+#### Güvenlik ve Performans
+- **OWASP Top 10 Uyumluluğu**: Injection, XSS, CSRF koruması
+- **Rate Limiting**: Auth (5/15dk), News (100/saat), Genel API (1000/saat)
+- **Input Validation**: express-validator ile tüm girdilerin doğrulanması
+- **Helmet.js**: HTTP header güvenliği
+- **CORS Koruması**: Yapılandırılabilir origin kontrolü
+- **Error Logging**: Winston ile kapsamlı loglama sistemi
 
-## Ön Gereksinimler
+#### Kullanıcı Deneyimi
+- **Responsive Tasarım**: Mobil-first yaklaşım ile tüm cihazlarda mükemmel görünüm
+- **Modern UI**: Tailwind CSS ile temiz ve profesyonel arayüz
+- **Toast Bildirimleri**: Kullanıcı dostu geri bildirimler
+- **Loading States**: Skeleton ekranlar ve yükleme göstergeleri
+- **Error Boundary**: Hata yakalama ve kullanıcı dostu hata mesajları
 
-- Node.js 18+ ve npm
-- Docker ve Docker Compose (Docker kurulumu için)
-- Supabase hesabı ve projesi
-- The Guardian API anahtarı
+### 🏗️ Mimari ve Yazılım Kalitesi
+
+#### SOLID Prensipleri
+- **Single Responsibility**: Her modül tek bir sorumluluğa sahip
+- **Open/Closed**: Genişlemeye açık, değişikliğe kapalı yapı
+- **Liskov Substitution**: Interface tutarlılığı
+- **Interface Segregation**: Odaklı, küçük interface'ler
+- **Dependency Inversion**: Dependency injection pattern
+
+#### Katmanlı Mimari
+- **Controllers**: HTTP request/response yönetimi
+- **Services**: Business logic ve veri işleme
+- **Middleware**: Authentication, validation, error handling
+- **Utils**: Yardımcı fonksiyonlar ve custom error sınıfları
+- **Constants**: Sabit değerler ve enum'lar
+
+#### Teknoloji Yığını
+- **Backend**: Node.js + Express.js (RESTful API)
+- **Frontend**: React 18 + Vite (Component-based architecture)
+- **Veritabanı**: Supabase (PostgreSQL) ile RLS (Row Level Security)
+- **API Entegrasyonu**: The Guardian Open Platform API
+- **Güvenlik**: JWT, bcrypt, Helmet, express-rate-limit, express-validator
+- **Styling**: Tailwind CSS + Typography plugin
+- **State Management**: React Context API
+- **Form Yönetimi**: React Hook Form
+- **Testing**: Jest + Supertest
+- **Linting/Formatting**: ESLint + Prettier
+- **Deployment**: Docker + Docker Compose, DigitalOcean/Render ready
+
+## 📦 Proje Yapısı
+
+```
+personalized-news/
+├── backend/                    # Backend API servisi
+│   ├── config/                 # Veritabanı ve logger konfigürasyonları
+│   ├── constants/              # Sabit değerler (kategoriler, ülkeler)
+│   ├── controllers/            # HTTP request/response yönetimi
+│   ├── middleware/             # Auth, validation, error handling
+│   ├── services/               # Business logic katmanı
+│   ├── routes/                 # API endpoint tanımları
+│   ├── utils/                  # Yardımcı fonksiyonlar ve error sınıfları
+│   ├── database/migrations/    # Veritabanı migration dosyaları
+│   ├── tests/                  # Unit ve integration testleri
+│   ├── server.js               # Ana uygulama giriş noktası
+│   └── package.json
+│
+├── frontend/                   # React frontend uygulaması
+│   ├── src/
+│   │   ├── components/         # UI bileşenleri (auth, news, layout, common)
+│   │   ├── contexts/           # React Context (Auth, Preferences)
+│   │   ├── hooks/              # Custom React hooks
+│   │   ├── pages/              # Route-level sayfalar
+│   │   ├── services/           # API service katmanı
+│   │   ├── utils/              # Yardımcı fonksiyonlar
+│   │   ├── config/             # Axios konfigürasyonu
+│   │   ├── App.jsx             # Ana uygulama bileşeni
+│   │   └── main.jsx            # React DOM render
+│   ├── public/                 # Statik dosyalar
+│   └── package.json
+│
+├── docs/                       # Detaylı dokümantasyon
+│   ├── API_SPECIFICATIONS.md   # API endpoint detayları
+│   ├── DEVELOPMENT_PLAN.md     # Geliştirme planı
+│   ├── ERROR_CODES.md          # Hata kodları kataloğu
+│   ├── MIGRATION_GUIDE.md      # Veritabanı migration rehberi
+│   ├── PROJECT_STRUCTURE.md    # Proje yapısı ve mimari
+│   ├── SECURITY_GUIDELINES.md  # Güvenlik standartları
+│   ├── TECHNOLOGY_STACK.md     # Teknoloji kararları
+│   └── TASKS.md                # Proje gereksinimleri
+│
+├── docker-compose.yml          # Development environment
+├── docker-compose.prod.yml     # Production environment
+└── README.md                   # Bu dosya
+```
+
+## 🔧 Detaylı Teknoloji Yığını
+
+### Backend Teknolojileri
+- **Runtime**: Node.js 20+
+- **Framework**: Express.js 4.x (RESTful API)
+- **Veritabanı**: Supabase (PostgreSQL)
+- **Kimlik Doğrulama**: JWT (jsonwebtoken 9.x)
+- **Şifreleme**: bcrypt 5.x (10 rounds)
+- **Validation**: express-validator 7.x, password-validator 5.x
+- **Güvenlik**: Helmet 8.x, express-rate-limit 7.x, CORS 2.x
+- **HTTP Client**: Axios 1.x (The Guardian API entegrasyonu)
+- **Logging**: Winston 3.x
+- **Testing**: Jest 29.x + Supertest 6.x
+- **Code Quality**: ESLint + Prettier
+
+### Frontend Teknolojileri
+- **Framework**: React 18.x
+- **Build Tool**: Vite 7.x
+- **Routing**: React Router DOM 6.x
+- **Styling**: Tailwind CSS 3.x + @tailwindcss/typography
+- **Form Yönetimi**: React Hook Form 7.x
+- **HTTP Client**: Axios 1.x
+- **State Management**: React Context API
+- **Notifications**: React Hot Toast 2.x
+- **Code Quality**: ESLint 9.x + Prettier 3.x
+
+### DevOps ve Deployment
+- **Containerization**: Docker + Docker Compose
+- **Production**: DigitalOcean App Platform / Render
+- **CI/CD**: Git-based deployment
+- **Environment Management**: dotenv
+
+## 📋 Ön Gereksinimler
+
+### Gerekli Yazılımlar
+- **Node.js**: 20.x veya üzeri
+- **npm**: Node.js ile birlikte gelir
+- **Docker**: 20.x veya üzeri (Docker deployment için)
+- **Docker Compose**: 2.x veya üzeri (Docker deployment için)
+- **Git**: Version control için
+
+### Gerekli Hesaplar ve API Anahtarları
+- **Supabase Hesabı**: [supabase.com](https://supabase.com) - PostgreSQL veritabanı için
+- **The Guardian API Key**: [open-platform.theguardian.com](https://open-platform.theguardian.com/access) - Haber verisi için
 
 ## Supabase Kurulum Rehberi
 
@@ -118,9 +231,10 @@ GUARDIAN_API_KEY=your_guardian_api_key_here
 ### 1. Depoyu klonlayın
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/mmdincer/personalized-news.git
 cd personalized-news
 ```
+
 
 ### 2. Ortam değişkenlerini ayarlayın
 
@@ -244,11 +358,53 @@ Veritabanı migration'ları SQL dosyaları kullanılarak yönetilir.
 - **Migration Dosyaları**: `backend/database/migrations/` klasöründe bulunur
 - **İsimlendirme Kuralı**: `XXX_migration_name.sql` (örn: `001_create_users_table.sql`)
 
-Migration'ları çalıştırmak için:
+**Not:** Migration'lar Supabase SQL Editor'de manuel olarak çalıştırılmalıdır.
+
+## Test Çalıştırma
+
+### Backend Testleri
+
 ```bash
-# Backend dizininden
-npm run migrate up   # Tüm bekleyen migration'ları uygula
-npm run migrate down # Son migration'ı geri al
+cd backend
+npm test                    # Tüm testleri çalıştır
+npm run test:unit          # Sadece unit testler
+npm run test:integration   # Sadece integration testler
+npm run test:watch         # Watch mode ile test
+```
+
+### Test Coverage
+
+```bash
+cd backend
+npm test -- --coverage
+```
+
+Coverage raporu `backend/coverage/` klasöründe oluşturulur.
+
+## Kod Kalitesi
+
+### Linting
+
+```bash
+# Backend
+cd backend
+npm run lint
+
+# Frontend
+cd frontend
+npm run lint
+```
+
+### Formatting
+
+```bash
+# Backend
+cd backend
+npm run format
+
+# Frontend
+cd frontend
+npm run format
 ```
 
 ## API Dokümantasyonu
@@ -332,3 +488,7 @@ Daha detaylı sorun giderme bilgileri için şu dosyalara bakın:
 ## Geliştirme Planı
 
 Projenin geliştirme yol haritası ve görev takibi için `docs/DEVELOPMENT_PLAN.md` dosyasına bakın.
+
+## Lisans
+
+Bu proje ISC lisansı altında lisanslanmıştır.
