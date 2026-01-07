@@ -83,8 +83,9 @@ const updateUserPreferences = async (userId, preferences) => {
     // This ensures we catch invalid categories and provide clear error messages
     const rawValidation = validateCategories(preferences.categories);
     if (!rawValidation.isValid) {
+      const errors = rawValidation.errors || [];
       throw new Error(
-        `Invalid categories: ${rawValidation.invalidCategories.join(', ')}`
+        `Invalid categories: ${errors.length > 0 ? errors.join(', ') : 'Unknown error'}`
       );
     }
 

@@ -25,17 +25,20 @@ try {
 }
 
 // Initialize News Service cache cleanup (if news service is available)
-try {
-  const newsService = require('./services/newsService');
-  if (newsService.startCacheCleanup) {
-    newsService.startCacheCleanup();
+// Skip in test environment to avoid open handles
+if (process.env.NODE_ENV !== 'test') {
+  try {
+    const newsService = require('./services/newsService');
+    if (newsService.startCacheCleanup) {
+      newsService.startCacheCleanup();
+      // eslint-disable-next-line no-console
+      console.log('✓ News service cache cleanup started');
+    }
+  } catch (error) {
+    // News service not available yet (not an error)
     // eslint-disable-next-line no-console
-    console.log('✓ News service cache cleanup started');
+    console.log('ℹ News service cache cleanup skipped (service not available)');
   }
-} catch (error) {
-  // News service not available yet (not an error)
-  // eslint-disable-next-line no-console
-  console.log('ℹ News service cache cleanup skipped (service not available)');
 }
 
 const app = express();
@@ -152,27 +155,30 @@ app.use('*', (req, res) => {
 const errorHandler = require('./middleware/errorHandler');
 app.use(errorHandler);
 
-// Start server
-const server = app.listen(PORT, () => {
-  // eslint-disable-next-line no-console
-  console.log(`Server is running on port ${PORT}`);
-  // eslint-disable-next-line no-console
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  // eslint-disable-next-line no-console
-  console.log(`Health check: http://localhost:${PORT}/api/health`);
-});
+// Start server only if not in test environment
+let server;
+if (process.env.NODE_ENV !== 'test') {
+  server = app.listen(PORT, () => {
+    // eslint-disable-next-line no-console
+    console.log(`Server is running on port ${PORT}`);
+    // eslint-disable-next-line no-console
+    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    // eslint-disable-next-line no-console
+    console.log(`Health check: http://localhost:${PORT}/api/health`);
+  });
 
-// Handle port already in use error
-server.on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    // eslint-disable-next-line no-console
-    console.error(`Port ${PORT} is already in use. Please stop the other process or use a different port.`);
-    // eslint-disable-next-line no-console
-    console.error(`To find and kill the process: lsof -ti:${PORT} | xargs kill -9`);
-    process.exit(1);
-  } else {
-    throw err;
-  }
-});
+  // Handle port already in use error
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      // eslint-disable-next-line no-console
+      console.error(`Port ${PORT} is already in use. Please stop the other process or use a different port.`);
+      // eslint-disable-next-line no-console
+      console.error(`To find and kill the process: lsof -ti:${PORT} | xargs kill -9`);
+      process.exit(1);
+    } else {
+      throw err;
+    }
+  });
+}
 
 module.exports = app;

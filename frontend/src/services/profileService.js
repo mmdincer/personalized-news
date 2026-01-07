@@ -34,3 +34,5 @@ export const updatePassword = async ({ currentPassword, newPassword }) => {
   return response;
 };
 
+
+
