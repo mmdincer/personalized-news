@@ -1,0 +1,55 @@
+# Production Docker Compose Configuration
+# This file is optimized for production deployment with Nginx reverse proxy
+# Usage: docker compose -f docker-compose.prod.yml up -d
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: personalized-news-backend
+    # Ports are NOT exposed to host - only accessible via Docker network
+    # Nginx reverse proxy will connect to backend:3000 via Docker network
+    expose:
+      - "3000"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - GUARDIAN_API_KEY=${GUARDIAN_API_KEY}
+      - CORS_ORIGINS=${CORS_ORIGINS:-https://news.mmdincer.com}
+    volumes:
+      - ./backend/logs:/app/logs
+    networks:
+      - personalized-news-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: personalized-news-frontend
+    # Ports are NOT exposed to host - only accessible via Docker network
+    # Nginx reverse proxy will connect to frontend:80 via Docker network
+    expose:
+      - "80"
+    depends_on:
+      - backend
+    networks:
+      - personalized-news-network
+    restart: unless-stopped
+
+networks:
+  personalized-news-network:
+    driver: bridge
+
