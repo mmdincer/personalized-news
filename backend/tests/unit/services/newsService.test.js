@@ -46,8 +46,12 @@ describe('News Service', () => {
   describe('Constants', () => {
     it('should export required constants', () => {
       expect(newsService.CACHE_DURATION_MS).toBe(15 * 60 * 1000);
-      expect(newsService.MAX_REQUESTS_PER_DAY).toBe(500); // The Guardian API free tier
-      expect(newsService.MAX_REQUESTS_PER_SECOND).toBe(1); // The Guardian API free tier
+      // In test environment, MAX_REQUESTS_PER_DAY is 10000 (development mode)
+      // In production, it's 500 (The Guardian API free tier)
+      expect(newsService.MAX_REQUESTS_PER_DAY).toBe(process.env.NODE_ENV === 'production' ? 500 : 10000);
+      // In test environment, MAX_REQUESTS_PER_SECOND is 5 (development mode)
+      // In production, it's 1 (The Guardian API free tier)
+      expect(newsService.MAX_REQUESTS_PER_SECOND).toBe(process.env.NODE_ENV === 'production' ? 1 : 5);
     });
   });
 });

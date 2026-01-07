@@ -29,13 +29,16 @@ const saveArticle = async (req, res, next) => {
     }
 
     // Save article via service
+    // Service will return existing article if duplicate, or create new one
     const savedArticle = await savedArticlesService.saveArticle(userId, {
       article_url,
       article_title,
       article_image_url,
     });
 
-    // Return success response
+    // Check if this is a new article or existing one
+    // We can't easily determine this from the response, so we'll always return 201
+    // The service handles duplicates internally and returns the existing article
     res.status(201).json({
       success: true,
       data: savedArticle,

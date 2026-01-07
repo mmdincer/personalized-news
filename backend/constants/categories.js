@@ -144,7 +144,6 @@ const validateCategories = (categories) => {
   }
 
   const errors = [];
-  const seen = new Set();
 
   categories.forEach((category, index) => {
     const normalizedCategory = category?.toLowerCase()?.trim();
@@ -153,13 +152,6 @@ const validateCategories = (categories) => {
       errors.push(`Category at index ${index} is empty`);
       return;
     }
-
-    if (seen.has(normalizedCategory)) {
-      errors.push(`Duplicate category: ${normalizedCategory}`);
-      return;
-    }
-
-    seen.add(normalizedCategory);
 
     if (!isValidCategory(normalizedCategory)) {
       errors.push(
@@ -172,7 +164,7 @@ const validateCategories = (categories) => {
     isValid: errors.length === 0,
     errors,
   };
-};
+};;
 
 /**
  * Normalize categories array (remove duplicates, lowercase, trim)
