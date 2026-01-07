@@ -75,6 +75,11 @@ const updatePreferences = async (req, res, next) => {
       preferences
     );
 
+    console.log('📝 [preferences] User preferences updated:', {
+      userId,
+      newCategories: updatedPreferences.categories
+    });
+
     // Clear preferences cache for this user (cache invalidation)
     clearPreferencesCache(userId);
 

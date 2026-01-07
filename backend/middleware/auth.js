@@ -23,16 +23,26 @@ const getCachedPreferences = async (userId) => {
 
   // Check if cache is valid
   if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+    console.log('✨ [cache] Using cached preferences for user:', {
+      userId,
+      categories: cached.data.categories
+    });
     return cached.data;
   }
 
   // Cache miss or expired - fetch from database
+  console.log('🔄 [cache] Cache miss/expired, fetching fresh preferences for user:', userId);
   const preferences = await getUserPreferences(userId);
 
   // Update cache
   preferencesCache.set(userId, {
     data: preferences,
     timestamp: Date.now(),
+  });
+
+  console.log('💾 [cache] Cached fresh preferences for user:', {
+    userId,
+    categories: preferences.categories
   });
 
   return preferences;
@@ -44,7 +54,12 @@ const getCachedPreferences = async (userId) => {
  * @param {string} userId - User ID
  */
 const clearPreferencesCache = (userId) => {
-  preferencesCache.delete(userId);
+  const wasDeleted = preferencesCache.delete(userId);
+  console.log('🧹 [cache] Cleared preferences cache for user:', {
+    userId,
+    success: wasDeleted,
+    cacheSize: preferencesCache.size
+  });
 };
 
 /**
