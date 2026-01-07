@@ -110,17 +110,15 @@ export const AuthProvider = ({ children }) => {
 
   /**
    * Logout user
-   * Clears auth state and redirects to login
-   * Note: For programmatic navigation, use navigate() from react-router-dom in components
+   * Clears auth state
+   * Note: Redirect should be handled by the component calling logout() using navigate()
+   * This prevents double redirects and allows components to control navigation
    */
   const logout = () => {
     authService.logout();
     setUser(null);
     setIsAuthenticated(false);
-    // Redirect to login page
-    if (typeof window !== 'undefined') {
-      window.location.href = '/login';
-    }
+    // Note: Navigation is handled by the component (e.g., Header uses navigate('/login'))
   };
 
   /**

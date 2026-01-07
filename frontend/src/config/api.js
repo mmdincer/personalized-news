@@ -75,7 +75,8 @@ apiClient.interceptors.response.use(
         // Only redirect if not already on login/register page
         if (!window.location.pathname.includes('/login') && 
             !window.location.pathname.includes('/register')) {
-          window.location.href = '/login';
+          // Use replace instead of href to avoid adding to history
+          window.location.replace('/login');
         }
       }
 
