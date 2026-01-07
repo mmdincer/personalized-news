@@ -43,18 +43,3 @@ services:
         value: ${CORS_ORIGINS}
         scope: RUN_TIME
 
-# Frontend Static Site (React SPA)
-static_sites:
-  - name: frontend
-    source_dir: frontend
-    build_command: npm install && npm run build
-    output_dir: dist
-    routes:
-      - path: /
-    envs:
-      - key: VITE_API_URL
-        value: ${BACKEND_URL}/api
-        scope: BUILD_TIME
-        type: ALIAS
-        alias: backend
-
