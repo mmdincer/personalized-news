@@ -35,19 +35,35 @@ const logger = winston.createLogger({
   ],
 });
 
-// In production, also log to file
-if (process.env.NODE_ENV === 'production') {
-  logger.add(
-    new winston.transports.File({
-      filename: 'logs/error-handler-error.log',
-      level: 'error',
-    })
-  );
-  logger.add(
-    new winston.transports.File({
-      filename: 'logs/error-handler.log',
-    })
-  );
+// In production, also log to file (only if logs directory is writable)
+// Note: In containerized environments (Docker, Render, etc.), file logging may not be available
+// Console logs are sufficient and visible in platform dashboards
+if (process.env.NODE_ENV === 'production' && process.env.ENABLE_FILE_LOGGING === 'true') {
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    const logsDir = path.join(process.cwd(), 'logs');
+    
+    // Try to create logs directory if it doesn't exist
+    if (!fs.existsSync(logsDir)) {
+      fs.mkdirSync(logsDir, { recursive: true });
+    }
+    
+    logger.add(
+      new winston.transports.File({
+        filename: 'logs/error-handler-error.log',
+        level: 'error',
+      })
+    );
+    logger.add(
+      new winston.transports.File({
+        filename: 'logs/error-handler.log',
+      })
+    );
+  } catch (error) {
+    // If file logging fails (permission issues, etc.), continue with console logging only
+    logger.warn('File logging not available, using console logging only', { error: error.message });
+  }
 }
 
 const errorHandler = (err, req, res, next) => {

@@ -322,41 +322,6 @@
 
 ---
 
-## 18. chore/deployment
-
-### Görevler
-- [ ] Production environment setup: environment variables, Supabase production credentials, The Guardian API key
-- [ ] Backend deployment: production server setup (VPS/Cloud), PM2 veya process manager, SSL certificate, domain configuration
-- [ ] Frontend deployment: static file hosting (Vercel/Netlify/VPS), build optimization, environment variables
-- [ ] CI/CD pipeline (opsiyonel): GitHub Actions veya benzeri, automated testing, automated deployment
-- [ ] Monitoring setup (opsiyonel): error tracking (Sentry), logging (Winston file logs), uptime monitoring
-- [ ] Deployment documentation: deployment guide, environment setup, troubleshooting
-
-### Başarı Kriterleri
-- [ ] Production environment hazır
-- [ ] Backend production'da çalışıyor
-- [ ] Frontend production'da çalışıyor
-- [ ] SSL certificate yapılandırıldı
-- [ ] Domain yapılandırıldı
-- [ ] Deployment documentation mevcut
-
----
-
-## 19. fix/bug-fixes-and-polish
-
-### Görevler
-- [ ] Bug fixes: kullanıcı testleri sonrası bug fix'ler
-- [ ] Optimization: performance optimizasyonları, code cleanup ve refactoring, console.log temizleme
-- [ ] Polish: UI/UX iyileştirmeleri, final security audit - bakınız: [SECURITY_GUIDELINES.md](./SECURITY_GUIDELINES.md)
-
-### Başarı Kriterleri
-- [ ] Kritik bug'lar düzeltildi
-- [ ] Performance kabul edilebilir seviyede
-- [ ] Code quality standartlarına uygun
-- [ ] Security audit tamamlandı
-
----
-
 ## Branch Merge Sırası (Önerilen)
 
 1. feat/project-setup → main
@@ -375,8 +340,6 @@
 15. chore/docker-support → main
 16. docs/readme-documentation → main
 17. test/integration-tests → main (opsiyonel)
-18. chore/deployment → main
-19. fix/bug-fixes-and-polish → main
 
 ---
 

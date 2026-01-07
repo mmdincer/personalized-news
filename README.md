@@ -6,6 +6,17 @@ Bu, kullanıcılara kişiselleştirilmiş bir haber akışı sağlamak için tas
 
 **Production URL:** [https://news.mmdincer.com](https://news.mmdincer.com)
 
+## 🚀 Ücretsiz Deployment
+
+Uygulamayı **tamamen ücretsiz** olarak deploy etmek için detaylı rehber: **[Ücretsiz Deployment Rehberi](./docs/FREE_DEPLOYMENT_GUIDE.md)**
+
+Bu rehberde şunları öğreneceksiniz:
+- Render, Railway, Vercel gibi ücretsiz platformlarda deploy etme
+- Backend ve frontend'i ayrı ayrı deploy etme
+- Environment variables yapılandırması
+- CORS ayarları
+- Sorun giderme ipuçları
+
 ## Özellikler
 
 - Kullanıcı kimlik doğrulama (kayıt, giriş, çıkış)

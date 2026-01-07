@@ -1,0 +1,35 @@
+# Render Blueprint Configuration
+# Bu dosya Render'da otomatik deploy için kullanılabilir
+# Render Dashboard'dan "New Blueprint" seçeneği ile bu dosyayı kullanabilirsiniz
+
+services:
+  # Backend Service
+  - type: web
+    name: personalized-news-backend
+    env: docker
+    region: frankfurt
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: SUPABASE_URL
+        sync: false  # Manuel olarak eklemeniz gerekecek
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false  # Manuel olarak eklemeniz gerekecek
+      - key: JWT_SECRET
+        sync: false  # Manuel olarak eklemeniz gerekecek
+      - key: GUARDIAN_API_KEY
+        sync: false  # Manuel olarak eklemeniz gerekecek
+      - key: CORS_ORIGINS
+        sync: false  # Frontend URL'ini aldıktan sonra güncelleyin
+
+  # Frontend Static Site
+  # Not: Render Blueprint'te static site desteği sınırlıdır
+  # Manuel olarak Static Site olarak oluşturmanız önerilir
+  # veya Web Service olarak deploy edip nginx ile serve edebilirsiniz
+
