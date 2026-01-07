@@ -117,6 +117,12 @@ const authenticateToken = async (req, res, next) => {
     try {
       const decoded = verifyToken(token);
 
+      // Debug log
+      console.log('🔐 [auth] Token verified for user:', {
+        userId: decoded.userId,
+        email: decoded.email
+      });
+
       // Fetch user preferences (categories) - uses cache
       const preferences = await getCachedPreferences(decoded.userId);
 
@@ -126,6 +132,12 @@ const authenticateToken = async (req, res, next) => {
         email: decoded.email,
         categories: preferences.categories,
       };
+
+      // Debug log attached user
+      console.log('✅ [auth] Request user set:', {
+        userId: req.user.id,
+        email: req.user.email
+      });
 
       // Continue to next middleware/route handler
       next();

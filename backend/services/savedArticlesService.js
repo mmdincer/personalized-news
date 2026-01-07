@@ -230,16 +230,26 @@ const getSavedArticles = async (userId) => {
     throw new Error('User ID is required');
   }
 
+  // Debug log
+  console.log('🔍 [savedArticlesService] Fetching saved articles for user_id:', userId);
+
   // Query saved articles (ordered by saved_at DESC - newest first)
   const { data, error } = await supabase
     .from('saved_articles')
-    .select('id, article_url, article_title, article_image_url, article_description, article_content, article_source_name, article_published_at, saved_at')
+    .select('id, article_url, article_title, article_image_url, article_description, article_content, article_source_name, article_published_at, saved_at, user_id')
     .eq('user_id', userId)
     .order('saved_at', { ascending: false });
 
   // Handle query errors
   if (error) {
+    console.error('❌ [savedArticlesService] Query error:', error);
     throw new Error(`Failed to fetch saved articles: ${error.message}`);
+  }
+
+  // Debug log results
+  console.log(`✅ [savedArticlesService] Found ${data?.length || 0} articles for user ${userId}`);
+  if (data && data.length > 0) {
+    console.log('📊 [savedArticlesService] Sample article user_ids:', data.slice(0, 3).map(a => ({ id: a.id, user_id: a.user_id })));
   }
 
   // Return articles (empty array if none found)

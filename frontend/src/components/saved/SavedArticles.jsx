@@ -30,9 +30,17 @@ const SavedArticles = () => {
       setLoading(true);
       setError(null);
 
+      // Debug: Log current user info
+      const currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+      const token = localStorage.getItem('token');
+      console.log('🔍 [SavedArticles] Current user:', currentUser);
+      console.log('🔍 [SavedArticles] Token exists:', !!token);
+
       const response = await getSavedArticles();
 
       if (response.success && response.data) {
+        console.log(`✅ [SavedArticles] Received ${response.data.length} articles from API`);
+
         // Create a Map with article_url as key for fast lookup
         const map = new Map();
         response.data.forEach((savedArticle) => {
