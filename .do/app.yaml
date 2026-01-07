@@ -1,5 +1,5 @@
-name: personalized-news
-region: nyc
+name: personalized-news-backend
+region: fra
 
 # Backend Service (Node.js API)
 services:
@@ -42,4 +42,5 @@ services:
       - key: CORS_ORIGINS
         value: ${CORS_ORIGINS}
         scope: RUN_TIME
+        type: SECRET
 
