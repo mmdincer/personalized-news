@@ -133,8 +133,8 @@ const DateFilter = ({
   const hasFilters = localFromDate || localToDate;
 
   return (
-    <div className={`w-full ${className}`}>
-      <div className={`${className.includes('border-0') ? '' : 'bg-white rounded-lg border border-gray-300'} ${className.includes('p-0') ? '' : 'p-4'}`}>
+    <div className={`w-full max-w-full ${className}`}>
+      <div className={`${className.includes('border-0') ? '' : 'bg-white rounded-lg border border-gray-300'} ${className.includes('p-0') ? '' : 'p-4'} w-full max-w-full`}>
         {/* Header */}
         {!className.includes('border-0') && (
           <div className="flex items-center gap-1.5 mb-2.5">
@@ -171,14 +171,14 @@ const DateFilter = ({
         {className.includes('compact') ? (
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full">
             {/* From Date */}
-            <div className="flex items-center gap-1.5 flex-1 min-w-0">
+            <div className="flex items-center gap-1.5 flex-1 min-w-0 max-w-full">
               <label
                 htmlFor="from-date"
                 className="text-xs font-medium text-gray-600 whitespace-nowrap flex-shrink-0"
               >
                 From:
               </label>
-              <div className="relative flex-1 min-w-0 w-full">
+              <div className="relative flex-1 min-w-0 max-w-full overflow-hidden">
                 <input
                   id="from-date"
                   type="date"
@@ -195,7 +195,6 @@ const DateFilter = ({
                     ${error && error.includes('from') ? 'border-red-300 focus:ring-red-500' : ''}
                     ${localFromDate ? 'bg-blue-50 border-blue-200' : ''}
                   `}
-                  style={{ minWidth: '100%', width: '100%' }}
                   aria-label="From date"
                   aria-describedby={error && error.includes('from') ? 'date-error' : undefined}
                 />
@@ -203,14 +202,14 @@ const DateFilter = ({
             </div>
 
             {/* To Date */}
-            <div className="flex items-center gap-1.5 flex-1 min-w-0">
+            <div className="flex items-center gap-1.5 flex-1 min-w-0 max-w-full">
               <label
                 htmlFor="to-date"
                 className="text-xs font-medium text-gray-600 whitespace-nowrap flex-shrink-0"
               >
                 To:
               </label>
-              <div className="relative flex-1 min-w-0 w-full">
+              <div className="relative flex-1 min-w-0 max-w-full overflow-hidden">
                 <input
                   id="to-date"
                   type="date"
@@ -228,7 +227,6 @@ const DateFilter = ({
                     ${error && error.includes('to') ? 'border-red-300 focus:ring-red-500' : ''}
                     ${localToDate ? 'bg-blue-50 border-blue-200' : ''}
                   `}
-                  style={{ minWidth: '100%', width: '100%' }}
                   aria-label="To date"
                   aria-describedby={error && error.includes('to') ? 'date-error' : undefined}
                 />

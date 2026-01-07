@@ -366,7 +366,7 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
   return (
     <div className="space-y-6">
       {/* Filters Section */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-visible">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         {/* Filters Header */}
         <div className="px-3 sm:px-4 py-2 sm:py-2.5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
           <div className="flex items-center justify-between">
@@ -420,11 +420,11 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
         </div>
 
         {/* Filters Content */}
-        <div className="p-3 sm:p-4">
+        <div className="p-3 sm:p-4 overflow-x-hidden">
           {/* Single Row Filters */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 w-full">
             {/* Search Bar */}
-            <div className="sm:col-span-2 lg:col-span-1">
+            <div className="sm:col-span-2 lg:col-span-1 w-full">
               <SearchBar
                 onSearch={handleSearch}
                 placeholder="Search news..."
@@ -436,7 +436,7 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
             </div>
 
             {/* Date Filter - Compact */}
-            <div className="sm:col-span-2 lg:col-span-2 flex items-center">
+            <div className="sm:col-span-2 lg:col-span-2 w-full min-w-0">
               <DateFilter
                 fromDate={dateFilters.fromDate}
                 toDate={dateFilters.toDate}
@@ -447,7 +447,7 @@ const NewsFeed = ({ showCategoryFilter = true }) => {
             </div>
 
             {/* Sort Dropdown */}
-            <div className="sm:col-span-1 lg:col-span-1 relative z-10">
+            <div className="sm:col-span-1 lg:col-span-1 relative z-10 w-full">
               <SortDropdown
                 value={sort}
                 onChange={handleSortChange}
