@@ -96,8 +96,6 @@ personalized-news/
 │   │   │       ├── Header.jsx
 │   │   │       ├── Navigation.jsx
 │   │   │       └── Footer.jsx
-│   │   │   └── es/              # Spanish translations
-│   │   │       └── translation.json
 │   │   ├── contexts/
 │   │   │   ├── AuthContext.jsx  # Authentication state management (user, token, login, logout)
 │   │   │   └── PreferencesContext.jsx  # User preferences state (categories, updatePreferences)

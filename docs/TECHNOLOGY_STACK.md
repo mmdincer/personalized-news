@@ -139,9 +139,7 @@ Bu dosya projede kullanılan teknolojiler ve karar gerekçelerini içerir.
     "react-router-dom": "^6.x",
     "axios": "^1.x",
     "react-hook-form": "^7.x",
-    "react-hot-toast": "^2.x",
-    "react-i18next": "^13.x",
-    "i18next": "^23.x"
+    "react-hot-toast": "^2.x"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.x",
@@ -168,7 +166,6 @@ Bu dosya projede kullanılan teknolojiler ve karar gerekçelerini içerir.
 | Form Management | react-hook-form | Performanslı |
 | State Management | Context API | Basit, yeterli |
 | Notifications | react-hot-toast | Hafif, modern |
-| i18n | react-i18next | 5 dil desteği |
 | Testing | Jest | Yaygın, kolay |
 
 ## Environment Variables
